@@ -4022,7 +4022,8 @@ function renderNotifs() {
   }
 
   list.innerHTML = items.map(function(n, i) {
-    var accId = 'notif-acc-' + i;
+    // spdToggleAcc() looks up `acc-` + id, so the body must carry that prefix.
+    var accId = 'notif-' + i;
     var date = String(n.date || '').trim();
     return '<div class="spd-acc notif-item">' +
       '<button type="button" class="spd-acc-head" onclick="spdToggleAcc(\'' + accId + '\',this)" aria-expanded="false">' +
@@ -4030,7 +4031,7 @@ function renderNotifs() {
         (date ? '<span class="badge badge-b spd-acc-badges" style="font-size:9px">' + esc(date) + '</span>' : '') +
         '<span class="material-symbols-outlined spd-acc-arrow">expand_more</span>' +
       '</button>' +
-      '<div class="spd-acc-body" id="' + accId + '">' +
+      '<div class="spd-acc-body" id="acc-' + accId + '">' +
         '<div class="notif-text">' + esc(n.text || '') + '</div>' +
         '<div class="notif-date"><span class="material-symbols-outlined">schedule</span>' +
           '<span>' + t('notif.date') + ':</span>' +
