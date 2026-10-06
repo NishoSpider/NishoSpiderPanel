@@ -1093,6 +1093,12 @@ tr{animation:fadeIn .3s ease}
 .spd-acc-sec-t{font-size:11px;color:var(--txt2);margin-bottom:4px}
 .spd-acc-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .spd-acc .scn-pane{display:block!important}
+/* Notifications: subject sits on the accordion head, body + date/time inside. */
+#notif-list .spd-acc-title{font-weight:700;white-space:normal;overflow:visible;text-overflow:clip}
+.notif-text{white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.85;color:var(--txt);user-select:text;-webkit-user-select:text}
+.notif-text:empty::before{content:"—";color:var(--txt2)}
+.notif-date{display:flex;align-items:center;gap:6px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border);font-size:11px;color:var(--txt2)}
+.notif-date .material-symbols-outlined{font-size:14px}
 .spd-acc.node-item-accordion .spd-acc-body{padding-top:6px}
 
 /* No text selection outside form controls */
@@ -1334,6 +1340,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <div class="nav-item" onclick="switchTab('contact',this)">
         <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg></span>
         <span data-i18n="contact">Contact Me</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('advanced',this)">
+        <span class="nav-ic"><span class="material-symbols-outlined" style="font-size:18px">tune</span></span>
+        <span data-i18n="tab.advanced">پیشرفته</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('help',this)">
+        <span class="nav-ic"><span class="material-symbols-outlined" style="font-size:18px">help</span></span>
+        <span data-i18n="tab.help">راهنما</span>
+      </div>
+      <div class="nav-item" id="nav-notif" onclick="switchTab('notif',this)">
+        <span class="nav-ic"><span class="material-symbols-outlined" style="font-size:18px">campaign</span></span>
+        <span data-i18n="notif.nav">اعلان‌ها</span>
       </div>
       <div class="nav-item" onclick="doLogout()" style="color:var(--red)!important">
         <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m7 14l5-5-5-5m5 5H9"/></svg></span>
@@ -1785,8 +1803,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             <div class="panel-h"><span class="glow" data-i18n="backupRestore">بکاپ و بازیابی</span></div>
             <div class="px-hint" data-i18n="backupRestoreHint">بکاپ کامل شامل: کاربران، لینک‌ها، اینباندها، اسکن‌ها، تنظیمات، رمز، گروه‌ها و تنظیمات Worker. فایل JSON دانلود/آپلود می‌شود.</div>
             <div style="display:flex;gap:8px;margin-top:10px">
-              <button class="btn btn-p" style="flex:1" onclick="downloadBackup()"><span data-i18n="backup">بکاپ (دانلود)</span></button>
-              <button class="btn btn-g" style="flex:1" onclick="document.getElementById('restore-file').click()"><span data-i18n="restore">بازیابی (آپلود)</span></button>
+              <button class="btn btn-p" style="flex:1" onclick="downloadBackup()"><span data-i18n="backup">بکاپ</span></button>
+              <button class="btn btn-g" style="flex:1" onclick="document.getElementById('restore-file').click()"><span data-i18n="restore">ریستور</span></button>
             </div>
             <input type="file" id="restore-file" accept=".json" style="display:none" onchange="uploadRestore(this)">
             <pre id="restore-log" dir="ltr" style="display:none;margin-top:10px;padding:10px;border-radius:8px;background:var(--bg2,#111);color:var(--orange);font-size:11px;max-height:150px;overflow-y:auto;white-space:pre-wrap;font-family:monospace"></pre>
@@ -1926,6 +1944,103 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
         </div>
       </div>
 
+      <!-- ADVANCED INBOUND JSON TAB -->
+      <div class="tab-content hidden" id="tab-advanced">
+        <div class="panel">
+          <div class="panel-h"><span class="glow" data-i18n="tab.advanced">پیشرفته</span></div>
+          <div class="px-hint" data-i18n="advancedInboundHint">یک اینباند را انتخاب کنید و JSON کامل آن را ویرایش کنید. تغییرات ذخیره و برای سرویس اعمال می‌شوند.</div>
+          <div id="advanced-inbound-list" class="f-r" style="gap:8px;margin:12px 0"></div>
+          <div id="advanced-inbound-editor" class="hidden">
+            <input type="hidden" id="advanced-inbound-id">
+            <div class="f-g"><label data-i18n="advancedJson">Inbound JSON</label><textarea id="advanced-inbound-json" dir="ltr" spellcheck="false" style="min-height:360px;font-family:monospace;font-size:12px;white-space:pre;user-select:text;-webkit-user-select:text"></textarea></div>
+            <button class="btn btn-p" type="button" onclick="saveAdvancedInbound()"><span data-i18n="advancedSave">ذخیره JSON</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- HELP TAB (last content tab) -->
+      <div class="tab-content hidden" id="tab-help">
+        <div class="panel">
+          <div class="panel-h"><span class="glow" data-i18n="tab.help">راهنما</span></div>
+          <div class="px-hint" data-i18n="helpIntro">راهنما و تنظیمات کانفیگ‌های پیش‌فرض</div>
+          <div class="spd-acc-list" style="margin-top:12px">
+            <div class="spd-acc">
+              <button type="button" class="spd-acc-head" onclick="spdToggleAcc('help-template',this)" aria-expanded="false"><span class="spd-acc-title"><strong data-i18n="helpTemplate">Template</strong></span><span class="material-symbols-outlined spd-acc-arrow">expand_more</span></button>
+              <div class="spd-acc-body" id="acc-help-template">
+                <div class="px-hint" data-i18n="helpPromptHint">این Prompt منطق صفحه ساب فعلی را توضیح می‌دهد تا بتوانید آن را به هوش مصنوعی بدهید.</div>
+                <textarea id="help-template-text" readonly dir="ltr" spellcheck="false" style="width:100%;min-height:360px;margin:10px 0;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--bg2);color:var(--txt);font:12px/1.6 monospace;white-space:pre-wrap;user-select:text;-webkit-user-select:text">You are modifying SpiderPanel's user subscription page, static/sub.html. First inspect the existing page and its server-side data contract. Preserve the established behavior unless the requested change requires otherwise.
+
+PAGE AND DATA CONTRACT
+- The page is served for a user's subscription UUID and reads the final path segment as uname. It fetches GET /api/sub/{encodeURIComponent(uname)} with cache: no-store.
+- The API returns subscription data including config_uuid, username, status/is_active, configs (and a legacy single config), traffic_used_bytes, traffic_limit_bytes, max_ip_per_user, used_ips, expire_days, expire_at_ts. Treat absent optional fields safely.
+- Build the public subscription URL as window.location.origin + '/link/' + config_uuid. This is the import URL copied by the page and used by quick-connect apps.
+- The API can return a status/telemetry line in configs. Do not show entries containing the encoded 📊 marker %F0%9F%93%8A. If configs is empty, use the single config field when present.
+- Keep config strings byte-for-byte intact for copy and QR actions. Decode only the URI fragment to create the display name; do not rebuild a VLESS URI in the browser.
+- Per-config QR images come from GET /api/sub/{uuid}/qr?cfg={zero-based-config-index}. The server maps that index to the same filtered list of real configs. The QR must encode the configuration, not the subscription URL.
+
+PAGE BEHAVIOR
+- applyData populates the subscription URL and ID, active/inactive status, username, used/total/remaining traffic, usage percentage ring and bar, current/allowed connections, and remaining expiry in days, hours, and minutes. A zero traffic limit means unlimited; a missing expiry means no expiry.
+- renderConfigs groups links into TLS, Reality, and Telegram Proxy. Identify categories from the URI: Telegram proxy links begin with t.me/proxy or tg://proxy; Reality links contain security=reality; other configs belong to TLS. Translate category labels with the page's fa/en dictionaries.
+- Each config card shows its decoded remark and protocol and has copy and QR actions. Escape remarks before inserting them into HTML. Never insert server text as trusted markup.
+- The chips filter all/TLS/Reality/Telegram groups. Search filters by the decoded config name within the active category. Update group visibility and visible counts after either action.
+- Copy Subscription Link, Copy Sub Text, Copy All Configs, and per-config Copy use the Clipboard API with the existing textarea fallback. Keep localized success/error toast messages.
+- Quick Connect opens a modal with Android, iOS, and Windows choices. Existing app deep links are: Happ happ://add/{encoded-sub-url}; v2rayNG v2rayng://install-sub?url={encoded-sub-url}&name=SPiDER; V2Box v2box://install-sub?url={encoded-sub-url}&name=SPiDER; Hiddify hiddify://install-sub?url={encoded-sub-url}&name=SPiDER; Windows v2rayN v2rayn://install-sub?url={encoded-sub-url}. Copy the subscription URL before redirecting to the chosen client.
+- The QR modal requests the server image for the selected real config index, shows its decoded name, and can close from its button. Quick Connect closes from its close button, backdrop, or chosen action.
+- Keep event binding idempotent: dynamically rendered cards are recreated, so do not attach duplicate handlers. Existing code uses a _bound marker for this.
+
+LANGUAGE, THEME, AND LAYOUT
+- Language is shared with the main panel through localStorage key spider-lang (fa or en). Every human-readable UI string, including dynamically-created buttons, empty states, titles, toasts, and errors, needs both Persian and English dictionary entries. applyLang must update text, placeholders, direction, and the visible language button.
+- Theme is shared through spider-theme (dark or light) and data-theme on the root. Use the existing CSS variables for both themes; do not hard-code colors that break the light theme.
+- Preserve responsive mobile layout, RTL for Persian and LTR for English, accessible button types/labels, safe-area spacing, and reduced overflow on narrow screens. Keep selection disabled for decorative text only; inputs and the copyable subscription URL must remain selectable.
+- Keep the existing content structure and page identity. Do not copy the admin dashboard, expose private account fields, or mix this user page with the separate public group page at /p/{uuid_key}.
+
+IMPLEMENTATION RULES
+- Before coding, trace the matching API response in main.py and inspect current IDs/classes in sub.html. Do not assume a field or endpoint that the repository does not provide.
+- Make the smallest coherent HTML/CSS/JavaScript change, keep browser code compatible with the project's current style, and escape any API-derived text.
+- If a requested UI behavior needs new server data, describe and implement the API contract in main.py too; never silently depend on a field that the endpoint does not return.
+- Preserve existing client deep links, telemetry filtering, account calculations, QR index mapping, and copy semantics while editing. Return a concise summary of files changed and any behavior that cannot be guaranteed by the current server contract.</textarea>
+                <button class="btn btn-p" type="button" onclick="copyHelpPrompt()"><span data-i18n="helpCopyPrompt">کپی Prompt</span></button>
+              </div>
+            </div>
+            <div class="spd-acc">
+              <button type="button" class="spd-acc-head" onclick="spdToggleAcc('help-server-edit',this)" aria-expanded="false"><span class="spd-acc-title"><strong data-i18n="helpServerEdit">Server Edit</strong></span><span class="material-symbols-outlined spd-acc-arrow">expand_more</span></button>
+              <div class="spd-acc-body" id="acc-help-server-edit">
+                <div class="px-hint" data-i18n="helpServerEditHint">آدرس اتصال کانفیگ‌های پیش‌فرض TLS + WS را تغییر دهید. Host و SNI دامنه پنل باقی می‌مانند.</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+                  <button class="btn btn-g" type="button" onclick="saveHelpAddress('chatgpt')" data-i18n="helpChatgptAddress">قرار دادن chatgpt.com در Address</button>
+                  <button class="btn btn-g" type="button" onclick="saveHelpAddress('panel_ipv6')" data-i18n="helpPanelIpv6">استفاده از IPv6 دامنه پنل</button>
+                  <button class="btn btn-g" type="button" onclick="saveHelpAddress('panel')" data-i18n="helpResetAddress">استفاده از دامنه پنل</button>
+                </div>
+                <div class="f-g"><label for="help-custom-address" data-i18n="helpAddressLabel">Custom Address</label><div style="display:flex;gap:8px"><input id="help-custom-address" type="text" dir="ltr" data-i18n-placeholder="helpAddressPlaceholder" placeholder="دامنه یا IP (IPv4/IPv6)" style="flex:1"><button class="btn btn-p" type="button" onclick="saveHelpAddress('custom')" data-i18n="helpCustomAddress">ذخیره آدرس سفارشی</button></div></div>
+              </div>
+            </div>
+            <div class="spd-acc">
+              <button type="button" class="spd-acc-head" onclick="spdToggleAcc('help-config-options',this)" aria-expanded="false"><span class="spd-acc-title"><strong data-i18n="helpConfigOptions">تنظیمات کانفیگ</strong></span><span class="material-symbols-outlined spd-acc-arrow">expand_more</span></button>
+              <div class="spd-acc-body" id="acc-help-config-options">
+                <div class="px-hint" data-i18n="helpFeatureHint">این گزینه‌ها فقط به کانفیگ‌های اینباند پیش‌فرض TLS + WS افزوده می‌شوند.</div>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div><strong data-i18n="helpEch">افزودن ECH</strong><div class="px-hint" data-i18n="helpEchHint">پارامتر ECH را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.</div></div><button type="button" class="ios-switch" id="help-ech-switch" role="switch" aria-checked="false" onclick="toggleHelpFeature('ech',this)"></button></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0"><div><strong data-i18n="helpFf">افزودن F+F</strong><div class="px-hint" data-i18n="helpFfHint">مجموعه cipher و تنظیمات fragment نمونه را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.</div></div><button type="button" class="ios-switch" id="help-ff-switch" role="switch" aria-checked="false" onclick="toggleHelpFeature('ff',this)"></button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- NOTIFICATIONS TAB -->
+      <div class="tab-content hidden" id="tab-notif">
+        <div class="panel">
+          <div class="panel-h">
+            <span class="glow" data-i18n="notif.title">اعلان‌ها</span>
+            <span style="font-size:10px;color:var(--txt2)" id="notif-source"></span>
+            <button class="btn btn-g btn-sm" type="button" style="margin-right:auto" onclick="loadNotifs(true)"><span data-i18n="notif.refresh">بروزرسانی</span></button>
+          </div>
+          <div class="px-hint" data-i18n="notif.hint">هر اعلان یک آکاردیون است؛ با زدن روی موضوع، متن کامل به همراه تاریخ و ساعت نمایش داده می‌شود.</div>
+          <div id="notif-list" class="spd-acc-list" style="margin-top:12px">
+            <div class="empty" data-i18n="notif.loading">در حال دریافت اعلان‌ها...</div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /content -->
   </div><!-- /main-area -->
 </div><!-- /app-wrap -->
@@ -1936,9 +2051,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 <div class="modal" id="mod-user"><div class="modal-c" style="max-width:680px">
   <div class="modal-t"><span class="glow" data-i18n="createUser">ایجاد کاربر جدید</span></div>
   <form onsubmit="submitCreateUser(event)">
-    <div class="f-r">
-      <div class="f-g"><label data-i18n="username">نام کاربری</label><input type="text" id="cu-name" placeholder="خالی = تصادفی"></div>
-      <div class="f-g"><label data-i18n="conn">اتصال همزمان</label><input type="number" id="cu-conn" placeholder="∞ نامحدود"></div>
+      <div class="f-r">
+        <div class="f-g"><label data-i18n="username">نام کاربری</label><input type="text" id="cu-name" placeholder="خالی = تصادفی"></div>
+        <div class="f-g"><label data-i18n="conn">اتصال همزمان</label><input type="number" id="cu-conn" placeholder="∞ نامحدود"></div>
+        <div class="f-g"><label data-i18n="speedLimit">محدودیت سرعت (Mbps - صفر=نامحدود)</label><input type="number" id="cu-speed" min="0" step="0.1" value="0"><div class="px-hint" data-i18n="speedLimitHint">سقف سرعت مجموع اتصال‌های WebSocket این کاربر؛ صفر یعنی نامحدود.</div></div>
     </div>
     <div class="f-r">
       <div class="f-g"><label data-i18n="volume">حجم</label><input type="number" id="cu-vol" placeholder="∞ نامحدود"></div>
@@ -1967,6 +2083,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     <div class="f-g"><label data-i18n="volEdit">حجم (GB - ۰=نامحدود)</label><input type="number" id="eu-vol" value="20"></div>
     <div class="f-g"><label data-i18n="daysEdit">روز اعتبار (۰=نامحدود)</label><input type="number" id="eu-exp" value="30"></div>
     <div class="f-g"><label data-i18n="conn">اتصال همزمان</label><input type="number" id="eu-conn" value="0" placeholder="۰=نامحدود"></div>
+    <div class="f-g"><label data-i18n="speedLimit">محدودیت سرعت (Mbps - صفر=نامحدود)</label><input type="number" id="eu-speed" min="0" step="0.1" value="0"></div>
     <div class="f-g"><label data-i18n="status">وضعیت</label><select id="eu-status"><option value="active" data-i18n="active">فعال</option><option value="inactive" data-i18n="inactive">غیرفعال</option></select></div>
     <div class="f-g" style="display:flex;align-items:center;gap:8px">
       <input type="checkbox" id="eu-reset" style="width:auto">
@@ -2123,13 +2240,19 @@ var selectedTheme = localStorage.getItem('spider-theme') || 'dark';
 var LANG = localStorage.getItem('spider-lang') || 'fa';
 var I18N = {
   fa: {
-    'dash': 'داشبورد', 'navGroup': 'مدیریت', 'advanced': 'پیشرفته', 'networkTotal': 'مجموع ارسال + دریافت', 'users': 'کاربران', 'inbounds': 'اینباندها', 'scanner': 'اسکنر IP', 'worker': 'Worker', 'settings': 'تنظیمات', 'contact': 'Contact Me', 'logout': 'خروج',
-    'workerSetupTip': 'پنل را به Cloudflare متصل کنید تا یک پروژه Pages اختصاصی ساخته شود، worker.js داخل آن Deploy شود و یک KV اختصاصی به آن متصل شود.', 'cfToken': 'Cloudflare API Token', 'getToken': 'گرفتن توکن', 'cfAccountId': 'Account ID', 'cfWorkerName': 'Worker Name', 'cfWorkerDomain': 'Worker Domain', 'createNewWorker': 'ساخت Worker جدید', 'cfConnect': 'اتصال و Deploy', 'connected': 'متصل', 'disconnected': 'قطع', 'workerStatus': 'وضعیت', 'remoteStatus': 'وضعیت ریموت', 'lastHeartbeat': 'آخرین Heartbeat', 'workerId': 'Pages Project', 'kvId': 'KV ID', 'onlineUsers': 'کاربران آنلاین', 'workerTraffic': 'مصرف Worker', 'workerUrl': 'Worker URL', 'lastSync': 'آخرین Sync', 'lastError': 'آخرین خطا', 'proxyPool': 'Proxy IP Pool', 'addProxy': 'افزودن کشور', 'workerSettings': 'تنظیمات Worker', 'removeConn': 'حذف اتصال Worker', 'noProxyYet': 'هنوز کشوری اضافه نکرده‌اید', 'connecting': 'در حال ساخت...', 'workerConnected': 'Worker جدید ساخته و Deploy شد', 'syncing': 'در حال Sync...', 'synced': 'Sync شد', 'confirmRemoveWorker': 'اتصال Worker حذف شود؟', 'workerRemoved': 'اتصال Worker حذف شد', 'proxyCodePrompt': 'کد کشور (مثلا de):', 'proxyCountryPrompt': 'نام کشور:', 'proxyHostPrompt': 'آدرس Proxy IP (مثلا de.example.com):', 'proxyPortPrompt': 'پورت Proxy IP:', 'proxySaved': 'کشور ذخیره و Worker بروزرسانی شد', 'confirmDelProxy': 'این کشور حذف شود؟', 'proxyDeleted': 'کشور حذف شد', 'workerFillAll': 'همه فیلدها را پر کنید', 'workerProxyEnabled': 'Worker Proxy IP', 'workerProxyNone': 'بدون Proxy', 'workerRouteTip': 'کانفیگ کاربر روی دامنه Pages با مسیر /ws/{uuid} ساخته می‌شود و از Railway عبور نمی‌کند.', 'workerAutoName': 'یک پروژه Pages جدید با نام تصادفی (spider-xxxxxx) و KV اختصاصی ساخته می‌شود — نیازی به ورود نام نیست.', 'proxySource': 'منبع پروکسی روزانه', 'autoSyncHourly': 'بروزرسانی خودکار (ساعتی)', 'updateNow': 'بروزرسانی از منبع', 'updatingFromSource': 'در حال بروزرسانی از منبع', 'sourceUpdated': 'بروزرسانی شد', 'sourceError': 'خطا در بروزرسانی منبع', 'countries': 'کشور', 'syncsDone': 'تعداد بروزرسانی‌ها', 'pickCountry': 'یک کشور انتخاب کنید',
-    'tab.dash': 'داشبورد', 'tab.users': 'مدیریت کاربران', 'tab.inbounds': 'مدیریت اینباندها', 'tab.scanner': 'اسکنر آی‌پی', 'tab.settings': 'تنظیمات',
+    'dash': 'داشبورد', 'navGroup': 'مدیریت', 'advanced': 'پیشرفته', 'networkTotal': 'مجموع ارسال + دریافت', 'users': 'کاربران', 'inbounds': 'اینباندها', 'scanner': 'اسکنر IP', 'worker': 'ورکر (Worker)', 'settings': 'تنظیمات', 'contact': 'تماس با من', 'logout': 'خروج',
+    'workerSetupTip': 'پنل را به Cloudflare متصل کنید تا یک پروژه Pages اختصاصی ساخته شود، worker.js داخل آن Deploy شود و یک KV اختصاصی به آن متصل شود.', 'cfToken': 'توکن API کلادفلر', 'getToken': 'گرفتن توکن', 'cfAccountId': 'شناسه حساب', 'cfWorkerName': 'نام Worker', 'cfWorkerDomain': 'دامنه Worker', 'createNewWorker': 'ساخت Worker جدید', 'cfConnect': 'اتصال و Deploy', 'connected': 'متصل', 'disconnected': 'قطع', 'workerStatus': 'وضعیت', 'remoteStatus': 'وضعیت ریموت', 'lastHeartbeat': 'آخرین Heartbeat', 'workerId': 'پروژه Pages', 'kvId': 'KV ID', 'onlineUsers': 'کاربران آنلاین', 'workerTraffic': 'مصرف Worker', 'workerUrl': 'نشانی ورکر', 'lastSync': 'آخرین Sync', 'lastError': 'آخرین خطا', 'proxyPool': 'مخزن IP پروکسی', 'addProxy': 'افزودن کشور', 'workerSettings': 'تنظیمات Worker', 'removeConn': 'حذف اتصال Worker', 'noProxyYet': 'هنوز کشوری اضافه نکرده‌اید', 'connecting': 'در حال ساخت...', 'workerConnected': 'Worker جدید ساخته و Deploy شد', 'syncing': 'در حال Sync...', 'synced': 'Sync شد', 'confirmRemoveWorker': 'اتصال Worker حذف شود؟', 'workerRemoved': 'اتصال Worker حذف شد', 'proxyCodePrompt': 'کد کشور (مثلا de):', 'proxyCountryPrompt': 'نام کشور:', 'proxyHostPrompt': 'آدرس Proxy IP (مثلا de.example.com):', 'proxyPortPrompt': 'پورت Proxy IP:', 'proxySaved': 'کشور ذخیره و Worker بروزرسانی شد', 'confirmDelProxy': 'این کشور حذف شود؟', 'proxyDeleted': 'کشور حذف شد', 'workerFillAll': 'همه فیلدها را پر کنید', 'workerProxyEnabled': 'IP پروکسی Worker', 'workerProxyNone': 'بدون Proxy', 'workerRouteTip': 'کانفیگ کاربر روی دامنه Pages با مسیر /ws/{uuid} ساخته می‌شود و از Railway عبور نمی‌کند.', 'workerAutoName': 'یک پروژه Pages جدید با نام تصادفی (spider-xxxxxx) و KV اختصاصی ساخته می‌شود — نیازی به ورود نام نیست.', 'proxySource': 'منبع پروکسی روزانه', 'autoSyncHourly': 'بروزرسانی خودکار (ساعتی)', 'updateNow': 'بروزرسانی از منبع', 'updatingFromSource': 'در حال بروزرسانی از منبع', 'sourceUpdated': 'بروزرسانی شد', 'sourceError': 'خطا در بروزرسانی منبع', 'countries': 'کشور', 'syncsDone': 'تعداد بروزرسانی‌ها', 'pickCountry': 'یک کشور انتخاب کنید',
+    'tab.dash': 'داشبورد', 'tab.users': 'مدیریت کاربران', 'tab.inbounds': 'مدیریت اینباندها', 'tab.scanner': 'اسکنر آی‌پی', 'tab.settings': 'تنظیمات', 'tab.advanced': 'پیشرفته', 'tab.help': 'راهنما',
+    'helpTemplate': 'قالب', 'helpServerEdit': 'ویرایش سرور', 'helpConfigOptions': 'تنظیمات کانفیگ', 'helpCopyPrompt': 'کپی متن راهنما', 'helpPromptCopied': 'متن راهنما کپی شد', 'helpPromptCopyFailed': 'کپی متن راهنما ناموفق بود',
+    'helpIntro': 'راهنما و تنظیمات کانفیگ‌های پیش‌فرض', 'helpPromptHint': 'این Prompt منطق صفحه ساب فعلی را توضیح می‌دهد تا بتوانید آن را به هوش مصنوعی بدهید.',
+    'helpServerEditHint': 'آدرس اتصال کانفیگ‌های پیش‌فرض TLS + WS را تغییر دهید. Host و SNI دامنه پنل باقی می‌مانند.', 'helpChatgptAddress': 'قرار دادن chatgpt.com در Address', 'helpCustomAddress': 'ذخیره آدرس سفارشی', 'helpAddressLabel': 'آدرس سفارشی', 'helpAddressPlaceholder': 'دامنه یا IP (IPv4/IPv6)', 'helpPanelIpv6': 'استفاده از IPv6 دامنه پنل', 'helpResetAddress': 'استفاده از دامنه پنل',
+    'helpAddressSaved': 'آدرس کانفیگ ذخیره شد', 'helpAddressInvalid': 'دامنه یا IP معتبر وارد کنید', 'helpIpv6NotFound': 'برای دامنه پنل IPv6 پیدا نشد', 'helpSettingsSaved': 'تنظیمات ذخیره شد',
+    'helpFeatureHint': 'این گزینه‌ها فقط به کانفیگ‌های اینباند پیش‌فرض TLS + WS افزوده می‌شوند.', 'helpEch': 'افزودن ECH', 'helpEchHint': 'پارامتر ECH را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.', 'helpFf': 'افزودن F+F', 'helpFfHint': 'مجموعه cipher و تنظیمات fragment نمونه را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.',
+    'advancedInboundHint': 'یک اینباند را انتخاب کنید و JSON کامل آن را ویرایش کنید. تغییرات ذخیره و برای سرویس اعمال می‌شوند.', 'advancedSelectInbound': 'انتخاب اینباند', 'advancedChooseInbound': 'انتخاب کنید', 'advancedJson': 'JSON اینباند', 'advancedSave': 'ذخیره JSON', 'advancedSaved': 'JSON اینباند ذخیره شد', 'advancedInvalidJson': 'JSON معتبر نیست', 'advancedNoInbounds': 'اینباند قابل ویرایشی وجود ندارد', 'defaultTlsWsInbound': 'پیش‌فرض TLS + WS', 'defaultHttpWsInbound': 'پیش‌فرض HTTP + WS',
     'inboundFixedHint': 'فقط اینباندهای پیش‌فرض پنل استفاده می‌شوند. WS/TLS به‌صورت خودکار با دامنه اصلی پنل آماده است؛ Reality را با دامنه و پورت خودتان تکمیل کنید (کلید pbk به‌صورت خودکار ساخته می‌شود).', 'inboundFixed': 'افزودن اینباند غیرفعال است — فقط اینباندهای پیش‌فرض.', 'inboundAuto': 'این اینباند خودکار است و نیازی به تنظیم ندارد.',
     'newUser': 'کاربر جدید', 'newInbound': 'اینباند جدید', 'domain': 'دامنه',
     'loading': 'در حال بارگذاری...', 'noUsers': 'هیچ کاربری وجود ندارد', 'noInbounds': 'هیچ اینباندی وجود ندارد', 'errLoadUsers': 'خطا در بارگذاری کاربران', 'errLoadInbounds': 'خطا در بارگذاری اینباندها', 'errLoadStats': 'خطا در بارگذاری آمار',
-    'live': '● LIVE', 'liveBadge': 'LIVE', 'cloudflareTitle': 'Cloudflare', 'railwayTitle': 'Railway', 'tcpTitle': 'TCP', 'advancedTitle': 'پیشرفته', 'sniTitle': 'SNI', 'workerMainTitle': 'Worker',
+    'live': '● زنده', 'liveBadge': 'زنده', 'cloudflareTitle': 'Cloudflare', 'railwayTitle': 'Railway', 'tcpTitle': 'TCP', 'advancedTitle': 'پیشرفته', 'sniTitle': 'SNI', 'workerMainTitle': 'ورکر',
     'scnTip': 'اسکن زنده از رنج‌های Cloudflare. IPهای پاسخ‌دهنده مرتب و ۱۰ تای اول به صورت خودکار ذخیره می‌شوند.',
     'ipCount': 'تعداد IP', 'targetPort': 'پورت هدف', 'startScan': 'شروع اسکن', 'stop': 'توقف', 'scanning': 'در حال اسکن...', 'scanStopped': 'اسکن متوقف شد',
     'found': 'IP یافت شده', 'tried': 'تست شده', 'bestPing': 'بهترین پینگ', 'saved': 'ذخیره شده', 'savedFirst10': 'ذخیره شده (اولین ۱۰ آی‌پی)', 'clear': 'پاک کردن', 'notSaved': 'هنوز ذخیره‌ای نیست', 'startPrompt': 'برای شروع اسکن، دکمه «شروع اسکن» را بزنید', 'noHit': 'هیچ آی‌پی پاسخ‌دهنده‌ای یافت نشد', 'saveCleared': 'لیست ذخیره‌شده پاک شد',
@@ -2138,9 +2261,9 @@ var I18N = {
     'addDomain': 'افزودن دامنه', 'checkDomains': 'شروع بررسی دامنه‌ها', 'checking': 'در حال بررسی...', 'checkingDomains': 'در حال بررسی دامنه‌ها...',
     'appearance': 'تنظیمات ظاهری', 'themeMode': 'حالت نمایش', 'fixedTheme': 'فونت و رنگ هماهنگ با صفحه ساب + iOS است.', 'theme': 'تم', 'dark': 'تاریک', 'light': 'روشن', 'color': 'رنگ', 'lightMode': 'حالت روشن فعال شد', 'darkMode': 'حالت تاریک فعال شد',
     'red': 'قرمز', 'green': 'سبز', 'blue': 'آبی',
-    'panelMusic': 'Panel Music', 'bgMusic': 'Background Music', 'toggleMusic': 'روشن/خاموش', 'changePassword': 'Change Password', 'curPass': 'رمز فعلی', 'newPass': 'رمز جدید', 'changePassBtn': 'تغییر رمز',
+    'panelMusic': 'موسیقی پنل', 'bgMusic': 'موسیقی پس‌زمینه', 'toggleMusic': 'روشن/خاموش', 'changePassword': 'تغییر رمز عبور', 'curPass': 'رمز فعلی', 'newPass': 'رمز جدید', 'changePassBtn': 'تغییر رمز',
     'contactSub': 'برای پشتیبانی و همکاری با من در ارتباط باشید',
-    'createUser': 'ایجاد کاربر جدید', 'editUser': 'ویرایش کاربر', 'username': 'نام کاربری', 'conn': 'اتصال همزمان', 'volume': 'حجم', 'unit': 'واحد', 'expire': 'اعتبار', 'day': 'روز', 'month': 'ماه',
+    'createUser': 'ایجاد کاربر جدید', 'editUser': 'ویرایش کاربر', 'username': 'نام کاربری', 'conn': 'اتصال همزمان', 'speedLimit': 'محدودیت سرعت (Mbps - صفر=نامحدود)', 'speedLimitHint': 'سقف سرعت مجموع اتصال‌های WebSocket این کاربر؛ صفر یعنی نامحدود.', 'volume': 'حجم', 'unit': 'واحد', 'expire': 'اعتبار', 'day': 'روز', 'month': 'ماه',
     'inboundsMulti': 'اینباندها (چندتایی)', 'noInboundOpt': 'اینباندی وجود ندارد',
     'inboundPickHint': 'برای هر اینباند، گزینه‌های مخصوصش نمایش داده می‌شود: Worker → انتخاب کشور؛ VLESS غیرپیش‌فرض → Cloudflare و Railway؛ Reality → بدون گزینه.',
     'workerCountries': 'کشورهای چندمنطقه‌ای (برای هر کشور یک تیک فعال کنید):',
@@ -2158,10 +2281,10 @@ var I18N = {
     'volEdit': 'حجم (GB - ۰=نامحدود)', 'daysEdit': 'روز اعتبار (۰=نامحدود)', 'status': 'وضعیت', 'active': 'فعال', 'inactive': 'غیرفعال', 'resetTraffic': 'بازنشانی ترافیک', 'saveChanges': 'ذخیره تغییرات',
     'inboundName': 'نام اینباند', 'proto': 'پروتکل', 'port': 'پورت', 'extPort': 'پورت خارجی', 'optional': 'اختیاری', 'sniFixed': 'SNI هدف ثابت',
     'securityType': 'نوع امنیت', 'realitySettings': 'تنظیمات Reality', 'autoGen': 'تولید خودکار', 'genRealityKey': 'تولید کلید Reality (x25519)',
-    'dest': 'Destination', 'serverNames': 'Server Names (SNI)', 'shortIds': 'Short IDs', 'hex8': 'هگز ۸ رقمی — خالی = تصادفی', 'generate': '+ تولید', 'spiderx': 'SpiderX',
-    'extDomain': 'External Domain', 'extPortCfg': 'External Port', 'extDomainPlace': 'دامنه خارجی برای کانفیگ کلاینت', 'commaSep': 'با کاما جدا کنید',
+    'dest': 'مقصد', 'serverNames': 'نام سرورها (SNI)', 'shortIds': 'شناسه‌های کوتاه', 'hex8': 'هگز ۸ رقمی — خالی = تصادفی', 'generate': '+ تولید', 'spiderx': 'SpiderX',
+    'extDomain': 'دامنه خارجی', 'extPortCfg': 'پورت خارجی', 'extDomainPlace': 'دامنه خارجی برای کانفیگ کلاینت', 'commaSep': 'با کاما جدا کنید',
     'intPort': 'پورت اصلی (پورتی که سرور روی آن گوش میدهد)', 'extPortCfg2': 'پورت خارجی (کانفیگ)', 'portHint': 'پورت داخلی = پورتی که Xray روی آن گوش میدهد. پورت خارجی = پورتی که در کانفیگ ظاهر میشود (آدرس کانفیگ: domain:external_port).',
-    'network': 'شبکه', 'serviceName': 'Service Name', 'createInbound': 'ایجاد اینباند', 'editInbound': 'ویرایش اینباند', 'inboundCreated': 'اینباند با موفقیت ذخیره شد',
+    'network': 'شبکه', 'serviceName': 'نام سرویس', 'createInbound': 'ایجاد اینباند', 'editInbound': 'ویرایش اینباند',
     'config': 'کانفیگ', 'copy': 'کپی', 'close': 'بستن', 'copied': 'کانفیگ کپی شد', 'noCfg': 'کانفیگی موجود نیست', 'errCopy': 'خطا در کپی', 'notFound': 'یافت نشد', 'delete': 'حذف', 'edit': 'ویرایش', 'unlimited': 'نامحدود', 'expired': 'منقضی', 'daysUnit': ' روز', 'default': 'پیش‌فرض', 'usersCount': 'کاربران', 'secNetwork': 'شبکه', 'security': 'امنیت', 'action': 'عملیات', 'expiry': 'انقضا', 'connTh': 'اتصال',
     'confirmDeleteUser': 'آیا از حذف این کاربر اطمینان دارید؟', 'confirmDeleteInbound': 'آیا از حذف این اینباند اطمینان دارید؟', 'keysGenerated': 'کلیدهای Reality تولید شد', 'errKeyGen': 'خطا در تولید کلید', 'shortIdGen': 'Short ID تولید شد', 'shortIdNew': 'Short ID جدید تولید شد',
     'inboundUpdated': 'اینباند بروزرسانی شد', 'inboundCreated': 'اینباند ایجاد شد', 'updateInbound': 'بروزرسانی اینباند', 'inboundDeleted': 'اینباند حذف شد',
@@ -2171,22 +2294,28 @@ var I18N = {
     'backupDownloaded': 'بکاپ دانلود شد', 'restoreDone': 'بازیابی انجام شد', 'restoreFailed': 'بازیابی ناموفق', 'restoreUploading': 'در حال آپلود و بازیابی...', 'restoreUploadFailed': 'آپلود ناموفق',
     'panelUpdate': 'بروزرسانی پنل', 'updatePanel': 'بروزرسانی', 'confirmUpdate': 'پنل از GitHub بروزرسانی شود؟', 'updateStarted': 'بروزرسانی شروع شد...', 'updateDone': 'بروزرسانی کامل شد — پنل را ری‌استارت کنید', 'updateFailed': 'بروزرسانی ناموفق بود', 'updateRunning': 'در حال بروزرسانی...',
     'panelUpdateHint': 'با زدن این دکمه، آخرین نسخه ریپو از GitHub دریافت و روی سرور نصب می‌شود (amirh00sain/SpiderPanel). بعد از اتمام، پنل را در Railway ری‌استارت کنید تا نسخه جدید اعمال شود.',
-    'backupRestore': 'بکاپ و بازیابی', 'backup': 'بکاپ (دانلود)', 'restore': 'بازیابی (آپلود)', 'backupRestoreHint': 'بکاپ کامل شامل: کاربران، لینک‌ها، اینباندها، اسکن‌ها، تنظیمات، رمز، گروه‌ها و تنظیمات Worker. فایل JSON دانلود/آپلود می‌شود.',
-    'autoconfig': 'Auto Config', 'tunnel': 'Tunnel', 'qrCode': 'QR Code',
-    'acAutoBtn': 'Auto', 'acHint': 'اسکن کامل خودکار: پینگ دامنه‌ها → انتخاب Railway/Cloudflare → اسکن IP → تست دامنه‌های TCP → اسکن SNI → پینگ نهایی پنل. همه مراحل با اینترنت خود شما انجام می‌شود.',
+    'backupRestore': 'بکاپ و بازیابی', 'backup': 'بکاپ', 'restore': 'ریستور', 'backupRestoreHint': 'بکاپ کامل شامل: کاربران، لینک‌ها، اینباندها، اسکن‌ها، تنظیمات، رمز، گروه‌ها و تنظیمات Worker. فایل JSON دانلود/آپلود می‌شود.',
+    'autoconfig': 'پیکربندی خودکار', 'tunnel': 'تونل', 'qrCode': 'کد QR',
+    'acAutoBtn': 'خودکار', 'acHint': 'اسکن کامل خودکار: پینگ دامنه‌ها → انتخاب Railway/Cloudflare → اسکن IP → تست دامنه‌های TCP → اسکن SNI → پینگ نهایی پنل. همه مراحل با اینترنت خود شما انجام می‌شود.',
     'acEnterDomain': 'لطفاً دامنه پنل را وارد کنید', 'acPingingDomains': 'در حال گرفتن پینگ از دامنه‌ها...', 'acYourDomain': 'دامنه شما', 'acPickDomain': 'دامنه را انتخاب کنید (دامنه Railway → اسکن IP های Railway، غیر از آن → اسکن IP های Cloudflare):',
     'acScanningRailway': 'اسکن IP های Railway و ذخیره ۱۰ تای برتر...', 'acScanningCf': 'اسکن IP های Cloudflare و ذخیره ۱۰ تای برتر...',
     'acTcpTesting': 'تست دامنه‌های TCP (دامنه + IP هر دو تست می‌شوند)...', 'acSniTesting': 'تست SNI ها و ذخیره سریع‌ترین‌ها...', 'acFinalPing': 'پینگ نهایی به دامنه فعلی پنل...', 'acDone': 'اتمام اسکن خودکار ✓',
     'tunnelNotReady': 'ابتدا یک Worker در تب Worker بسازید — بخش Tunnel بعد از ساخت Worker فعال می‌شود.', 'tunnelPath': 'مسیر اتصال', 'workerPing': 'پینگ سرور تا Worker', 'tunnelKv': 'KV اختصاصی Tunnel', 'tunnelInboundPath': 'اینباند (TLS WS)', 'tunnelCreate': 'ایجاد اینباند Tunnel', 'tunnelCreated': 'اینباند Tunnel ساخته شد', 'tunnelNoWorker': 'Worker متصل نیست',
-    'reverse': 'Reverse', 'reverseSwitch': 'حالت Reverse', 'reverseHint': 'با روشن کردن این سوییچ، مسیر اتصال برعکس می‌شود: User → Worker → Railway → Site. دامنه کانفیگ، دامنه Worker و مسیر /reverse/{uuid} خواهد بود.', 'reverseOn': 'Reverse فعال شد', 'reverseOff': 'Reverse غیرفعال شد',
-    'bot': 'Bot', 'telegramBotApiKey': 'Telegram Bot API Key', 'telegramBotTokenHint': 'توکن فقط روی سرور ذخیره می‌شود و در پنل کامل نمایش داده نمی‌شود.', 'nodes': 'نودها', 'addNode': 'افزودن نود', 'editNode': 'ویرایش نود', 'nodeDomain': 'دامنه نود', 'nodeApiKey': 'API Key', 'nodeStatus': 'وضعیت', 'nodeOnline': 'آنلاین', 'nodeOffline': 'آفلاین', 'nodeSynced': 'همگام‌سازی شد', 'nodeSyncFailed': 'خطا در همگام‌سازی', 'nodeDelete': 'حذف نود', 'confirmDeleteNode': 'آیا از حذف این نود اطمینان دارید؟', 'nodeDeleted': 'نود حذف شد', 'nodeSyncing': 'در حال همگام‌سازی...', 'nodeIp': 'آی‌پی سرور', 'nodeLatency': 'پینگ', 'syncAllNodes': 'همگام‌سازی همه', 'noNodes': 'هنوز نودی اضافه نشده', 'nodeAdded': 'نود اضافه شد', 'nodeUpdated': 'نود بروزرسانی شد',
-    'serverIp': 'آی‌پی سرور', 'serverInfo': 'اطلاعات سرور', 'apiKey': 'API Key', 'copyApiKey': 'کپی API Key', 'inboundType': 'Inbound Type', 'config': 'Config', 'telegramProxy': 'Telegram Proxy',
-    'login': { 'signIn': 'Sign In' }
+    'reverse': 'معکوس', 'reverseSwitch': 'حالت Reverse', 'reverseHint': 'با روشن کردن این سوییچ، مسیر اتصال برعکس می‌شود: User → Worker → Railway → Site. دامنه کانفیگ، دامنه Worker و مسیر /reverse/{uuid} خواهد بود.', 'reverseOn': 'Reverse فعال شد', 'reverseOff': 'Reverse غیرفعال شد',
+    'bot': 'ربات', 'telegramBotApiKey': 'کلید API ربات تلگرام', 'telegramBotTokenHint': 'توکن فقط روی سرور ذخیره می‌شود و در پنل کامل نمایش داده نمی‌شود.', 'nodes': 'نودها', 'addNode': 'افزودن نود', 'editNode': 'ویرایش نود', 'nodeDomain': 'دامنه نود', 'nodeApiKey': 'کلید API', 'nodeStatus': 'وضعیت', 'nodeOnline': 'آنلاین', 'nodeOffline': 'آفلاین', 'nodeSynced': 'همگام‌سازی شد', 'nodeSyncFailed': 'خطا در همگام‌سازی', 'nodeDelete': 'حذف نود', 'confirmDeleteNode': 'آیا از حذف این نود اطمینان دارید؟', 'nodeDeleted': 'نود حذف شد', 'nodeSyncing': 'در حال همگام‌سازی...', 'nodeIp': 'آی‌پی سرور', 'nodeLatency': 'پینگ', 'syncAllNodes': 'همگام‌سازی همه', 'noNodes': 'هنوز نودی اضافه نشده', 'nodeAdded': 'نود اضافه شد', 'nodeUpdated': 'نود بروزرسانی شد',
+    'serverIp': 'آی‌پی سرور', 'serverInfo': 'اطلاعات سرور', 'apiKey': 'کلید API', 'copyApiKey': 'کپی API Key', 'inboundType': 'نوع اینباند', 'telegramProxy': 'پروکسی تلگرام',
+    'login': { 'signIn': 'ورود' }
   },
   en: {
     'dash': 'Dashboard', 'navGroup': 'Management', 'advanced': 'Advanced', 'networkTotal': 'Total sent + received', 'users': 'Users', 'inbounds': 'Inbounds', 'scanner': 'IP Scanner', 'worker': 'Worker', 'settings': 'Settings', 'contact': 'Contact Me', 'logout': 'Logout',
     'workerSetupTip': 'Connect the panel to Cloudflare to create a dedicated Pages project, deploy worker.js, and attach a private KV namespace automatically.', 'cfToken': 'Cloudflare API Token', 'getToken': 'Get Token', 'cfAccountId': 'Account ID', 'cfWorkerName': 'Worker Name', 'cfWorkerDomain': 'Worker Domain', 'createNewWorker': 'Create New Worker', 'cfConnect': 'Connect & Deploy', 'connected': 'Connected', 'disconnected': 'Disconnected', 'workerStatus': 'Status', 'remoteStatus': 'Remote Status', 'lastHeartbeat': 'Last Heartbeat', 'workerId': 'Pages Project', 'kvId': 'KV ID', 'onlineUsers': 'Online Users', 'workerTraffic': 'Worker Traffic', 'workerUrl': 'Worker URL', 'lastSync': 'Last Sync', 'lastError': 'Last Error', 'proxyPool': 'Proxy IP Pool', 'addProxy': 'Add Country', 'workerSettings': 'Worker Settings', 'removeConn': 'Remove Worker Connection', 'noProxyYet': 'No country added yet', 'connecting': 'Creating...', 'workerConnected': 'New worker created & deployed', 'syncing': 'Syncing...', 'synced': 'Synced', 'confirmRemoveWorker': 'Remove the Worker connection?', 'workerRemoved': 'Worker connection removed', 'proxyCodePrompt': 'Country code (e.g. de):', 'proxyCountryPrompt': 'Country name:', 'proxyHostPrompt': 'Proxy IP host (e.g. de.example.com):', 'proxyPortPrompt': 'Proxy IP port:', 'proxySaved': 'Country saved, worker updated', 'confirmDelProxy': 'Delete this country?', 'proxyDeleted': 'Country deleted', 'workerFillAll': 'Fill in all fields', 'workerProxyEnabled': 'Worker Proxy IP', 'workerProxyNone': 'No Proxy', 'workerRouteTip': 'The user config is built on the Pages Worker domain with the /ws/{uuid} path.', 'workerAutoName': 'A dedicated Pages project is created with a random name (spider-xxxxxx) and its own dedicated KV — no project name is needed.', 'proxySource': 'Daily Proxy Source', 'autoSyncHourly': 'Auto-update (hourly)', 'updateNow': 'Update Now', 'updatingFromSource': 'Updating from source', 'sourceUpdated': 'Updated', 'sourceError': 'Failed to update source', 'countries': 'countries', 'syncsDone': 'Syncs done', 'pickCountry': 'Pick a country',
-    'tab.dash': 'Dashboard', 'tab.users': 'Manage Users', 'tab.inbounds': 'Manage Inbounds', 'tab.scanner': 'IP Scanner', 'tab.settings': 'Settings',
+    'tab.dash': 'Dashboard', 'tab.users': 'Manage Users', 'tab.inbounds': 'Manage Inbounds', 'tab.scanner': 'IP Scanner', 'tab.settings': 'Settings', 'tab.advanced': 'Advanced', 'tab.help': 'Help',
+    'helpTemplate': 'Template', 'helpServerEdit': 'Server Edit', 'helpConfigOptions': 'Config Options', 'helpCopyPrompt': 'Copy Prompt', 'helpPromptCopied': 'Prompt copied', 'helpPromptCopyFailed': 'Could not copy the prompt',
+    'helpIntro': 'Help and default config settings', 'helpPromptHint': 'This prompt documents the current subscription page so you can give it to an AI.',
+    'helpServerEditHint': 'Change the connect address in default TLS + WS configs. Host and SNI remain the panel domain.', 'helpChatgptAddress': 'Set Address to chatgpt.com', 'helpCustomAddress': 'Save custom address', 'helpAddressLabel': 'Custom Address', 'helpAddressPlaceholder': 'Domain or IP (IPv4/IPv6)', 'helpPanelIpv6': 'Use the panel domain IPv6', 'helpResetAddress': 'Use the panel domain',
+    'helpAddressSaved': 'Config address saved', 'helpAddressInvalid': 'Enter a valid domain or IP address', 'helpIpv6NotFound': 'No IPv6 address was found for the panel domain', 'helpSettingsSaved': 'Settings saved',
+    'helpFeatureHint': 'These options are added only to configs from the default TLS + WS inbound.', 'helpEch': 'Add ECH', 'helpEchHint': 'Adds the ECH parameter to default TLS + WS configs.', 'helpFf': 'Add F+F', 'helpFfHint': 'Adds the sample cipher suite and fragmentation parameters to default TLS + WS configs.',
+    'advancedInboundHint': 'Select an inbound and edit its full JSON. Changes are saved and applied to the service.', 'advancedSelectInbound': 'Select inbound', 'advancedChooseInbound': 'Choose an inbound', 'advancedJson': 'Inbound JSON', 'advancedSave': 'Save JSON', 'advancedSaved': 'Inbound JSON saved', 'advancedInvalidJson': 'Invalid JSON', 'advancedNoInbounds': 'No editable inbounds', 'defaultTlsWsInbound': 'Default TLS + WS', 'defaultHttpWsInbound': 'Default HTTP + WS',
     'inboundFixedHint': 'Only the panel’s default inbounds are used. WS/TLS is ready automatically with the panel’s main domain; fill Reality’s domain & ports yourself (pbk is auto-generated).', 'inboundFixed': 'Adding inbounds is disabled — only the default inbounds.', 'inboundAuto': 'This inbound is automatic — nothing to configure.',
     'newUser': 'New User', 'newInbound': 'New Inbound', 'domain': 'Domain',
     'loading': 'Loading...', 'noUsers': 'No users found', 'noInbounds': 'No inbounds found', 'errLoadUsers': 'Error loading users', 'errLoadInbounds': 'Error loading inbounds', 'errLoadStats': 'Error loading stats',
@@ -2201,7 +2330,7 @@ var I18N = {
     'red': 'Red', 'green': 'Green', 'blue': 'Blue',
     'panelMusic': 'Panel Music', 'bgMusic': 'Background Music', 'toggleMusic': 'On/Off', 'changePassword': 'Change Password', 'curPass': 'Current Password', 'newPass': 'New Password', 'changePassBtn': 'Change Password',
     'contactSub': 'Get in touch with me for support and collaboration',
-    'createUser': 'Create New User', 'editUser': 'Edit User', 'username': 'Username', 'conn': 'Concurrent Connections', 'volume': 'Traffic', 'unit': 'Unit', 'expire': 'Expiry', 'day': 'Day', 'month': 'Month',
+    'createUser': 'Create New User', 'editUser': 'Edit User', 'username': 'Username', 'conn': 'Concurrent Connections', 'speedLimit': 'Speed limit (Mbps - 0=unlimited)', 'speedLimitHint': 'Combined bandwidth cap for this user’s WebSocket connections; 0 means unlimited.', 'volume': 'Traffic', 'unit': 'Unit', 'expire': 'Expiry', 'day': 'Day', 'month': 'Month',
     'inboundsMulti': 'Inbounds (multi-select)', 'noInboundOpt': 'No inbounds available',
     'inboundPickHint': 'Each inbound shows its own options: Worker → choose countries, TLS → scanned-IP switch, Reality → no extra options.',
     'workerCountries': 'Multi-location countries (tick each country you want):',
@@ -2222,7 +2351,7 @@ var I18N = {
     'dest': 'Destination', 'serverNames': 'Server Names (SNI)', 'shortIds': 'Short IDs', 'hex8': '8-digit hex — empty = random', 'generate': '+ Generate', 'spiderx': 'SpiderX',
     'extDomain': 'External Domain', 'extPortCfg': 'External Port', 'extDomainPlace': 'External domain shown in the client config', 'commaSep': 'Separate with commas',
     'intPort': 'Main port (the port the server listens on)', 'extPortCfg2': 'External Port (config)', 'portHint': 'Internal port = what Xray listens on. External port = what appears in the config (config address: domain:external_port).',
-    'network': 'Network', 'serviceName': 'Service Name', 'createInbound': 'Create Inbound', 'editInbound': 'Edit Inbound', 'inboundCreated': 'Inbound saved successfully',
+    'network': 'Network', 'serviceName': 'Service Name', 'createInbound': 'Create Inbound', 'editInbound': 'Edit Inbound',
     'config': 'Config', 'copy': 'Copy', 'close': 'Close', 'copied': 'Config copied', 'noCfg': 'No config available', 'errCopy': 'Copy failed', 'notFound': 'Not found', 'delete': 'Delete', 'edit': 'Edit', 'unlimited': 'Unlimited', 'expired': 'Expired', 'daysUnit': ' days', 'default': 'Default', 'usersCount': 'Users', 'secNetwork': 'Network', 'security': 'Security', 'action': 'Actions', 'expiry': 'Expiry', 'connTh': 'Conn',
     'confirmDeleteUser': 'Are you sure you want to delete this user?', 'confirmDeleteInbound': 'Are you sure you want to delete this inbound?', 'keysGenerated': 'Reality keys generated', 'errKeyGen': 'Key generation failed', 'shortIdGen': 'Short ID generated', 'shortIdNew': 'New Short ID generated',
     'inboundUpdated': 'Inbound updated', 'inboundCreated': 'Inbound created', 'updateInbound': 'Update Inbound', 'inboundDeleted': 'Inbound deleted',
@@ -2232,7 +2361,7 @@ var I18N = {
     'backupDownloaded': 'Backup downloaded', 'restoreDone': 'Restore completed', 'restoreFailed': 'Restore failed', 'restoreUploading': 'Uploading and restoring...', 'restoreUploadFailed': 'Upload failed',
     'panelUpdate': 'Panel Update', 'updatePanel': 'Update', 'confirmUpdate': 'Update the panel from GitHub?', 'updateStarted': 'Update started...', 'updateDone': 'Update finished — restart the panel to apply', 'updateFailed': 'Update failed', 'updateRunning': 'Updating...',
     'panelUpdateHint': 'Clicking this pulls the latest repo from GitHub and installs it on the server (amirh00sain/SpiderPanel). When finished, restart the panel on Railway to apply the new version.',
-    'backupRestore': 'Backup & Restore', 'backup': 'Backup (Download)', 'restore': 'Restore (Upload)', 'backupRestoreHint': 'Full backup includes: users, links, inbounds, scans, settings, password, groups, and Worker config. JSON file is downloaded/uploaded.',
+    'backupRestore': 'Backup & Restore', 'backup': 'Backup', 'restore': 'Restore', 'backupRestoreHint': 'Full backup includes: users, links, inbounds, scans, settings, password, groups, and Worker config. JSON file is downloaded/uploaded.',
     'autoconfig': 'Auto Config', 'tunnel': 'Tunnel', 'qrCode': 'QR Code',
     'acAutoBtn': 'Auto', 'acHint': 'Full automatic scan: ping domains → pick Railway/Cloudflare → IP scan → TCP domain test → SNI scan → final panel ping. All steps run from your own internet.',
     'acEnterDomain': 'Please enter the panel domain', 'acPingingDomains': 'Pinging domains...', 'acYourDomain': 'Your domain', 'acPickDomain': 'Pick a domain (Railway → scan Railway IPs, otherwise → scan Cloudflare IPs):',
@@ -2241,10 +2370,36 @@ var I18N = {
     'tunnelNotReady': 'Create a Worker first — the Tunnel section activates once a Worker is connected.', 'tunnelPath': 'Connect path', 'workerPing': 'Server → Worker ping', 'tunnelKv': 'Dedicated Tunnel KV', 'tunnelInboundPath': 'Inbound (TLS WS)', 'tunnelCreate': 'Create Tunnel Inbound', 'tunnelCreated': 'Tunnel inbound created', 'tunnelNoWorker': 'Worker not connected',
     'reverse': 'Reverse', 'reverseSwitch': 'Reverse mode', 'reverseHint': 'When on, the connect path flips: User → Worker → Railway → Site. The config domain becomes the Worker domain with path /reverse/{uuid}.', 'reverseOn': 'Reverse enabled', 'reverseOff': 'Reverse disabled',
     'bot': 'Bot', 'telegramBotApiKey': 'Telegram Bot API Key', 'telegramBotTokenHint': 'The token is stored server-side and is never shown in full.', 'nodes': 'Nodes', 'addNode': 'Add Node', 'editNode': 'Edit Node', 'nodeDomain': 'Node Domain', 'nodeApiKey': 'API Key', 'nodeStatus': 'Status', 'nodeOnline': 'Online', 'nodeOffline': 'Offline', 'nodeSynced': 'Synced', 'nodeSyncFailed': 'Sync failed', 'nodeDelete': 'Delete Node', 'confirmDeleteNode': 'Are you sure you want to delete this node?', 'nodeDeleted': 'Node deleted', 'nodeSyncing': 'Syncing...', 'nodeIp': 'Server IP', 'nodeLatency': 'Ping', 'syncAllNodes': 'Sync All', 'noNodes': 'No nodes added yet', 'nodeAdded': 'Node added', 'nodeUpdated': 'Node updated',
-    'serverIp': 'Server IP', 'serverInfo': 'Server Info', 'apiKey': 'API Key', 'copyApiKey': 'Copy API Key', 'inboundType': 'Inbound Type', 'config': 'Config', 'telegramProxy': 'Telegram Proxy',
+    'serverIp': 'Server IP', 'serverInfo': 'Server Info', 'apiKey': 'API Key', 'copyApiKey': 'Copy API Key', 'inboundType': 'Inbound Type', 'telegramProxy': 'Telegram Proxy',
     'login': { 'signIn': 'Sign In' }
   }
 };
+
+Object.assign(I18N.fa, {
+  loginSubtitle: 'پنل مدیریت پرسرعت', loginUsernameLabel: 'نام کاربری', loginPasswordLabel: 'رمز عبور', loginUsernamePlaceholder: 'نام کاربری را وارد کنید', loginPasswordPlaceholder: 'رمز عبور را وارد کنید', signIn: 'ورود',
+  themeLight: 'روشن', themeDark: 'تاریک', inboundCreateHint: 'اینباند جدید بسازید یا اینباندهای موجود را ویرایش کنید. پیکربندی و پروکسی تلگرام پشتیبانی می‌شوند.',
+  tween: 'فاصله درخواست‌ها (ms)', timeout: 'مهلت پاسخ (s)', sniRealityTarget: 'SNI (مقصد Reality)', autoScan: 'اسکن خودکار', sniScanHint: 'SNI را وارد کنید یا اسکن خودکار را بزنید تا از فهرست sni_reality_for_scan.txt بررسی شود. سه مورد سریع‌تر ذخیره می‌شوند.', sniStartPrompt: 'برای شروع اسکن خودکار را بزنید', fastestSnis: 'سریع‌ترین SNIهای ذخیره‌شده (sni_reality.txt)', update: 'بروزرسانی',
+  workerPermissionsHint: 'توکن باید دسترسی Pages:Write، ویرایش Workers KV و خواندن حساب را داشته باشد. شناسه حساب خودکار پیدا می‌شود.',
+  botTokenHint: 'توکن فقط روی سرور ذخیره می‌شود. یک ربات می‌تواند هم‌زمان در کانال و فروش استفاده شود.', saveSettings: 'ذخیره تنظیمات', testBot: 'تست ربات', channelBotTab: 'ربات کانال', sellBotTab: 'ربات فروش', schedulePosting: 'ارسال زمان‌بندی‌شده', enable: 'فعال‌سازی', autoCreateSend: 'ساخت و ارسال خودکار', channelLink: 'پیوند کانال', scheduleMinutes: 'زمان‌بندی (دقیقه)', usernamePrefix: 'پیشوند نام کاربر', trafficPerUserGb: 'حجم هر کاربر (GB) — صفر یعنی نامحدود', expiryDays: 'اعتبار (روز) — صفر یعنی نامحدود', inboundLabel: 'اینباند', defaultTlsWsOption: 'پیش‌فرض TLS + WS', autoReplace: 'جایگزینی خودکار', deletePreviousUser: 'پس از ارسال موفق، کاربر قبلی حذف شود', safeOrderHint: 'ترتیب عملیات: ساخت کاربر، ساخت لینک اشتراک و QR، ارسال موفق به کانال و سپس حذف کاربر قبلی. اگر ارسال ناموفق باشد، کاربر قبلی حفظ می‌شود.', saveChannelBot: 'ذخیره ربات کانال', createSendNow: 'ساخت و ارسال اکنون', channelBotStatus: 'وضعیت ربات کانال', sellBotSettings: 'تنظیمات ربات فروش', enableSalesReceipts: 'فعال‌سازی فروش و بررسی رسید', adminTelegramId: 'شناسه عددی تلگرام مدیر', adminTelegramHint: 'فقط این شناسه تلگرام به ابزارهای مدیریت ربات فروش دسترسی دارد.', plansProducts: 'محصول‌ها و طرح‌ها', planHint: 'هر طرح مستقل است و می‌تواند اینباند، حجم، مدت، قیمت و پیشوند کاربر خودش را داشته باشد. حذف آخرین طرح هم مجاز است.', planName: 'نام طرح', price: 'قیمت', selectInbound: 'انتخاب اینباند', volumeGbUnlimited: 'حجم (GB) — صفر یعنی نامحدود', durationDaysUnlimited: 'مدت (روز) — صفر یعنی نامحدود', addPlan: 'افزودن طرح', clearForm: 'پاک کردن فرم', forcedJoin: 'عضویت اجباری', forcedJoinHint: 'می‌توانید چند کانال اضافه کنید. برای نام کاربری، پیوند عضویت خودکار ساخته می‌شود؛ برای کانال عددی، پیوند را هم وارد کنید.', addChannel: 'افزودن کانال', paymentLink: 'پیوند پرداخت (اختیاری)', paymentDetails: 'اطلاعات پرداخت', supportUsername: 'نام کاربری یا پیوند پشتیبانی', supportText: 'متن بخش پشتیبانی', ordersSalesStatus: 'سفارش‌ها و وضعیت فروش', ordersHint: 'خریدار: انتخاب محصول، پرداخت و ارسال رسید. مدیر: دریافت رسید و تأیید یا رد آن. فعال‌سازی تکراری انجام نمی‌شود.', saveSellBot: 'ذخیره ربات فروش',
+  telegramProxySettings: 'تنظیمات پروکسی تلگرام', internalPort: 'پورت داخلی', externalPort: 'پورت خارجی', externalDomain: 'دامنه خارجی', telegramExternalHint: 'دامنه و پورت خارجی این اینباند ملاک اتصال هستند؛ مقادیر TCP مربوط به Railway فقط جهت اطلاع‌اند.', webSocket: 'وب‌سوکت', pathLabel: 'مسیر', modeLabel: 'حالت', privateKey: 'کلید خصوصی', publicKey: 'کلید عمومی', inboundConfigOption: 'پیکربندی',
+  nodeDomain: 'دامنه', nodeIpCountry: 'IP / کشور', nodeStatusLabel: 'وضعیت', nodeLatency: 'تأخیر', nodeLastSeen: 'آخرین مشاهده', nodeLastSync: 'آخرین همگام‌سازی', nodeInboundCount: 'تعداد اینباندها', nodeSyncedUsers: 'کاربران همگام‌شده', nodeLastError: 'آخرین خطا', refreshTest: 'بروزرسانی / آزمایش', cloudflareIp: 'IP کلادفلر', railwayIp: 'IP Railway', approved: 'تأییدشده', rejected: 'ردشده', cancelled: 'لغوشده', uptimeLabel: 'زمان فعالیت',
+  'notif.nav': 'اعلان‌ها', 'notif.title': 'اعلان‌ها', 'notif.refresh': 'بروزرسانی', 'notif.date': 'تاریخ و ساعت',
+  'notif.hint': 'اعلان‌ها از مخزن گیت‌هاب دریافت می‌شوند. هر اعلان یک آکاردیون است؛ با زدن روی موضوع، متن کامل به همراه تاریخ و ساعت نمایش داده می‌شود.',
+  'notif.loading': 'در حال دریافت اعلان‌ها...', 'notif.empty': 'فعلاً اعلانی ثبت نشده است.', 'notif.error': 'دریافت اعلان‌ها از گیت‌هاب ممکن نشد.'
+});
+Object.assign(I18N.en, {
+  loginSubtitle: 'High performance admin panel', loginUsernameLabel: 'Username', loginPasswordLabel: 'Password', loginUsernamePlaceholder: 'Enter username', loginPasswordPlaceholder: 'Enter password', signIn: 'Sign In',
+  themeLight: 'Light', themeDark: 'Dark', inboundCreateHint: 'Create an inbound or edit an existing one. Configs and Telegram Proxy are supported.',
+  tween: 'Request interval (ms)', timeout: 'Timeout (s)', sniRealityTarget: 'SNI (Reality target)', autoScan: 'Auto Scan', sniScanHint: 'Enter an SNI or run Auto Scan to check sni_reality_for_scan.txt. The three fastest results are saved.', sniStartPrompt: 'Press Auto Scan to begin', fastestSnis: 'Fastest saved SNIs (sni_reality.txt)', update: 'Update',
+  workerPermissionsHint: 'The token needs Pages:Write, Workers KV edit, and account read access. The account ID is detected automatically.',
+  botTokenHint: 'The token is stored on the server only. One bot can run both Channel Bot and Sell Bot.', saveSettings: 'Save Settings', testBot: 'Test Bot', channelBotTab: 'Channel Bot', sellBotTab: 'Sell Bot', schedulePosting: 'Scheduled Posting', enable: 'Enable', autoCreateSend: 'Create and send automatically', channelLink: 'Channel Link', scheduleMinutes: 'Schedule (minutes)', usernamePrefix: 'Username Prefix', trafficPerUserGb: 'Traffic per user (GB) — 0 means unlimited', expiryDays: 'Expiry (days) — 0 means unlimited', inboundLabel: 'Inbound', defaultTlsWsOption: 'Default TLS + WS', autoReplace: 'Auto Replace', deletePreviousUser: 'Delete the previous user after successful delivery', safeOrderHint: 'Order: create the user, build its subscription and QR, deliver to the channel, then delete the previous user. If delivery fails, the previous user stays.', saveChannelBot: 'Save Channel Bot', createSendNow: 'Create and send now', channelBotStatus: 'Channel Bot Status', sellBotSettings: 'Sell Bot Settings', enableSalesReceipts: 'Enable sales and receipt review', adminTelegramId: 'Admin Telegram Numeric ID', adminTelegramHint: 'Only this Telegram ID can access Sell Bot admin tools.', plansProducts: 'Products and Plans', planHint: 'Each plan is independent and can have its own inbound, volume, duration, price, and username prefix. The last plan can also be deleted.', planName: 'Plan Name', price: 'Price', selectInbound: 'Select Inbound', volumeGbUnlimited: 'Volume (GB) — 0 means unlimited', durationDaysUnlimited: 'Duration (days) — 0 means unlimited', addPlan: 'Add Plan', clearForm: 'Clear Form', forcedJoin: 'Required Channel Join', forcedJoinHint: 'Add any number of channels. A join link is generated for usernames; enter a link for numeric channel IDs.', addChannel: 'Add Channel', paymentLink: 'Payment Link (optional)', paymentDetails: 'Payment Details', supportUsername: 'Support Username or Link', supportText: 'Support Text', ordersSalesStatus: 'Orders and Sales Status', ordersHint: 'Buyer: choose a product, pay, and send a receipt. Admin: review and approve or reject it. Activation is idempotent.', saveSellBot: 'Save Sell Bot',
+  telegramProxySettings: 'Telegram Proxy Settings', internalPort: 'Internal Port', externalPort: 'External Port', externalDomain: 'External Domain', telegramExternalHint: 'The external domain and port are authoritative; Railway TCP values are advisory only.', webSocket: 'WebSocket', pathLabel: 'Path', modeLabel: 'Mode', privateKey: 'Private Key', publicKey: 'Public Key', inboundConfigOption: 'Config',
+  nodeDomain: 'Domain', nodeIpCountry: 'IP / Country', nodeStatusLabel: 'Status', nodeLatency: 'Latency', nodeLastSeen: 'Last Seen', nodeLastSync: 'Last Sync', nodeInboundCount: 'Inbound Count', nodeSyncedUsers: 'Synced Users', nodeLastError: 'Last Error', refreshTest: 'Refresh / Test', cloudflareIp: 'Cloudflare IP', railwayIp: 'Railway IP', approved: 'Approved', rejected: 'Rejected', cancelled: 'Cancelled', uptimeLabel: 'Uptime',
+  'notif.nav': 'Notifications', 'notif.title': 'Notifications', 'notif.refresh': 'Refresh', 'notif.date': 'Date & time',
+  'notif.hint': 'Announcements are pulled from the GitHub repository. Each one is an accordion: click the subject to reveal the full text together with its date and time.',
+  'notif.loading': 'Loading announcements...', 'notif.empty': 'No announcements published yet.', 'notif.error': 'Could not fetch announcements from GitHub.'
+});
+
 function t(key) {
   var dict = I18N[LANG] || I18N.fa;
   return dict[key] != null ? dict[key] : (I18N.fa[key] != null ? I18N.fa[key] : key);
@@ -2266,7 +2421,9 @@ function applyLang() {
   updateGreeting();
   if (typeof ALL_USERS !== 'undefined' && ALL_USERS.length) renderUsers();
   if (typeof ALL_IB !== 'undefined' && ALL_IB.length) renderInbounds();
+  if (typeof ALL_ADV_IB !== 'undefined' && ALL_ADV_IB.length) renderAdvancedInboundList();
   if ($id('dashboard-content') && $id('dashboard-content').innerHTML.indexOf('stat') > -1) loadDashboard();
+  if (typeof renderNotifs === 'function') renderNotifs();
 }
 function toggleLang() {
   LANG = LANG === 'fa' ? 'en' : 'fa';
@@ -2425,6 +2582,11 @@ function showApp() {
   $id('login-wrap').style.display = 'none';
   $id('app-wrap').classList.add('active');
   loadAll();
+  // Announcements are pulled once per panel open/refresh so the Notifications
+  // tab is already current by the time it is clicked.
+  NOTIF_DATA = null;
+  NOTIF_PENDING = null;
+  loadNotifs(false);
   updateGreeting();
 }
 
@@ -2547,7 +2709,7 @@ function switchTab(tab, el) {
   target.style.setProperty('margin-top', '0px', 'important');
   target.style.setProperty('top', '0px', 'important');
   target.style.setProperty('transform', 'none', 'important');
-  if (tab === 'worker' || tab === 'contact' || tab === 'settings' || tab === 'nodes') {
+  if (tab === 'worker' || tab === 'contact' || tab === 'settings' || tab === 'nodes' || tab === 'advanced' || tab === 'help' || tab === 'notif') {
     target.style.setProperty('position', 'static', 'important');
     target.style.setProperty('flex', 'none', 'important');
   }
@@ -2571,6 +2733,9 @@ function switchTab(tab, el) {
   if (tab === 'tunnel') loadTunnel();
   if (tab === 'nodes') loadNodes();
   if (tab === 'bot') loadBot();
+  if (tab === 'advanced') loadAdvancedInbounds();
+  if (tab === 'help') loadHelpSettings();
+  if (tab === 'notif') loadNotifs(false);
   closeSidebar();
 }
 
@@ -2718,10 +2883,13 @@ function _copyNodeConfigEncoded(encoded) {
 
 function _userAccBody(u) {
   var connTxt = u.concurrent_connections ? u.concurrent_connections : t('unlimited');
+  var speedVal = parseFloat(u.speed_limit_mbps) || 0;
+  var speedTxt = speedVal > 0 ? speedVal + ' Mbps' : t('unlimited');
   return '<div class="spd-acc-body" id="acc-ua-' + u.user_id + '">' +
     '<div class="spd-acc-sec"><div class="spd-acc-sec-t">' + t('volume') + '</div>' + _userTraffic(u) + '</div>' +
     '<div class="spd-acc-kv"><span>' + t('expiry') + '</span><b>' + _userExp(u) + '</b></div>' +
     '<div class="spd-acc-kv"><span>' + t('connTh') + '</span><b>' + connTxt + '</b></div>' +
+    '<div class="spd-acc-kv"><span>' + t('speedLimit') + '</span><b>' + speedTxt + '</b></div>' +
     '<div class="spd-acc-btns user-action-btns">' +
       '<button class="btn btn-sm btn-g" onclick="viewCfg(\'' + esc(u.config_uuid || '') + '\')" title="Config">'+iconCfg+'</button>' +
       '<button class="btn btn-sm btn-g" onclick="viewSub(\'' + (u.config_uuid || '') + '\')" title="Sub Link">'+iconLink+'</button>' +
@@ -2768,6 +2936,7 @@ async function openCreateUser() {
   $id('cu-exp').value = '';
   $id('cu-exp-u').value = 'days';
   $id('cu-conn').value = '';
+  $id('cu-speed').value = '0';
   openModal('mod-user');
 }
 
@@ -2803,6 +2972,7 @@ async function submitCreateUser(e) {
       traffic_limit_gb: vu === 'GB' ? v : v / 1024,
       expire_days: eu === 'months' ? ex * 30 : ex,
       concurrent_connections: parseInt($id('cu-conn').value) || 0,
+      speed_limit_mbps: parseFloat($id('cu-speed').value) || 0,
       inbound_ids: inbound_ids,
       proxy_countries: allCountries,
       proxy_country: firstCountry,
@@ -2843,7 +3013,7 @@ function renderEditInboundPicker(u) {
     html += '<div class="ib-pick' + (selected ? ' selected' : '') + '" data-id="' + esc(id) + '" onclick="euToggleIbPick(this)">' +
       '<div class="ib-pick-ic"><span class="material-symbols-outlined">' + (type === 'worker' ? 'bolt' : 'cloud') + '</span></div>' +
       '<div class="ib-pick-info">' +
-        '<div class="ib-pick-name">' + esc(ib.name) + '</div>' +
+        '<div class="ib-pick-name">' + esc(inboundDisplayName(ib)) + '</div>' +
         '<div class="ib-pick-meta">' + esc(proto + ' · ' + (ib.network || 'ws') + ' · ' + (ib.security || 'tls')) + '</div>' +
       '</div>' +
       '<div class="ib-pick-check"><span class="material-symbols-outlined">check</span></div>' +
@@ -2897,6 +3067,7 @@ function editUser(uid) {
   $id('eu-exp').value = u.expire_at ? Math.ceil((new Date(u.expire_at) - new Date()) / 86400000) : 0;
   $id('eu-status').value = u.status || 'active';
   $id('eu-conn').value = (u.concurrent_connections != null ? u.concurrent_connections : 0);
+  $id('eu-speed').value = (u.speed_limit_mbps != null ? u.speed_limit_mbps : 0);
   renderEditInboundPicker(u);
   openModal('mod-edit-user');
 }
@@ -2925,6 +3096,7 @@ async function submitEditUser(e) {
       traffic_limit_gb: $id('eu-vol').value ? parseFloat($id('eu-vol').value) : 0,
       expire_days: parseInt($id('eu-exp').value) || 0,
       concurrent_connections: parseInt($id('eu-conn').value) || 0,
+      speed_limit_mbps: parseFloat($id('eu-speed').value) || 0,
       status: $id('eu-status').value,
       reset_traffic: $id('eu-reset') ? $id('eu-reset').checked : false,
       fake_sni: fakeSni,
@@ -3027,10 +3199,11 @@ function renderInbounds() {
   for (var i = 0; i < ALL_IB.length; i++) {
     var ib = ALL_IB[i];
     var proto = (ib.protocol || 'vless').toLowerCase();
+    var inboundTitle = inboundDisplayName(ib);
     var protoBadge = proto === 'reality' ? 'badge-p' : 'badge-b';
     html += '<div class="spd-acc">' +
       '<button type="button" class="spd-acc-head" onclick="spdToggleAcc(\'ia-' + ib.inbound_id + '\',this)" aria-expanded="false">' +
-        '<span class="spd-acc-title"><strong>' + esc(ib.name) + '</strong></span>' +
+        '<span class="spd-acc-title"><strong>' + esc(inboundTitle) + '</strong></span>' +
         '<span class="spd-acc-badges"><span class="badge ' + protoBadge + '">' + proto.toUpperCase() + '</span></span>' +
         '<span class="material-symbols-outlined spd-acc-arrow">expand_more</span>' +
       '</button>' +
@@ -3438,6 +3611,153 @@ function loadSettings() {
   // Already handled by theme pickers in HTML
 }
 
+var ALL_ADV_IB = [];
+var SELECTED_ADV_IB = '';
+
+function _advancedInboundTitle(ib) {
+  if (ib && ib._managed_kind === 'default_tls_ws' && (!ib.advanced_customized || ib.name === 'پیش‌فرض TLS + WS')) return t('defaultTlsWsInbound');
+  if (ib && ib._managed_kind === 'default_http_ws' && (!ib.advanced_customized || ib.name === 'پیش‌فرض HTTP + WS')) return t('defaultHttpWsInbound');
+  return (ib && ib.name) || (ib && ib.inbound_id) || t('inboundName');
+}
+
+async function loadAdvancedInbounds() {
+  try {
+    var d = await api('/api/inbounds');
+    ALL_ADV_IB = (d.inbounds || []).filter(function(ib) {
+      var p = String(ib.protocol || '').toLowerCase();
+      return p !== 'node' && p !== 'telegram';
+    });
+    if (!ALL_ADV_IB.some(function(ib) { return ib.inbound_id === SELECTED_ADV_IB; })) SELECTED_ADV_IB = '';
+    renderAdvancedInboundList();
+  } catch(e) {
+    var list = $id('advanced-inbound-list');
+    if (list) list.textContent = t('errLoadInbounds');
+  }
+}
+
+function renderAdvancedInboundList() {
+  var list = $id('advanced-inbound-list');
+  if (!list) return;
+  if (!ALL_ADV_IB.length) {
+    list.innerHTML = '<div class="empty">' + esc(t('advancedNoInbounds')) + '</div>';
+    $id('advanced-inbound-editor').classList.add('hidden');
+    return;
+  }
+  list.innerHTML = ALL_ADV_IB.map(function(ib) {
+    var title = _advancedInboundTitle(ib);
+    var meta = [ib.protocol || '', ib.network || '', ib.security || ''].filter(Boolean).join(' · ');
+    return '<button type="button" class="btn btn-sm ' + (ib.inbound_id === SELECTED_ADV_IB ? 'btn-p' : 'btn-g') + '" data-inbound-id="' + esc(ib.inbound_id) + '" style="height:auto;min-height:38px;display:flex;flex-direction:column;align-items:flex-start">' +
+      '<strong>' + esc(title) + '</strong><small dir="ltr">' + esc(meta) + '</small></button>';
+  }).join('');
+  Array.prototype.forEach.call(list.querySelectorAll('[data-inbound-id]'), function(btn) {
+    btn.addEventListener('click', function() { selectAdvancedInbound(btn.getAttribute('data-inbound-id')); });
+  });
+  if (SELECTED_ADV_IB) {
+    if ($id('advanced-inbound-editor').classList.contains('hidden') || $id('advanced-inbound-id').value !== SELECTED_ADV_IB) {
+      selectAdvancedInbound(SELECTED_ADV_IB, true);
+    } else {
+      Array.prototype.forEach.call($id('advanced-inbound-list').querySelectorAll('[data-inbound-id]'), function(btn) {
+        var selected = btn.getAttribute('data-inbound-id') === SELECTED_ADV_IB;
+        btn.classList.toggle('btn-p', selected);
+        btn.classList.toggle('btn-g', !selected);
+      });
+    }
+  }
+}
+
+function selectAdvancedInbound(iid, keepSelection) {
+  var ib = ALL_ADV_IB.find(function(item) { return item.inbound_id === iid; });
+  if (!ib) return;
+  SELECTED_ADV_IB = iid;
+  var editable = Object.assign({}, ib);
+  delete editable.inbound_id;
+  delete editable.users_count;
+  delete editable.advanced_customized;
+  delete editable._managed_kind;
+  $id('advanced-inbound-id').value = iid;
+  $id('advanced-inbound-json').value = JSON.stringify(editable, null, 2);
+  $id('advanced-inbound-editor').classList.remove('hidden');
+  if (!keepSelection) renderAdvancedInboundList();
+  else {
+    Array.prototype.forEach.call($id('advanced-inbound-list').querySelectorAll('[data-inbound-id]'), function(btn) {
+      var selected = btn.getAttribute('data-inbound-id') === iid;
+      btn.classList.toggle('btn-p', selected);
+      btn.classList.toggle('btn-g', !selected);
+    });
+  }
+}
+
+async function saveAdvancedInbound() {
+  var iid = $id('advanced-inbound-id').value;
+  if (!iid) return;
+  var inbound;
+  try { inbound = JSON.parse($id('advanced-inbound-json').value); }
+  catch(e) { toast(t('advancedInvalidJson'), 'err'); return; }
+  try {
+    await api('/api/inbounds/' + encodeURIComponent(iid) + '/raw', {method: 'PUT', body: {inbound: inbound}});
+    toast(t('advancedSaved'), 'ok');
+    $id('advanced-inbound-id').value = '';
+    await Promise.all([loadAdvancedInbounds(), loadInbounds()]);
+  } catch(e) { toast(e.message || t('toast.err'), 'err'); }
+}
+
+function _setHelpSwitch(id, enabled) {
+  var el = $id(id);
+  if (!el) return;
+  el.classList.toggle('on', !!enabled);
+  el.setAttribute('aria-checked', String(!!enabled));
+}
+
+async function loadHelpSettings() {
+  try {
+    var s = await api('/api/help/settings');
+    if ($id('help-custom-address')) $id('help-custom-address').value = s.address_override || '';
+    _setHelpSwitch('help-ech-switch', s.ech_enabled);
+    _setHelpSwitch('help-ff-switch', s.ff_enabled);
+  } catch(e) { toast(e.message || t('toast.err'), 'err'); }
+}
+
+async function saveHelpAddress(mode) {
+  var payload = {address_mode: mode};
+  if (mode === 'custom') {
+    payload.address = ($id('help-custom-address').value || '').trim();
+    if (!payload.address) { toast(t('helpAddressInvalid'), 'err'); return; }
+  }
+  try {
+    var s = await api('/api/help/settings', {method: 'POST', body: payload});
+    if ($id('help-custom-address')) $id('help-custom-address').value = s.address_override || '';
+    toast(t('helpAddressSaved'), 'ok');
+  } catch(e) {
+    var msg = /IPv6|AAAA|IPv4/i.test(e.message || '') ? t('helpIpv6NotFound') : (/hostname|address/i.test(e.message || '') ? t('helpAddressInvalid') : (e.message || t('toast.err')));
+    toast(msg, 'err');
+  }
+}
+
+async function toggleHelpFeature(feature, el) {
+  var enabled = !el.classList.contains('on');
+  _setHelpSwitch(el.id, enabled);
+  var body = feature === 'ech' ? {ech_enabled: enabled} : {ff_enabled: enabled};
+  try {
+    await api('/api/help/settings', {method: 'POST', body: body});
+    toast(t('helpSettingsSaved'), 'ok');
+  } catch(e) {
+    _setHelpSwitch(el.id, !enabled);
+    toast(e.message || t('toast.err'), 'err');
+  }
+}
+
+async function copyHelpPrompt() {
+  var text = $id('help-template-text').value;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(text);
+    else {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    toast(t('helpPromptCopied'), 'ok');
+  } catch(e) { toast(t('helpPromptCopyFailed'), 'err'); }
+}
+
 async function changePassword(e) {
   e.preventDefault();
   try {
@@ -3674,6 +3994,78 @@ function togglePanelAudio() {
 // The old Leaflet map + proxy-IP selector was removed — per-inbound options
 // (worker countries, scanned-IP switches) live inside the create-user modal.
 function loadProxyCountries(){}  // kept as no-op for loadAll()
+
+// ─── Notifications ───
+// Announcements live as notif/*.txt files in a GitHub repo. Every notif file
+// becomes one accordion: the subject is on the head, the body and the date/time
+// are revealed when it is clicked. `force` bypasses the server-side cache.
+var NOTIF_DATA = null;
+var NOTIF_PENDING = null;
+
+function renderNotifs() {
+  var list = $id('notif-list');
+  if (!list) return;
+  var data = NOTIF_DATA;
+  var src = $id('notif-source');
+  if (src) src.textContent = (data && data.source) ? data.source : '';
+  if (!data) return;
+
+  var items = data.items || [];
+  if (data.error) {
+    list.innerHTML = '<div class="empty">' + esc(t('notif.error')) +
+      '<div style="margin-top:6px;font-size:10px;opacity:.75">' + esc(data.error) + '</div></div>';
+    return;
+  }
+  if (!items.length) {
+    list.innerHTML = '<div class="empty">' + esc(t('notif.empty')) + '</div>';
+    return;
+  }
+
+  list.innerHTML = items.map(function(n, i) {
+    var accId = 'notif-acc-' + i;
+    var date = String(n.date || '').trim();
+    return '<div class="spd-acc notif-item">' +
+      '<button type="button" class="spd-acc-head" onclick="spdToggleAcc(\'' + accId + '\',this)" aria-expanded="false">' +
+        '<span class="spd-acc-title">' + esc(n.title || n.name || '') + '</span>' +
+        (date ? '<span class="badge badge-b spd-acc-badges" style="font-size:9px">' + esc(date) + '</span>' : '') +
+        '<span class="material-symbols-outlined spd-acc-arrow">expand_more</span>' +
+      '</button>' +
+      '<div class="spd-acc-body" id="' + accId + '">' +
+        '<div class="notif-text">' + esc(n.text || '') + '</div>' +
+        '<div class="notif-date"><span class="material-symbols-outlined">schedule</span>' +
+          '<span>' + t('notif.date') + ':</span>' +
+          '<span dir="ltr">' + esc(date || '—') + '</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function loadNotifs(force) {
+  if (force) { NOTIF_DATA = null; NOTIF_PENDING = null; }
+  if (NOTIF_DATA) { renderNotifs(); return; }
+
+  var tab = $id('tab-notif');
+  var list = $id('notif-list');
+  if (list && tab && !tab.classList.contains('hidden') && !list.querySelector('.spd-acc')) {
+    list.innerHTML = '<div class="empty">' + esc(t('notif.loading')) + '</div>';
+  }
+  if (NOTIF_PENDING) return NOTIF_PENDING;
+
+  NOTIF_PENDING = (async function() {
+    try {
+      NOTIF_DATA = await api('/api/notifications' + (force ? '?refresh=1' : ''));
+      renderNotifs();
+    } catch(e) {
+      console.error(e);
+      NOTIF_DATA = {items: [], error: e.message || 'error', source: ''};
+      renderNotifs();
+    } finally {
+      NOTIF_PENDING = null;
+    }
+  })();
+  return NOTIF_PENDING;
+}
 
 // ═══ IP SCANNER ═══
 var SCN_CF_RANGES = [];
@@ -4696,6 +5088,12 @@ function cuInboundType(ib) {
   return 'tls';
 }
 
+function inboundDisplayName(ib) {
+  if (ib && ib._managed_kind === 'default_tls_ws' && (!ib.advanced_customized || ib.name === 'پیش‌فرض TLS + WS')) return t('defaultTlsWsInbound');
+  if (ib && ib._managed_kind === 'default_http_ws' && (!ib.advanced_customized || ib.name === 'پیش‌فرض HTTP + WS')) return t('defaultHttpWsInbound');
+  return (ib && ib.name) || '';
+}
+
 function cuToggleIbPick(el) {
   el.classList.toggle('selected');
   var id = el.getAttribute('data-id');
@@ -4758,7 +5156,7 @@ function cuRenderInboundOpts() {
     html += '<div class="ib-pick' + (selected ? ' selected' : '') + '" data-id="' + esc(id) + '" onclick="cuToggleIbPick(this)">' +
       '<div class="ib-pick-ic"><span class="material-symbols-outlined">' + (type === 'worker' ? 'bolt' : type === 'reality' ? 'shield' : 'cloud') + '</span></div>' +
       '<div class="ib-pick-info">' +
-        '<div class="ib-pick-name">' + esc(ib.name) + '</div>' +
+        '<div class="ib-pick-name">' + esc(inboundDisplayName(ib)) + '</div>' +
         '<div class="ib-pick-meta">' + esc(meta) + '</div>' +
       '</div>' +
       '<div class="ib-pick-check"><span class="material-symbols-outlined">check</span></div>' +
