@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="fa" dir="rtl" class="dark">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Spider Panel Login</title>
+<title>NishoVpn | ورود به پنل مدیریت</title>
+<link rel="icon" type="image/png" href="/static/img/nisho-logo.png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 
 <script>
 tailwind.config = {
@@ -14,15 +16,26 @@ tailwind.config = {
     theme: {
         extend: {
             colors: {
-                "on-surface": "#e2e2e2",
-                "on-surface-variant": "#94a3b8",
-                "background": "#000000"
+                nisho: {
+                    50: '#faf5ff',
+                    100: '#f3e8ff',
+                    200: '#e9d5ff',
+                    300: '#d8b4fe',
+                    400: '#c084fc',
+                    500: '#a855f7',
+                    600: '#9333ea',
+                    700: '#7e22ce',
+                    800: '#6b21a8',
+                    900: '#581c87',
+                    950: '#2e1065',
+                },
+                "on-surface": "#f1f5f9",
+                "on-surface-variant": "#a78bfa",
+                "background": "#07050d"
             },
             fontFamily: {
-                "headline-lg": ["Inter"],
-                "body-sm": ["Inter"],
-                "body-lg": ["Inter"],
-                "code-label": ["JetBrains Mono"]
+                sans: ["Vazirmatn", "Inter", "sans-serif"],
+                mono: ["JetBrains Mono", "monospace"]
             }
         }
     }
@@ -30,30 +43,22 @@ tailwind.config = {
 </script>
 
 <style>
-/* Prevent zoom on all devices */
+/* Reset & anti-zoom */
 html, body {
     touch-action: pan-y;
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
-}
-* {
-    touch-action: pan-y;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-}
-/* استایل کلی و پس‌زمینه */
-* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    user-select: none !important;
-    -webkit-user-select: none !important;
+    background-color: #07050d !important;
+    color: #f1f5f9 !important;
+    min-height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: relative;
+    font-family: 'Vazirmatn', 'Inter', sans-serif;
 }
 
 input, textarea, select {
@@ -61,259 +66,321 @@ input, textarea, select {
     -webkit-user-select: text;
 }
 
-body {
-    background-color: #000000 !important;
-    color: #e2e2e2 !important;
-    min-height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    position: relative;
-    font-family: 'Inter', sans-serif;
+/* Cosmic purple background aura */
+.bg-mesh {
+    position: fixed;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(109, 40, 217, 0.15) 0%, transparent 65%),
+        #07050d;
+    z-index: 0;
 }
 
-/* کانتینر مجسمه در سمت چپ */
+.cyber-grid {
+    position: fixed;
+    inset: 0;
+    background-image: 
+        linear-gradient(rgba(147, 51, 234, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(147, 51, 234, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    pointer-events: none;
+    mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+}
+
+/* Nisho Cobra Showcase in Left/Background */
 .hero-container {
     position: absolute;
-    left: 0;
-    bottom: 0;
-    top: 0;
-    width: 60vw;
-    max-width: 900px;
+    left: 4%;
+    bottom: 50%;
+    transform: translateY(50%);
+    width: 44vw;
+    max-width: 620px;
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     pointer-events: none;
-    z-index: 1; /* در لایه زیرین باکس لاگین قرار می‌گیرد */
+    z-index: 1;
 }
 
-/* تصویر مجسمه */
-.hero-statue {
-    height: 98vh;
-    max-height: 100%;
-    width: auto;
-    object-fit: contain;
-    object-position: bottom left;
-    opacity: 0.92;
-    image-rendering: pixelated;
-    -webkit-mask-image: linear-gradient(90deg, #000 65%, transparent 100%);
-    mask-image: linear-gradient(90deg, #000 65%, transparent 100%);
-}
-
-/* هاله دایره‌ای دور سر مجسمه */
 .hero-halo {
     position: absolute;
-    left: 14%;
-    top: 6%;
-    width: clamp(280px, 34vw, 550px);
+    width: clamp(300px, 35vw, 540px);
     aspect-ratio: 1;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(126, 34, 206, 0.15) 50%, transparent 75%);
+    filter: blur(25px);
     z-index: 0;
-    animation: breathe 7s ease-in-out infinite;
+    animation: nishoPulse 6s ease-in-out infinite alternate;
 }
 
-@keyframes breathe {
-    0%, 100% { opacity: 0.4; transform: scale(1); }
-    50% { opacity: 0.85; transform: scale(1.02); }
+@keyframes nishoPulse {
+    0% { transform: scale(0.92); opacity: 0.6; }
+    100% { transform: scale(1.08); opacity: 0.95; filter: blur(35px); }
 }
 
-/* کلمه عمودی SPIDER روی مجسمه */
-.hero-vertical-text {
-    position: absolute;
-    top: 50%;
-    left: 38%;
-    transform: translateY(-50%);
-    writing-mode: vertical-rl;
-    text-orientation: upright;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: clamp(1.4rem, 2.2vw, 2.4rem);
+.hero-image-wrapper {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 20px 45px rgba(147, 51, 234, 0.45));
+    animation: floatSnake 7s ease-in-out infinite;
+}
+
+@keyframes floatSnake {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+.hero-statue {
+    width: clamp(260px, 30vw, 460px);
+    height: auto;
+    border-radius: 28px;
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);
+}
+
+.hero-brand-name {
+    margin-top: 18px;
+    font-family: 'Inter', sans-serif;
     font-weight: 900;
-    letter-spacing: 0.45em;
-    color: rgba(255, 255, 255, 0.7);
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+    font-size: clamp(1.8rem, 2.5vw, 2.8rem);
+    letter-spacing: 0.25em;
+    background: linear-gradient(135deg, #ffffff 0%, #d8b4fe 40%, #a855f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 10px 30px rgba(168, 85, 247, 0.5);
     z-index: 2;
 }
 
-/* کادر مینیمال گوشه بالا راست */
+/* Badge Bar */
 .badge-bar {
     position: absolute;
     top: 24px;
-    right: 24px;
+    right: 28px;
     display: flex;
     gap: 12px;
     font-size: 0.75rem;
     font-family: 'JetBrains Mono', monospace;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(216, 180, 254, 0.85);
     z-index: 20;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
 }
 
 .badge-item {
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    padding: 4px 10px;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
+    border: 1px solid rgba(168, 85, 247, 0.28);
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(18, 12, 34, 0.65);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* کارت شیشه‌ای لاگین */
+.badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #a855f7;
+    box-shadow: 0 0 8px #a855f7;
+    display: inline-block;
+}
+
+/* Glass Card */
 .glass-card {
-    background: rgba(10, 10, 15, 0.65) !important;
-    backdrop-filter: blur(24px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8) !important;
+    background: rgba(17, 13, 30, 0.78) !important;
+    backdrop-filter: blur(28px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+    border: 1px solid rgba(192, 132, 252, 0.2) !important;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85), 0 0 40px rgba(147, 51, 234, 0.15) !important;
 }
 
-/* ورودی فرم */
+/* Input Fields */
 .input-glass {
-    background-color: rgba(0, 0, 0, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    color: #e2e2e2 !important;
-    caret-color: #e2e2e2 !important;
-    transition: all 0.3s ease;
+    background-color: rgba(9, 6, 18, 0.75) !important;
+    border: 1px solid rgba(168, 85, 247, 0.22) !important;
+    color: #f3e8ff !important;
+    caret-color: #c084fc !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .input-glass:focus {
-    border-color: rgba(255, 255, 255, 0.6) !important;
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.15) !important;
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.35) !important;
     outline: none;
+    background-color: rgba(14, 9, 28, 0.9) !important;
 }
 
-/* دکمه ورود */
+/* Login Submit Button */
 .btn-submit {
-    background-color: #ffffff !important;
-    color: #000000 !important;
+    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #6366f1 100%) !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 25px rgba(124, 58, 237, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
     transition: all 0.25s ease;
 }
 
 .btn-submit:hover {
-    background-color: #e2e2e2 !important;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(147, 51, 234, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    filter: brightness(1.08);
 }
 
 .btn-submit:active {
     transform: translateY(0);
 }
 
-/* پیغام خطا */
+/* Error message */
 .error-msg {
-    background: rgba(255, 180, 171, 0.1);
-    border: 1px solid rgba(255, 180, 171, 0.3);
-    color: #ffb4ab;
-    padding: 10px 14px;
-    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #fca5a5;
+    padding: 12px 16px;
+    border-radius: 14px;
     font-size: 13px;
     display: none;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    backdrop-filter: blur(8px);
 }
 .error-msg.show { display: flex; }
 
-/* رفتار اختصاصی نسخه موبایل */
-@media (max-width: 768px) {
+/* Mobile Adaptations */
+@media (max-width: 900px) {
     .hero-container {
-        width: 100vw;
-        max-width: none;
-        opacity: 0.45; /* مات‌تر برای خوانایی بهتر فرم روی موبایل */
-        justify-content: center;
-    }
-    .hero-statue {
-        object-position: center bottom;
-        height: 85vh;
-        -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
-        mask-image: linear-gradient(180deg, #000 70%, transparent 100%);
-    }
-    .hero-halo {
-        left: 50%;
-        transform: translateX(-50%);
-        top: 10%;
-        width: 320px;
-    }
-    .hero-vertical-text {
-        left: 15%;
-        opacity: 0.35;
+        display: none;
     }
     .badge-bar {
         top: 16px;
         right: 16px;
-        font-size: 0.65rem;
     }
 }
 
-/* Prevent Android/iOS blue touch highlight on tap. Keep focus styling under our control. */
-html, body, button, a, input, select, textarea, summary,
-[role="button"], [tabindex], .btn, .btn-p, .btn-g, .btn-r, .btn-b, .btn-gr, .btn-glass,
-.nav-item, .nav-accordion-head, .spd-acc-head, .bot-tab, .bot-acc-head, .tab, .scn-tab,
-.cfg-copy-btn, .theme-dot, .lang-btn, .login-btn {
-  -webkit-tap-highlight-color: transparent !important;
-  -webkit-touch-callout: none;
+/* Tap highlights reset */
+button, a, input, [role="button"] {
+    -webkit-tap-highlight-color: transparent !important;
+    outline: none;
 }
-
-/* Remove the native blue touch/focus flash while retaining keyboard focus visibility. */
-button, a, summary, [role="button"], .btn, .nav-item, .nav-accordion-head, .spd-acc-head,
-.bot-tab, .bot-acc-head, .tab, .scn-tab, .cfg-copy-btn, .theme-dot, .lang-btn, .login-btn {
-  outline: none;
-}
-
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible,
-[role="button"]:focus-visible, [tabindex]:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
-
 </style>
 </head>
 <body class="h-screen w-screen overflow-hidden flex items-center justify-center relative">
 
-<!-- نوار شناور بالا (بدون کلید release) -->
+<div class="bg-mesh"></div>
+<div class="cyber-grid"></div>
+
+<!-- Top floating badge bar -->
 <div class="badge-bar">
-    <span class="badge-item">★ 2026</span>
-    <span class="badge-item">SPIDER</span>
+    <span class="badge-item">
+        <span class="badge-dot"></span>
+        <span>NISHO CORE v10.0</span>
+    </span>
+    <span class="badge-item">
+        <span class="material-symbols-outlined" style="font-size:14px;color:#c084fc">security</span>
+        <span>ENCRYPTED</span>
+    </span>
 </div>
 
-<!-- بک‌گراند: مجسمه دایترد و هاله (در سمت چپ) -->
+<!-- Left Branding Visual (Desktop) -->
 <div class="hero-container">
     <div class="hero-halo"></div>
-    <span class="hero-vertical-text">SPIDER</span>
-    <img class="hero-statue" src="/static/img/hero.png" alt="Spider Statue Background">
+    <div class="hero-image-wrapper">
+        <img class="hero-statue" src="/static/img/nisho-logo.png" alt="NishoVpn Mascot Cobra">
+    </div>
+    <div class="hero-brand-name">NISHO VPN</div>
+    <div class="text-xs tracking-widest text-purple-300/70 font-mono mt-1">HIGH PERFORMANCE TUNNEL GATEWAY</div>
 </div>
 
-<!-- باکس ورود (روی مجسمه و لایه z-10) -->
-<div class="glass-card rounded-3xl w-full max-w-md p-8 mx-4 flex flex-col gap-6 shadow-2xl z-10 relative">
+<!-- Login Card (Centered/Right) -->
+<div class="glass-card rounded-3xl w-full max-w-md p-8 md:p-10 mx-4 flex flex-col gap-6 z-10 relative md:mr-[10%]">
     <!-- Header -->
-    <div class="flex flex-col items-center gap-2 text-center">
-        <img src="/static/spider-logo.svg" alt="Spider" onerror="this.style.display='none'" style="width:96px;height:96px;margin-bottom:2px">
-        <h1 class="text-2xl font-bold tracking-wider text-white">SPIDER PANEL</h1>
-        <p class="text-xs text-on-surface-variant font-medium">High Performance Panel</p>
+    <div class="flex flex-col items-center gap-3 text-center">
+        <div class="relative group cursor-pointer">
+            <div class="absolute -inset-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl blur-md opacity-70 group-hover:opacity-100 transition duration-500"></div>
+            <img src="/static/img/nisho-logo.png" alt="NishoVpn" class="relative w-24 h-24 rounded-2xl object-cover ring-2 ring-purple-400/30 shadow-2xl">
+        </div>
+        <div>
+            <h1 class="text-2xl font-black tracking-wide text-white flex items-center justify-center gap-2">
+                <span>NISHO VPN</span>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono font-normal">PANEL</span>
+            </h1>
+            <p class="text-xs text-purple-300/80 font-medium mt-1">پنل مدیریت و امنیت شبکه نیشو وی‌پی‌ان</p>
+        </div>
     </div>
 
-    <!-- Error -->
+    <!-- Error Message Box -->
     <div class="error-msg" id="error-msg">
-        <span class="material-symbols-outlined" style="font-size:18px;">error</span>
-        <span id="error-text"></span>
+        <span class="material-symbols-outlined" style="font-size:20px;">error</span>
+        <span id="error-text">رمز عبور نادرست است</span>
     </div>
 
-    <!-- Form -->
-    <form class="flex flex-col gap-4" id="login-form">
+    <!-- Login Form -->
+    <form class="flex flex-col gap-5" id="login-form">
         <div class="flex flex-col gap-2">
-            <label class="font-code-label text-xs text-on-surface-variant tracking-wider" for="password">PASSWORD</label>
+            <div class="flex justify-between items-center text-xs text-purple-200/80 font-medium">
+                <label for="password" class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-purple-400" style="font-size:16px;">key</span>
+                    <span>رمز عبور مدیریت</span>
+                </label>
+                <span class="font-mono text-[10px] text-purple-400/60 uppercase">Admin Auth</span>
+            </div>
             <div class="relative">
-                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size: 20px;">lock</span>
-                <input class="input-glass w-full rounded-2xl py-3 pl-12 pr-4 text-sm text-white placeholder:text-gray-500 font-sans" id="password" placeholder="Enter password" type="password" autofocus required/>
+                <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-purple-400/70" style="font-size: 20px;">lock</span>
+                <input class="input-glass w-full rounded-2xl py-3.5 pr-12 pl-12 text-sm text-white placeholder:text-purple-300/30 text-left font-mono" 
+                       id="password" 
+                       placeholder="••••••••••••" 
+                       type="password" 
+                       dir="ltr"
+                       autofocus 
+                       required/>
+                <button type="button" id="togglePassword" class="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400/60 hover:text-purple-200 transition">
+                    <span class="material-symbols-outlined" style="font-size: 20px;" id="eyeIcon">visibility</span>
+                </button>
             </div>
         </div>
         
-        <button class="mt-2 btn-submit font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 text-sm" id="loginBtn" type="submit">
-            <span id="btn-text" class="flex items-center gap-2">Sign In <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span></span>
-            <span id="btn-spinner" class="hidden"><span class="material-symbols-outlined animate-spin" style="font-size: 18px;">progress_activity</span></span>
+        <button class="mt-2 btn-submit font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 text-sm cursor-pointer" id="loginBtn" type="submit">
+            <span id="btn-text" class="flex items-center gap-2">
+                <span>ورود به سامانه</span>
+                <span class="material-symbols-outlined rotate-180" style="font-size: 18px;">arrow_forward</span>
+            </span>
+            <span id="btn-spinner" class="hidden flex items-center gap-2">
+                <span class="material-symbols-outlined animate-spin" style="font-size: 18px;">progress_activity</span>
+                <span>در حال تایید...</span>
+            </span>
         </button>
     </form>
+
+    <!-- Footer Security Note -->
+    <div class="text-center pt-2 border-t border-purple-500/15">
+        <div class="flex items-center justify-center gap-2 text-[11px] text-purple-300/60">
+            <span class="material-symbols-outlined text-purple-400" style="font-size:14px;">verified_user</span>
+            <span>اتصال امن رمزنگاری‌شده Nisho Guard</span>
+        </div>
+    </div>
 </div>
 
-<!-- لاجیک احراز هویت -->
+<!-- Login Script -->
 <script>
+// Toggle Password Visibility
+const toggleBtn = document.getElementById('togglePassword');
+const passInput = document.getElementById('password');
+const eyeIcon = document.getElementById('eyeIcon');
+
+toggleBtn.addEventListener('click', function() {
+    if (passInput.type === 'password') {
+        passInput.type = 'text';
+        eyeIcon.textContent = 'visibility_off';
+    } else {
+        passInput.type = 'password';
+        eyeIcon.textContent = 'visibility';
+    }
+});
+
+// Auth submission
 document.getElementById('login-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     var btn = document.getElementById('loginBtn');
@@ -331,13 +398,14 @@ document.getElementById('login-form').addEventListener('submit', async function(
         var r = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: document.getElementById('password').value })
+            body: JSON.stringify({ password: passInput.value })
         });
         if (!r.ok) {
             var d = await r.json().catch(function() { return {}; });
-            throw new Error(d.detail || 'Login failed');
+            throw new Error(d.detail || 'رمز عبور نادرست است یا ارتباط برقرار نشد');
         }
-        location.href = '/spider';
+        // Redirect to Nisho panel
+        location.href = '/nisho';
     } catch(ex) {
         errText.textContent = ex.message;
         errDiv.classList.add('show');
@@ -348,29 +416,12 @@ document.getElementById('login-form').addEventListener('submit', async function(
 });
 </script>
 
-<!-- جلوگیری از زوم یا کپی ناخواسته -->
+<!-- Security handlers -->
 <script>
 document.addEventListener('wheel', function(e) { if(e.ctrlKey || e.metaKey) e.preventDefault(); }, {passive:false});
 document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].indexOf(e.key) >= 0) e.preventDefault();
-    if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === 'c' && !/^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || '')) e.preventDefault();
 });
-['copy', 'cut', 'contextmenu', 'selectstart', 'dragstart'].forEach(function(x) {
-    document.addEventListener(x, function(e) {
-        if (!/^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || '')) e.preventDefault();
-    });
-});
-['touchstart', 'touchmove'].forEach(function(x) {
-    document.addEventListener(x, function(e) {
-        if (e.touches.length > 1) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    }, {passive:false});
-});
-document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
-document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
-document.addEventListener('gestureend', function(e) { e.preventDefault(); });
 </script>
 </body>
 </html>

@@ -27,7 +27,7 @@ import io
 import logging
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger("Spider-Gateway")
+logger = logging.getLogger("Nisho-Gateway")
 
 try:
     import qrcode
@@ -55,7 +55,7 @@ _sys.modules.setdefault("main", _sys.modules[__name__])
 
 IRAN_TZ = ZoneInfo("Asia/Tehran")
 
-app = FastAPI(title="Spider Gateway", docs_url=None, redoc_url=None)
+app = FastAPI(title="Nisho Gateway", docs_url=None, redoc_url=None)
 
 # Import and include xhttp_siz10 router - deferred until globals are defined
 xhttp_router = None
@@ -75,7 +75,7 @@ def _env_port(default: int = PANEL_PORT) -> int:
 
 CONFIG = {
     "port": PANEL_PORT,
-    "secret": os.environ.get("SECRET_KEY", "spider-panel-secret-key-v2"),
+    "secret": os.environ.get("SECRET_KEY", "nisho-panel-secret-key-v2"),
     # Public host is discovered at runtime. Never use localhost as a public
     # endpoint or as a value embedded in client configs.
     "host": "",
@@ -91,7 +91,8 @@ app.add_middleware(
 
 # ── Persistence ───────────────────────────────────────────────────────────────
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/data"))
-DATA_FILE = DATA_DIR / "spider_state.json"
+DATA_FILE = DATA_DIR / "nisho_state.json"
+LEGACY_DATA_FILE = DATA_DIR / "spider_state.json"
 SAVE_LOCK = asyncio.Lock()
 
 # ── Official MTProxy runtime paths/settings ──────────────────────────────────
@@ -244,8 +245,9 @@ async def load_state():
     global LINKS, AUTH, SUBS, USERS, SETTINGS, GROUPS, IP_POOL, IP_BLACKLIST, INBOUNDS, NODES, PENDING_NODE_DELETIONS
     try:
         DATA_DIR.mkdir(parents=True, exist_ok=True)
-        if DATA_FILE.exists():
-            async with aiofiles.open(DATA_FILE, "r", encoding="utf-8") as f:
+        target_file = DATA_FILE if DATA_FILE.exists() else (LEGACY_DATA_FILE if LEGACY_DATA_FILE.exists() else DATA_FILE)
+        if target_file.exists():
+            async with aiofiles.open(target_file, "r", encoding="utf-8") as f:
                 raw = await f.read()
             data = json.loads(raw)
             LINKS.update(data.get("links", {}))
@@ -1439,7 +1441,7 @@ async def startup():
         except Exception as e:
             logger.warning(f"Xray apply on boot failed: {e}")
     log_activity("system", "سرور راه‌اندازی شد", "ok")
-    logger.info(f"Spider Panel v9 (commit 24d7594) started on port {CONFIG['port']}")
+    logger.info(f"NishoVpn Panel (Nisho Gateway) started on port {CONFIG['port']}")
     # Include XHTTP router for xhttp-siz10 endpoints (already merged into main.py)
     global xhttp_router
     # router is already defined in this module
@@ -1452,17 +1454,17 @@ async def startup():
     asyncio.create_task(_xray_client_audit_loop())
     global BOT_SCHEDULER_TASK, BOT_POLL_TASK, BOT_EXPIRY_TASK
     if BOT_SCHEDULER_TASK is None or BOT_SCHEDULER_TASK.done():
-        BOT_SCHEDULER_TASK = asyncio.create_task(_channel_bot_loop(), name="spider-channel-bot")
+        BOT_SCHEDULER_TASK = asyncio.create_task(_channel_bot_loop(), name="nisho-channel-bot")
     if BOT_POLL_TASK is None or BOT_POLL_TASK.done():
-        BOT_POLL_TASK = asyncio.create_task(_sell_bot_loop(), name="spider-sell-bot")
+        BOT_POLL_TASK = asyncio.create_task(_sell_bot_loop(), name="nisho-sell-bot")
     if BOT_EXPIRY_TASK is None or BOT_EXPIRY_TASK.done():
-        BOT_EXPIRY_TASK = asyncio.create_task(_sell_bot_expiry_loop(), name="spider-expiry-sweeper")
+        BOT_EXPIRY_TASK = asyncio.create_task(_sell_bot_expiry_loop(), name="nisho-expiry-sweeper")
 
     # Start Telegram Proxy instances for all existing TG inbounds
     await _start_all_telegram_proxies()
     global NODE_HEARTBEAT_TASK
     if NODE_HEARTBEAT_TASK is None or NODE_HEARTBEAT_TASK.done():
-        NODE_HEARTBEAT_TASK = asyncio.create_task(_node_heartbeat_loop(), name="spider-node-heartbeat")
+        NODE_HEARTBEAT_TASK = asyncio.create_task(_node_heartbeat_loop(), name="nisho-node-heartbeat")
 
 
 # ── Telegram Proxy Lifecycle ────────────────────────────────────────────────
@@ -2267,7 +2269,7 @@ def remote_node_config(node: dict, user: dict, remark_tag: str | None = None) ->
     node_country = str(node.get("country") or "").strip()
     node_ip = str(node.get("public_ip") or node.get("remote_ip") or "").strip()
     node_identity = " ".join(x for x in (node_flag, node_country, node_ip) if x).strip()
-    remark = f"Spider-{user.get('username', 'user')} {node_identity}".strip()
+    remark = f"Nisho-{user.get('username', 'user')} {node_identity}".strip()
     if node_label and node_label not in remark:
         remark += f" · {node_label}"
     if remark_tag and remark_tag not in remark:
@@ -2408,7 +2410,7 @@ def generate_random_path(prefix: str = "", length: int = 6) -> str:
 def now_ir() -> datetime:
     return datetime.now(IRAN_TZ)
 
-def generate_vless_link(uuid: str, host: str, remark: str = "Spider", protocol: str = DEFAULT_PROTOCOL) -> str:
+def generate_vless_link(uuid: str, host: str, remark: str = "Nisho", protocol: str = DEFAULT_PROTOCOL) -> str:
     """می‌سازد VLESS share-link متناسب با پروتکل انتخاب‌شده."""
     host = _safe_host(host)
     if not host:
@@ -2563,7 +2565,7 @@ def generate_user_config(user_id: str, user: dict, inbound_id: str = None, addr:
         logger.warning("Skipping config for user %s: invalid config UUID %r", user_id, config_uuid)
         return ""
     username = user.get("username", user_id)
-    rem = f"Spider-{username}"
+    rem = f"Nisho-{username}"
     if remark_tag:
         rem = f"{rem} {remark_tag}"
     remark = quote(rem)
@@ -2680,7 +2682,7 @@ def generate_user_config(user_id: str, user: dict, inbound_id: str = None, addr:
             params = ("encryption=none&security=tls&type=ws"
                       f"&host={quote(wdom)}&path={quote(rpath, safe='')}&sni={quote(wdom)}"
                       "&fp=chrome&alpn=http/1.1")
-            rev_rem = quote(f"Spider-{username} Reverse".strip())
+            rev_rem = quote(f"Nisho-{username} Reverse".strip())
             return f"vless://{config_uuid}@{wdom}:443?{params}#{rev_rem}"
         # Plain tunnel: user → Railway → Worker → site (path /tunnel/{uuid},
         # addressed to the panel/Railway domain).
@@ -2688,7 +2690,7 @@ def generate_user_config(user_id: str, user: dict, inbound_id: str = None, addr:
         params = ("encryption=none&security=tls&type=ws"
                   f"&host={quote(panel_domain)}&path={quote(tpath, safe='')}&sni={quote(panel_domain)}"
                   "&fp=chrome&alpn=http/1.1")
-        tun_rem = quote(f"Spider-{username} Tunnel".strip())
+        tun_rem = quote(f"Nisho-{username} Tunnel".strip())
         return f"vless://{config_uuid}@{panel_domain}:443?{params}#{tun_rem}"
 
     # The managed TLS+WS relay has a configurable connect address, while Host/SNI
@@ -2956,7 +2958,7 @@ def _worker_configs(user_id: str, user: dict, inbound: dict, stored_path: str, b
     # Canonical route shared by the generator, Worker and every subscription.
     wpath = f"/ws/{cfg_uuid}"
     uname = str(user.get("username") or user_id)
-    remark = quote(f"Spider-{uname}{(' ' + str(base_remark)) if base_remark and not str(base_remark).startswith('Spider-') else ''}")
+    remark = quote(f"Nisho-{uname}{(' ' + str(base_remark)) if base_remark and not str(base_remark).startswith('Nisho-') else ''}")
 
     params = (
         "encryption=none"
@@ -3344,7 +3346,7 @@ TGProxy = MTProtoProxyServer
 
 @app.get("/")
 async def root():
-    return {"service": "Spider Gateway", "version": "10.1", "status": "active"}
+    return {"service": "Nisho Gateway", "version": "10.0 Pro", "status": "active"}
 
 
 @app.get("/healthz")
@@ -3352,7 +3354,7 @@ async def healthz():
     """Provider-neutral health check endpoint; never blocks on public-domain discovery."""
     return {
         "ok": True,
-        "service": "SpiderPanel",
+        "service": "NishoPanel",
         "port": CONFIG.get("port", 8080),
         "public_domain_ready": bool(get_host()),
     }
@@ -3392,7 +3394,7 @@ async def _build_subscription_data_by_uuid(config_uuid: str):
             vless = generate_vless_link(
                 config_uuid,
                 host,
-                remark=f"Spider-{link['label']}",
+                remark=f"Nisho-{link['label']}",
                 protocol=proto,
             )
             return {
@@ -3473,7 +3475,7 @@ async def _build_subscription_data_by_uuid(config_uuid: str):
                 if not str(ib.get("external_domain") or "").strip() or not str(ib.get("external_port") or "").strip():
                     continue
             if ib and p_ == "worker":
-                configs.extend(_worker_configs(uid, user, ib, stored_path_user, f"Spider-{user.get('username', uid)}"))
+                configs.extend(_worker_configs(uid, user, ib, stored_path_user, f"Nisho-{user.get('username', uid)}"))
             else:
                 cfg = generate_user_config(uid, user, iid_)
                 if cfg:
@@ -3589,7 +3591,7 @@ async def link_page(uuid: str, request: Request):
         headers={
             "profile-title": quote(username),
             "profile-update-interval": "12",
-            "support-url": "https://t.me/spider_vpn1",
+            "support-url": "https://t.me/NishoVpn",
         },
     )
 
@@ -3600,7 +3602,7 @@ async def subscription_all(_=Depends(require_auth)):
     host = SETTINGS.get("domain") or get_host()
     async with LINKS_LOCK:
         lines = [
-            generate_vless_link(uid, host, remark=f"Spider-{d['label']}", protocol=d.get("protocol", DEFAULT_PROTOCOL))
+            generate_vless_link(uid, host, remark=f"Nisho-{d['label']}", protocol=d.get("protocol", DEFAULT_PROTOCOL))
             for uid, d in LINKS.items()
             if is_link_allowed(d)
         ]
@@ -3742,7 +3744,7 @@ async def sub_group_subscription(uuid_key: str, request: Request):
         for lid in link_ids:
             link = LINKS.get(lid)
             if link and is_link_allowed(link):
-                lines.append(generate_vless_link(lid, host, remark=f"Spider-{link['label']}", protocol=link.get("protocol", DEFAULT_PROTOCOL)))
+                lines.append(generate_vless_link(lid, host, remark=f"Nisho-{link['label']}", protocol=link.get("protocol", DEFAULT_PROTOCOL)))
 
     content = base64.b64encode("\n".join(lines).encode()).decode()
     return Response(
@@ -3750,7 +3752,7 @@ async def sub_group_subscription(uuid_key: str, request: Request):
         media_type="text/plain",
         headers={
             "profile-title": quote(sub["name"]),
-            "support-url": "https://t.me/spider_vpn1",
+            "support-url": "https://t.me/NishoVpn",
             "profile-update-interval": "12",
         }
     )
@@ -3883,7 +3885,7 @@ async def regenerate_panel_api_key(_=Depends(require_auth)):
         SETTINGS["security_token"] = new_key
         SETTINGS["panel_api_key_rotated_at"] = datetime.now().isoformat()
     await save_state()
-    log_activity("auth", "SpiderPanel API Key regenerated", "warn")
+    log_activity("auth", "NishoPanel API Key regenerated", "warn")
     return {"ok": True, "api_key": new_key, "prefix": "spdr_", "rotated_at": SETTINGS.get("panel_api_key_rotated_at")}
 
 
@@ -6064,23 +6066,27 @@ app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     if await is_valid_session(request.cookies.get(SESSION_COOKIE)):
-        return RedirectResponse(url="/spider")
+        return RedirectResponse(url="/nisho")
     return FileResponse(_os.path.join(_STATIC_DIR, "login.html"))
 
 @app.get("/dashboard", response_class=HTMLResponse)
 async def dashboard_redirect(request: Request):
-    return RedirectResponse(url="/spider")
+    return RedirectResponse(url="/nisho")
 
-@app.get("/spider", response_class=HTMLResponse)
-async def spider_panel(request: Request):
+@app.get("/nisho", response_class=HTMLResponse)
+async def nisho_panel(request: Request):
     if not await is_valid_session(request.cookies.get(SESSION_COOKIE)):
         return RedirectResponse(url="/login")
     await ensure_default_link()
     return FileResponse(_os.path.join(_STATIC_DIR, "index.html"))
 
+@app.get("/spider", response_class=HTMLResponse)
+async def spider_panel_alias(request: Request):
+    return await nisho_panel(request)
+
 @app.get("/test-ws", response_class=HTMLResponse)
 async def test_ws_redirect():
-    return HTMLResponse(content="<script>location.href='/spider'</script>")
+    return HTMLResponse(content="<script>location.href='/nisho'</script>")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -6474,7 +6480,7 @@ def _build_backup_payload() -> dict:
         "detected_at": SETTINGS.get("server_info_detected_at") or None,
     }
     return {
-        "backup_format": "SpiderPanel",
+        "backup_format": "NishoPanel",
         "backup_version": BACKUP_VERSION,
         "created_at": datetime.now().isoformat(),
         "state": {
@@ -6514,7 +6520,7 @@ def _validate_backup_payload(payload: dict) -> dict:
     # accidentally imported over a live installation.
     required_any = ("users", "settings", "links", "inbounds", "groups", "worker")
     if not any(k in state for k in required_any):
-        raise HTTPException(status_code=400, detail="این فایل بکاپ SpiderPanel نیست")
+        raise HTTPException(status_code=400, detail="این فایل بکاپ NishoPanel نیست")
 
     # Keep only the expected container/value shapes. Individual records remain
     # intentionally schema-compatible with older panel versions.
@@ -6535,7 +6541,7 @@ async def download_backup(_=Depends(require_auth)):
     """Download the complete current SpiderPanel state as a JSON file."""
     payload = _build_backup_payload()
     body = json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
-    filename = "spider-panel-backup-" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".json"
+    filename = "nisho-vpn-backup-" + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".json"
     return Response(
         content=body,
         media_type="application/json; charset=utf-8",
@@ -10625,7 +10631,7 @@ async def _ensure_worker_kv() -> str | None:
     if existing:
         return existing
     wname = str(WORKER.get("worker_name") or "").strip()
-    kv_title = f"{wname}-db" if wname else "spider-worker-kv"
+    kv_title = f"{wname}-db" if wname else "nisho-worker-kv"
     # List existing namespaces, reuse ours if a previous deploy created it.
     code, data = await _cf_api("GET", f"/accounts/{acct}/storage/kv/namespaces", cf_token, email="")
     if code == 200:
@@ -10665,7 +10671,7 @@ async def _ensure_tunnel_kv() -> str | None:
     if existing:
         return existing
     wname = str(WORKER.get("worker_name") or "").strip()
-    base = f"{wname}-db" if wname else "spider-worker-kv"
+    base = f"{wname}-db" if wname else "nisho-worker-kv"
     kv_title = f"{base}-tunnel"  # e.g. spider-a1b2c3-db-tunnel
     code, data = await _cf_api("GET", f"/accounts/{acct}/storage/kv/namespaces", cf_token, email="")
     if code == 200:
@@ -10705,7 +10711,7 @@ async def _ensure_reverse_kv() -> str | None:
     if existing:
         return existing
     wname = str(WORKER.get("worker_name") or "").strip()
-    base = f"{wname}-db" if wname else "spider-worker-kv"
+    base = f"{wname}-db" if wname else "nisho-worker-kv"
     kv_title = f"{base}-reverse"  # e.g. spider-a1b2c3-db-reverse
     code, data = await _cf_api("GET", f"/accounts/{acct}/storage/kv/namespaces", cf_token, email="")
     if code == 200:
@@ -10743,7 +10749,7 @@ async def _ensure_worker_pages_project(kv_id: str | None, tunnel_kv_id: str | No
     if not acct or not token or not name:
         return {"ok": False, "detail": "Cloudflare account, token or Pages project name missing"}
     if not re.fullmatch(r"[a-z][a-z0-9-]{0,30}", name):
-        name = "spider-" + secrets.token_hex(3)
+        name = "nisho-" + secrets.token_hex(3)
         async with WORKER_LOCK:
             WORKER["pages_project_name"] = name
             WORKER["worker_name"] = name
@@ -10889,7 +10895,7 @@ async def _worker_deploy() -> tuple:
     body = bytearray()
     body += field("branch", "main")
     body += field("commit_dirty", "false")
-    body += field("commit_message", "SpiderPanel managed worker deploy")
+    body += field("commit_message", "NishoVpn managed worker deploy")
     body += field("manifest", manifest)
     body += (
         f"--{boundary}\r\n"
@@ -12247,7 +12253,7 @@ def _bot_cfg() -> dict:
     ch.setdefault("enabled", False)
     ch.setdefault("channel", "")
     ch.setdefault("interval_minutes", 60)
-    ch.setdefault("username_prefix", "spider")
+    ch.setdefault("username_prefix", "nisho")
     ch.setdefault("traffic_limit_gb", 0)
     ch.setdefault("expire_days", 30)
     ch.setdefault("inbound_id", "")
@@ -12616,7 +12622,7 @@ async def _channel_bot_run_once() -> dict:
         channel_url = channel_input
     inbound_id = str(ch.get("inbound_id") or _bot_default_inbound_id()).strip()
     body = {
-        "username": _make_bot_username(ch.get("username_prefix") or "spider"),
+        "username": _make_bot_username(ch.get("username_prefix") or "nisho"),
         "traffic_limit_gb": max(0.0, float(ch.get("traffic_limit_gb") or 0)),
         "expire_days": max(0, int(ch.get("expire_days") or 0)),
         "inbound_id": inbound_id or None,
@@ -12632,9 +12638,9 @@ async def _channel_bot_run_once() -> dict:
     qr_png = _subscription_qr_bytes(sub_url)
     channel_link = _html_tag_link(channel_label or "Channel", channel_url)
     caption = (
-        f"<b>🕷 SpiderPanel</b>\n"
+        f"<b>⚡️ NishoVpn</b>\n"
         f"👤 <code>{username}</code>\n"
-        f"🔗 {_html_tag_link('لینک ساب', sub_url)}\n"
+        f"🔗 {_html_tag_link('لینک اشتراک', sub_url)}\n"
         f"📣 {channel_link}"
     )
     try:
@@ -12756,7 +12762,7 @@ def _sell_main_menu_markup():
 
 
 async def _sell_bot_send_main_menu(token: str, chat_id, welcome: str | None = None):
-    text = str(welcome or "🕷 <b>SpiderPanel Shop</b>\n\nیکی از بخش‌های زیر را انتخاب کنید:")
+    text = str(welcome or "⚡️ <b>NishoVpn Shop</b>\n\nیکی از بخش‌های زیر را انتخاب کنید:")
     sent = await _telegram_send_message(token, chat_id, text, reply_markup=_sell_main_menu_markup())
     return await _sell_bot_track_customer_message(chat_id, sent, "menu")
 

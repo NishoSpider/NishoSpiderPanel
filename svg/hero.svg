@@ -15,10 +15,10 @@
 <rect x="346" y="252" width="118" height="74" rx="18" fill="#121219" stroke="#363642"/>
 <circle cx="147" cy="132" r="8" fill="#8b5cf6"/>
 <circle cx="173" cy="132" r="8" fill="#d946ef"/>
-<text x="222" y="123" fill="#f4f4f5" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="800">SPIDERPANEL</text>
+<text x="222" y="123" fill="#f4f4f5" font-family="Inter,Arial,sans-serif" font-size="17" font-weight="800">NISHO VPN</text>
 <text x="550" y="185" fill="#a78bfa" font-family="Inter,Arial,sans-serif" font-size="22" font-weight="800" letter-spacing="4">XRAY · PANEL · TELEGRAM</text>
-<text x="550" y="245" fill="#ffffff" font-family="Inter,Arial,sans-serif" font-size="62" font-weight="900">SPiDER</text>
-<text x="550" y="302" fill="#ffffff" font-family="Inter,Arial,sans-serif" font-size="34" font-weight="800">Control Panel</text>
+<text x="550" y="245" fill="#ffffff" font-family="Inter,Arial,sans-serif" font-size="62" font-weight="900">NISHO</text>
+<text x="550" y="302" fill="#c084fc" font-family="Inter,Arial,sans-serif" font-size="34" font-weight="800">VPN Control Panel</text>
 <text x="550" y="348" fill="#b6b6c4" font-family="Inter,Arial,sans-serif" font-size="20">Deploy. Manage. Scan. Sell. Subscribe.</text>
 <rect x="550" y="378" width="260" height="36" rx="18" fill="url(#g)" filter="url(#s)"/>
 <text x="680" y="402" text-anchor="middle" fill="#09090b" font-family="Inter,Arial,sans-serif" font-size="16" font-weight="900">PORT 8080</text>

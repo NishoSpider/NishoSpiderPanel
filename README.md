@@ -1,16 +1,17 @@
 <div align="center">
-  <img src="svg/hero.svg" alt="SpiderPanel — control panel hero" width="100%" />
+  <img src="static/img/nisho-logo.png" alt="NishoVpn Panel" width="160" style="border-radius: 36px; box-shadow: 0 10px 40px rgba(168,85,247,0.5);" />
+  <h1 style="margin-top: 15px; font-size: 2.2rem; font-weight: 900; background: linear-gradient(135deg, #a855f7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">NISHO VPN PANEL</h1>
 
   <p>
-    <b>Modern Xray control panel for subscriptions, nodes, scanners and Telegram automation.</b><br>
-    Built around a responsive web UI with a fixed panel port <code>8080</code>.
+    <b>پنل مدیریت فوق‌سریع و هوشمند اختصاصی NishoVpn برای سابسکریپشن، نودها، ورکرها و اتوماسیون تلگرام</b><br>
+    Built around an ultra-modern cyber UI with fixed panel port <code>8080</code>.
   </p>
 
   <p>
-    <a href="https://github.com/amirh00sain/SpiderPanel"><img alt="GitHub" src="https://img.shields.io/badge/GitHub-SpiderPanel-111111?style=for-the-badge&logo=github&logoColor=white"></a>
+    <img alt="Brand" src="https://img.shields.io/badge/Brand-NishoVpn-8b5cf6?style=for-the-badge&logoColor=white">
     <img alt="Python" src="https://img.shields.io/badge/Python-3.x-111111?style=for-the-badge&logo=python&logoColor=white">
     <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-API-111111?style=for-the-badge&logo=fastapi&logoColor=white">
-    <img alt="Port" src="https://img.shields.io/badge/PORT-8080-8b5cf6?style=for-the-badge">
+    <img alt="Port" src="https://img.shields.io/badge/PORT-8080-a855f7?style=for-the-badge">
   </p>
 </div>
 
@@ -19,7 +20,7 @@
 <details>
 <summary><b>📚 Table of contents</b></summary>
 
-- [Why SpiderPanel?](#-why-spiderpanel)
+- [Why NishoVpn?](#-why-nishovpn)
 - [Deployment](#-deployment)
 - [Public endpoint & subscription flow](#-public-endpoint--subscription-flow)
 - [Telegram automation](#-telegram-automation)
@@ -35,9 +36,9 @@
 
 </details>
 
-## ✦ Why SpiderPanel?
+## ✦ Why NishoVpn?
 
-SpiderPanel brings the operational pieces of a proxy service into one panel: users, subscriptions, generated links, QR codes, nodes, workers, scanners, and Telegram automation.
+NishoVpn Panel brings the operational pieces of a proxy service into one sleek, cyber-themed panel: users, subscriptions, generated links, QR codes, nodes, workers, scanners, and Telegram automation.
 
 It is designed to be useful both on a direct VPS installation and on container/deployer environments where the public hostname may not be known until runtime.
 

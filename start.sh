@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 # ============================================================
-# SpiderPanel Universal Installer / Manager
+# NishoVpn Universal Installer / Manager
 # ============================================================
 
 APP_DIR="${SPIDER_APP_DIR:-/opt/SpiderPanel}"
@@ -47,7 +47,7 @@ IS_CODESPACE=0
 # ============================================================
 
 log() {
-    printf '[SpiderPanel] %s\n' "$*"
+    printf '[NishoVpn] %s\n' "$*"
 }
 
 ok() {
@@ -1539,27 +1539,28 @@ info_panel() {
     echo
 
     echo "================================================"
-    echo "                 SPIDERPANEL"
+    echo "                 NISHO VPN PANEL"
+    echo "           Next-Gen Secure Proxy Gateway"
     echo "================================================"
 
 
     # Panel port is intentionally fixed. Deployers may inject PORT, but
-    # SpiderPanel always listens on 8080.
+    # NishoPanel always listens on 8080.
     local listen_port="8080"
 
-    echo "Local URL: http://127.0.0.1:${listen_port}/spider"
+    echo "Local URL: http://127.0.0.1:${listen_port}/nisho"
 
 
     if [[ -n "$local_ip" ]]; then
 
-        echo "LAN URL: http://${local_ip}:${listen_port}/spider"
+        echo "LAN URL: http://${local_ip}:${listen_port}/nisho"
 
     fi
 
 
     if [[ -n "$ip" ]]; then
 
-        echo "Public IP URL: http://${ip}:${listen_port}/spider"
+        echo "Public IP URL: http://${ip}:${listen_port}/nisho"
 
     fi
 
@@ -1570,7 +1571,7 @@ info_panel() {
 
         local domain="${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN:-app.github.dev}"
 
-        echo "Codespace URL: https://${CODESPACE_NAME}-8080.${domain}/spider"
+        echo "Codespace URL: https://${CODESPACE_NAME}-8080.${domain}/nisho"
 
         echo "Forward port 8080 in Codespaces."
 
@@ -1595,17 +1596,17 @@ info_panel() {
 
     echo
 
-    echo "Commands:"
+    echo "Commands (nishopanel / spiderpanel):"
 
-    echo "  spiderpanel"
-    echo "  spiderpanel info"
-    echo "  spiderpanel status"
-    echo "  spiderpanel start"
-    echo "  spiderpanel stop"
-    echo "  spiderpanel restart"
-    echo "  spiderpanel update"
-    echo "  spiderpanel logs"
-    echo "  spiderpanel uninstall"
+    echo "  nishopanel"
+    echo "  nishopanel info"
+    echo "  nishopanel status"
+    echo "  nishopanel start"
+    echo "  nishopanel stop"
+    echo "  nishopanel restart"
+    echo "  nishopanel update"
+    echo "  nishopanel logs"
+    echo "  nishopanel uninstall"
 
     echo
 

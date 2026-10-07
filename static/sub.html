@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>SPiDER PANEL</title>
+<title>NishoVpn | اشتراک اختصاصی و اتصال امن</title>
+<link rel="icon" type="image/png" href="/static/img/nisho-logo.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 <style>
 /* Prevent zoom on all devices */
@@ -26,55 +27,77 @@ html, body {
 }
 /* ===== Dark & Light Theme Settings ===== */
 [data-theme="dark"] {
-  --bg: #000000;
-  --bg-page: #000000;
-  --bg2: #141417;
-  --card: rgba(18, 18, 22, 0.78);
-  --card-subtle: rgba(26, 26, 32, 0.75);
-  --border: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.35);
+  --bg: #07050d;
+  --bg-page: #07050d;
+  --bg2: #120d22;
+  --card: rgba(18, 13, 34, 0.78);
+  --card-subtle: rgba(28, 19, 52, 0.75);
+  --border: rgba(192, 132, 252, 0.16);
+  --border-strong: rgba(192, 132, 252, 0.4);
   --text: #f8fafc;
-  --muted: #94a3b8;
-  --accent: #ffffff;
-  --accent-contrast: #000000;
-  --glass-shine: rgba(255, 255, 255, 0.08);
-  --shadow: 0 8px 30px rgba(0, 0, 0, 0.75);
-  --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.9);
-  --ring-track: rgba(255, 255, 255, 0.12);
-  --ring-fill: #ffffff;
-  --glow-color: rgba(255, 255, 255, 0.45);
-  --btn-ctrl-bg: rgba(255, 255, 255, 0.06);
-  --btn-ctrl-hover: rgba(255, 255, 255, 0.16);
-  --modal-bg: rgba(18, 18, 24, 0.88);
-  --modal-sidebar: rgba(10, 10, 14, 0.75);
+  --muted: #a78bfa;
+  --accent: #c084fc;
+  --accent-contrast: #07050d;
+  --glass-shine: rgba(192, 132, 252, 0.1);
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.85);
+  --shadow-hover: 0 16px 40px rgba(124, 58, 237, 0.35);
+  --ring-track: rgba(168, 85, 247, 0.15);
+  --ring-fill: #a855f7;
+  --glow-color: rgba(168, 85, 247, 0.55);
+  --btn-ctrl-bg: rgba(168, 85, 247, 0.1);
+  --btn-ctrl-hover: rgba(168, 85, 247, 0.22);
+  --modal-bg: rgba(17, 12, 32, 0.94);
+  --modal-sidebar: rgba(11, 7, 22, 0.85);
   --success: #22c55e;
   --radius: 20px;
 }
 
 [data-theme="light"] {
   --bg: #ffffff;
-  --bg-page: #f8fafc;
-  --bg2: #f1f5f9;
-  --card: rgba(255, 255, 255, 0.88);
-  --card-subtle: rgba(241, 245, 249, 0.95);
-  --border: rgba(15, 23, 42, 0.14);
-  --border-strong: rgba(15, 23, 42, 0.35);
-  --text: #0f172a;
-  --muted: #64748b;
-  --accent: #0f172a;
+  --bg-page: #faf5ff;
+  --bg2: #f3e8ff;
+  --card: rgba(255, 255, 255, 0.9);
+  --card-subtle: rgba(243, 232, 255, 0.95);
+  --border: rgba(126, 34, 206, 0.16);
+  --border-strong: rgba(126, 34, 206, 0.38);
+  --text: #1e1b4b;
+  --muted: #6b21a8;
+  --accent: #7e22ce;
   --accent-contrast: #ffffff;
-  --glass-shine: rgba(0, 0, 0, 0.04);
-  --shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
-  --shadow-hover: 0 16px 40px rgba(15, 23, 42, 0.14);
-  --ring-track: #e2e8f0;
-  --ring-fill: #0f172a;
-  --glow-color: rgba(15, 23, 42, 0.2);
-  --btn-ctrl-bg: rgba(15, 23, 42, 0.05);
-  --btn-ctrl-hover: rgba(15, 23, 42, 0.1);
-  --modal-bg: rgba(255, 255, 255, 0.94);
-  --modal-sidebar: rgba(241, 245, 249, 0.85);
+  --glass-shine: rgba(126, 34, 206, 0.04);
+  --shadow: 0 8px 30px rgba(126, 34, 206, 0.08);
+  --shadow-hover: 0 16px 40px rgba(126, 34, 206, 0.18);
+  --ring-track: #e9d5ff;
+  --ring-fill: #7e22ce;
+  --glow-color: rgba(126, 34, 206, 0.25);
+  --btn-ctrl-bg: rgba(126, 34, 206, 0.06);
+  --btn-ctrl-hover: rgba(126, 34, 206, 0.12);
+  --modal-bg: rgba(255, 255, 255, 0.96);
+  --modal-sidebar: rgba(243, 232, 255, 0.9);
   --success: #16a34a;
   --radius: 20px;
+}
+
+.nisho-avatar-box {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 12px;
+  border-radius: 22px;
+  padding: 3px;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  box-shadow: 0 0 25px rgba(168, 85, 247, 0.45);
+  animation: nishoFloat 4s ease-in-out infinite alternate;
+}
+.nisho-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 19px;
+  object-fit: cover;
+  display: block;
+}
+@keyframes nishoFloat {
+  0% { transform: translateY(0); box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
+  100% { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(168, 85, 247, 0.65); }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1036,10 +1059,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       </button>
     </div>
     <div class="brand-center">
-      <div class="brand-title">SPiDER</div>
+      <div class="nisho-avatar-box">
+        <img src="/static/img/nisho-logo.png" alt="NishoVpn" class="nisho-avatar-img">
+      </div>
+      <div class="brand-title">NISHO VPN</div>
       <div class="brand-panel-row">
         <span class="brand-line"></span>
-        <div class="brand-sub">PANEL</div>
+        <div class="brand-sub">VIP ACCESS</div>
         <span class="brand-line"></span>
       </div>
       <div class="status-pill">
@@ -1189,28 +1215,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   <div class="social-section">
     <div class="social-title" data-i18n="followUs">ما را دنبال کنید</div>
     <div class="social-row">
-      <a class="social-card tilt-card" href="https://t.me/SPiDER_VPN1" target="_blank" rel="noopener noreferrer">
+      <a class="social-card tilt-card" href="https://t.me/NishoVpn" target="_blank" rel="noopener noreferrer">
         <span class="social-icon">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
         </span>
         <span class="social-name">Telegram</span>
       </a>
-      <a class="social-card tilt-card" href="https://www.youtube.com/@SPiDER_VPN1" target="_blank" rel="noopener noreferrer">
+      <a class="social-card tilt-card" href="https://t.me/NishoVpn_Support" target="_blank" rel="noopener noreferrer">
         <span class="social-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.5 31.5 0 000 12a31.5 31.5 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.5 31.5 0 0024 12a31.5 31.5 0 00-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </span>
-        <span class="social-name">YouTube</span>
-      </a>
-      <a class="social-card tilt-card" href="https://github.com/amirh00sain/SpiderPanel" target="_blank" rel="noopener noreferrer">
-        <span class="social-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.52 2.87 8.35 6.84 9.71.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0112 6.8c.85 0 1.71.12 2.51.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.58.69.48A10.03 10.03 0 0022 12.26C22 6.58 17.52 2 12 2z"/></svg>
-        </span>
-        <span class="social-name">GitHub</span>
+        <span class="social-name">پشتیبانی نیشو</span>
       </a>
     </div>
   </div>
 
-  <footer class="site-foot">SPiDER PANEL • Pure Minimal Edition</footer>
+  <footer class="site-foot">NishoVpn • Ultra Fast & Secure Proxy Network</footer>
 </div>
 
 <!-- Modal QR Code -->
@@ -1300,10 +1320,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     }
   };
 
-  var lang = localStorage.getItem("spider-lang") || "fa";
+  var lang = localStorage.getItem("nisho-lang") || localStorage.getItem("spider-lang") || "fa";
 
   function applyLang(l) {
     lang = l;
+    localStorage.setItem("nisho-lang", l);
     localStorage.setItem("spider-lang", l);
     var t = i18n[l] || i18n.fa;
     document.documentElement.lang = l;
@@ -1322,15 +1343,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
   function tr(k) { return (i18n[lang] && i18n[lang][k]) || k; }
 
-  // Theme Handling (تغییر تم بدون اثر منفی بر دکمه‌ها)
+  // Theme Handling
   var root = document.documentElement;
-  var savedTheme = localStorage.getItem("spider-theme") || "dark";
+  var savedTheme = localStorage.getItem("nisho-theme") || localStorage.getItem("spider-theme") || "dark";
   root.setAttribute("data-theme", savedTheme);
 
   function toggleTheme() {
     var cur = root.getAttribute("data-theme");
     var next = cur === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", next);
+    localStorage.setItem("nisho-theme", next);
     localStorage.setItem("spider-theme", next);
   }
 
@@ -1515,24 +1537,24 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       {
         name: "v2rayNG",
         icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>',
-        getLink: function(sub) { return "v2rayng://install-sub?url=" + encodeURIComponent(sub) + "&name=SPiDER"; }
+        getLink: function(sub) { return "v2rayng://install-sub?url=" + encodeURIComponent(sub) + "&name=NishoVpn"; }
       },
       {
         name: "V2Box",
         icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
-        getLink: function(sub) { return "v2box://install-sub?url=" + encodeURIComponent(sub) + "&name=SPiDER"; }
+        getLink: function(sub) { return "v2box://install-sub?url=" + encodeURIComponent(sub) + "&name=NishoVpn"; }
       },
       {
         name: "Hiddify",
         icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 3.84L19.5 19h-15L12 5.84zM11 10h2v4h-2zm0 6h2v2h-2z"/></svg>',
-        getLink: function(sub) { return "hiddify://install-sub?url=" + encodeURIComponent(sub) + "&name=SPiDER"; }
+        getLink: function(sub) { return "hiddify://install-sub?url=" + encodeURIComponent(sub) + "&name=NishoVpn"; }
       }
     ],
     ios: [
       {
         name: "V2Box",
         icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
-        getLink: function(sub) { return "v2box://install-sub?url=" + encodeURIComponent(sub) + "&name=SPiDER"; }
+        getLink: function(sub) { return "v2box://install-sub?url=" + encodeURIComponent(sub) + "&name=NishoVpn"; }
       },
       {
         name: "Happ",
@@ -1542,7 +1564,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       {
         name: "Hiddify",
         icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 3.84L19.5 19h-15L12 5.84zM11 10h2v4h-2zm0 6h2v2h-2z"/></svg>',
-        getLink: function(sub) { return "hiddify://install-sub?url=" + encodeURIComponent(sub) + "&name=SPiDER"; }
+        getLink: function(sub) { return "hiddify://install-sub?url=" + encodeURIComponent(sub) + "&name=NishoVpn"; }
       }
     ],
     windows: [

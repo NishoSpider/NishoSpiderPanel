@@ -1,4 +1,4 @@
-// SpiderPanel — managed Cloudflare Pages Worker
+// NishoVpn — managed Cloudflare Pages Worker
 // VLESS over WebSocket/TLS, one canonical route per user: /ws/{uuid}
 // The panel injects __PANEL_TOKEN__, __PANEL_DOMAIN__ and __WORKER_DOMAIN__
 // during deployment. SPIDER_KV is a Pages KV binding configured by the panel.
@@ -1017,7 +1017,7 @@ export default {
       const kv = await kvReady(env);
       return json({
         ok: kv,
-        service: "SpiderPanel VLESS Worker",
+        service: "NishoVpn VLESS Worker",
         panel_domain: PANEL_DOMAIN,
         worker_domain: WORKER_DOMAIN,
         kv_bound: kv,
