@@ -1324,6 +1324,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
             <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg></span>
             <span data-i18n="inbounds">اینباندها</span>
           </div>
+          <div class="nav-item" onclick="switchTab('custom-configs',this)">
+            <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+            <span>کانفیگ‌های تلگرام / آزاد</span>
+            <span class="badge badge-p" id="nav-custom-cfg-badge" style="display:none;margin-right:auto;font-size:10px;padding:1px 6px;">0</span>
+          </div>
           <div class="nav-item" onclick="switchTab('scanner',this)">
             <span class="nav-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/><path d="M11 8v3l2 2"/></svg></span>
             <span data-i18n="scanner">اسکنر IP</span>
@@ -1426,6 +1431,52 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
           <div id="inbounds-list"><div class="empty" data-i18n="loading">در حال بارگذاری...</div></div>
         </div>
 
+      </div>
+
+      <!-- CUSTOM TELEGRAM / FREE CONFIGS TAB -->
+      <div class="tab-content hidden" id="tab-custom-configs">
+        <div class="panel">
+          <div class="panel-h" style="justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="glow">مدیریت کانفیگ‌های تلگرام و آزاد</span>
+              <span class="badge badge-p" id="custom-configs-total-pill">0 کانفیگ</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-p" onclick="openAddCustomConfigModal()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>افزودن کانفیگ (تکی یا گروهی)</span>
+              </button>
+              <button class="btn btn-d" onclick="clearAllCustomConfigs()" title="حذف همه">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <span>حذف همه</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="px-hint" style="margin-bottom:16px;line-height:1.75;background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.2);border-radius:10px;padding:12px 14px">
+            💡 <strong>تزریق کانفیگ‌های آزاد به لینک‌های ساب:</strong> کانفیگ‌های رایگانی که از کانال‌های تلگرام یا جاهای دیگر پیدا می‌کنید را اینجا به صورت تکی یا چندتایی پیست کنید. می‌توانید اسم و ریمارک هرکدام را به دلخواه تغییر دهید. این کانفیگ‌ها به صورت خودکار به لینک ساب تمام کاربران اضافه می‌شوند. به محض اینکه حجم یا زمان اشتراک کاربری به پایان برسد (یا اشتراک توسط شما غیرفعال شود)، اتصال این کانفیگ‌ها نیز برای آن کاربر به طور خودکار قطع خواهد شد. هر تغییری که در اینجا اعمال کنید به صورت آنی در آپدیت بعدی ساب کاربران اعمال می‌شود.
+          </div>
+
+          <!-- Search and Filter Bar -->
+          <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+            <div style="flex:1;min-width:240px;position:relative">
+              <input type="text" id="custom-cfg-search" placeholder="جستجو در نام، پروتکل یا آدرس کانفیگ..." oninput="renderCustomConfigsList()" style="width:100%;padding:9px 36px 9px 12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid var(--border);color:var(--txt);">
+              <svg style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--txt-m);pointer-events:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn btn-g active" id="btn-filter-proto-all" onclick="setCustomProtoFilter('all')">همه</button>
+              <button class="btn btn-g" id="btn-filter-proto-vless" onclick="setCustomProtoFilter('vless')">VLESS</button>
+              <button class="btn btn-g" id="btn-filter-proto-vmess" onclick="setCustomProtoFilter('vmess')">VMess</button>
+              <button class="btn btn-g" id="btn-filter-proto-trojan" onclick="setCustomProtoFilter('trojan')">Trojan</button>
+              <button class="btn btn-g" id="btn-filter-proto-shadowsocks" onclick="setCustomProtoFilter('shadowsocks')">SS</button>
+              <button class="btn btn-g" id="btn-filter-proto-hy2" onclick="setCustomProtoFilter('hysteria2')">Hy2 / TUIC</button>
+            </div>
+          </div>
+
+          <div id="custom-configs-list">
+            <div class="empty">در حال بارگذاری کانفیگ‌ها...</div>
+          </div>
+        </div>
       </div>
 
       <!-- IP SCANNER TAB -->
@@ -2371,6 +2422,84 @@ IMPLEMENTATION RULES
   <button class="btn btn-g" onclick="closeModal('mod-qr')" style="width:100%"><span data-i18n="close">بستن</span></button>
 </div></div>
 
+<!-- ADD CUSTOM CONFIG MODAL -->
+<div class="modal" id="mod-custom-config">
+  <div class="modal-c" style="max-width:620px">
+    <div class="modal-t"><span class="glow">افزودن کانفیگ‌های تلگرام به ساب</span></div>
+    
+    <div style="margin-top:14px">
+      <div class="form-g">
+        <label style="display:flex;justify-content:space-between;align-items:center">
+          <span>لینک کانفیگ یا لیست کانفیگ‌ها</span>
+          <span style="font-size:11px;color:var(--txt-m)">پیست تکی یا چندخطی از تلگرام</span>
+        </label>
+        <textarea id="custom-cfg-raw" rows="6" placeholder="کانفیگ‌ها را اینجا پیست کنید (پشتیبانی از VLESS, VMess, Trojan, SS, Hysteria2, TUIC):&#10;vless://...&#10;vmess://...&#10;trojan://...&#10;hysteria2://..." style="width:100%;font-family:monospace;font-size:12px;direction:ltr;text-align:left;line-height:1.4"></textarea>
+      </div>
+
+      <div class="form-g">
+        <label style="display:flex;justify-content:space-between;align-items:center">
+          <span>نام دلخواه / ریمارک (Remark)</span>
+          <span style="font-size:11px;color:var(--txt-m)">خالی = حفظ نام اصلی خود کانفیگ</span>
+        </label>
+        <input type="text" id="custom-cfg-name" placeholder="مثال: 🚀 تلگرام پرسرعت آلمان (برای چندتایی خودکار شماره‌گذاری می‌شود)">
+      </div>
+
+      <div class="form-g" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px">
+        <div>
+          <div style="font-weight:600;font-size:13px">فعال در لینک ساب</div>
+          <div style="font-size:11px;color:var(--txt-m)">کانفیگ بلافاصله به اشتراک کاربران تحویل داده شود</div>
+        </div>
+        <div class="switch on" id="custom-cfg-enabled-sw" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
+    <div class="modal-btns" style="margin-top:20px">
+      <button class="btn btn-g" type="button" onclick="closeModal('mod-custom-config')">انصراف</button>
+      <button class="btn btn-p" type="button" id="custom-cfg-submit-btn" onclick="submitCustomConfig()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>افزودن و اعمال در ساب</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT CUSTOM CONFIG MODAL -->
+<div class="modal" id="mod-edit-custom-config">
+  <div class="modal-c" style="max-width:560px">
+    <div class="modal-t"><span class="glow">ویرایش نام و مشخصات کانفیگ</span></div>
+    
+    <div style="margin-top:14px">
+      <input type="hidden" id="edit-custom-cfg-id" value="">
+      
+      <div class="form-g">
+        <label>نام دلخواه / ریمارک (Remark در v2ray)</label>
+        <input type="text" id="edit-custom-cfg-name" placeholder="مثال: 🚀 سرور رایگان هلند 01">
+      </div>
+
+      <div class="form-g">
+        <label>لینک خام کانفیگ (URI)</label>
+        <textarea id="edit-custom-cfg-uri" rows="3" style="width:100%;font-family:monospace;font-size:12px;direction:ltr;text-align:left"></textarea>
+      </div>
+
+      <div class="form-g" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px">
+        <div>
+          <div style="font-weight:600;font-size:13px">وضعیت در ساب</div>
+          <div style="font-size:11px;color:var(--txt-m)">فعال یا غیرفعال در لینک ساب</div>
+        </div>
+        <div class="switch on" id="edit-custom-cfg-sw" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
+    <div class="modal-btns" style="margin-top:20px">
+      <button class="btn btn-g" type="button" onclick="closeModal('mod-edit-custom-config')">انصراف</button>
+      <button class="btn btn-p" type="button" onclick="submitEditCustomConfig()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>ذخیره تغییرات</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -2842,7 +2971,7 @@ function toggleNodeAccordion(btn) {
 }
 
 function switchTab(tab, el) {
-  if (['users','inbounds','scanner','worker','bot','settings'].indexOf(tab) >= 0) toggleNavAccordion(true);
+  if (['users','inbounds','custom-configs','scanner','worker','bot','settings'].indexOf(tab) >= 0) toggleNavAccordion(true);
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   if (el) el.classList.add('active');
   var content = document.querySelector('.content');
@@ -2861,7 +2990,7 @@ function switchTab(tab, el) {
   target.style.setProperty('margin-top', '0px', 'important');
   target.style.setProperty('top', '0px', 'important');
   target.style.setProperty('transform', 'none', 'important');
-  if (tab === 'worker' || tab === 'contact' || tab === 'settings' || tab === 'nodes' || tab === 'advanced' || tab === 'help' || tab === 'notif') {
+  if (tab === 'worker' || tab === 'contact' || tab === 'settings' || tab === 'nodes' || tab === 'advanced' || tab === 'help' || tab === 'notif' || tab === 'custom-configs') {
     target.style.setProperty('position', 'static', 'important');
     target.style.setProperty('flex', 'none', 'important');
   }
@@ -2880,6 +3009,7 @@ function switchTab(tab, el) {
   if (tab === 'dashboard') loadDashboard();
   if (tab === 'users') loadUsers();
   if (tab === 'inbounds') loadInbounds();
+  if (tab === 'custom-configs') loadCustomConfigs();
   if (tab === 'scanner') scnInit();
   if (tab === 'worker') loadWorker();
   if (tab === 'tunnel') loadTunnel();
@@ -5832,10 +5962,254 @@ async function generateApiKey() {
   } catch(e) { toast(e.message || 'خطا', 'err'); }
 }
 
+// ─── Custom External / Telegram Configs ───
+var CUSTOM_CONFIGS_DATA = [];
+var CUSTOM_PROTO_FILTER = 'all';
+
+async function loadCustomConfigs() {
+  var list = $id('custom-configs-list');
+  if (list && !CUSTOM_CONFIGS_DATA.length) list.innerHTML = '<div class="empty">در حال بارگذاری کانفیگ‌ها...</div>';
+  try {
+    var res = await api('/api/custom-configs');
+    CUSTOM_CONFIGS_DATA = res.configs || [];
+    var count = CUSTOM_CONFIGS_DATA.length;
+    var badge = $id('nav-custom-cfg-badge');
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+    var pill = $id('custom-configs-total-pill');
+    if (pill) pill.textContent = count + ' کانفیگ';
+    renderCustomConfigsList();
+  } catch(e) {
+    if (list) list.innerHTML = '<div class="empty" style="color:var(--red)">خطا در دریافت کانفیگ‌ها: ' + esc(e.message) + '</div>';
+  }
+}
+
+function setCustomProtoFilter(proto) {
+  CUSTOM_PROTO_FILTER = proto;
+  ['all','vless','vmess','trojan','shadowsocks','hy2'].forEach(function(p) {
+    var b = $id('btn-filter-proto-' + p);
+    if (b) b.classList.toggle('active', p === proto);
+  });
+  renderCustomConfigsList();
+}
+
+function renderCustomConfigsList() {
+  var list = $id('custom-configs-list');
+  if (!list) return;
+  var q = ($id('custom-cfg-search') ? $id('custom-cfg-search').value : '').toLowerCase().trim();
+
+  var filtered = CUSTOM_CONFIGS_DATA.filter(function(item) {
+    var proto = (item.protocol || '').toLowerCase();
+    if (CUSTOM_PROTO_FILTER !== 'all') {
+      if (CUSTOM_PROTO_FILTER === 'hy2') {
+        if (proto !== 'hysteria2' && proto !== 'tuic') return false;
+      } else if (proto !== CUSTOM_PROTO_FILTER) {
+        return false;
+      }
+    }
+    if (q) {
+      var name = (item.name || '').toLowerCase();
+      var uri = (item.raw_uri || '').toLowerCase();
+      if (name.indexOf(q) === -1 && uri.indexOf(q) === -1 && proto.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty" style="padding:40px 20px;text-align:center">' +
+      '<div style="font-size:36px;margin-bottom:12px;opacity:0.6">📦</div>' +
+      '<div style="font-size:15px;font-weight:600;margin-bottom:6px">هیچ کانفیگی یافت نشد</div>' +
+      '<div style="font-size:12px;color:var(--txt-m);margin-bottom:16px">کانفیگ‌های رایگان را از تلگرام کپی کرده و با دکمه بالا اضافه کنید</div>' +
+      '<button class="btn btn-p" onclick="openAddCustomConfigModal()" style="margin:0 auto">افزودن کانفیگ جدید</button>' +
+      '</div>';
+    return;
+  }
+
+  var html = '<div style="display:flex;flex-direction:column;gap:10px">';
+  filtered.forEach(function(item) {
+    var proto = (item.protocol || 'custom').toUpperCase();
+    var protoBadgeClass = 'badge-p';
+    if (proto === 'VMESS') protoBadgeClass = 'badge-g';
+    else if (proto === 'TROJAN') protoBadgeClass = 'badge-y';
+    else if (proto === 'SHADOWSOCKS' || proto === 'SS') protoBadgeClass = 'badge-g';
+    else if (proto === 'HYSTERIA2' || proto === 'HY2' || proto === 'TUIC') protoBadgeClass = 'badge-r';
+
+    var isEnabled = item.enabled !== false;
+    var hostPreview = '';
+    try {
+      var raw = item.raw_uri || '';
+      if (raw.indexOf('@') >= 0) {
+        hostPreview = raw.split('@')[1].split('?')[0].split('#')[0];
+      } else if (raw.indexOf('://') >= 0) {
+        hostPreview = raw.split('://')[1].split('/')[0].split('?')[0].split('#')[0];
+      }
+    } catch(e) {}
+
+    html += '<div class="card" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid var(--border);gap:12px;flex-wrap:wrap;transition:all 0.2s ease">' +
+      '<div style="display:flex;align-items:center;gap:12px;min-width:240px;flex:1">' +
+        '<span class="badge ' + protoBadgeClass + '" style="font-size:11px;font-weight:700;padding:3px 8px">' + esc(proto) + '</span>' +
+        '<div style="display:flex;flex-direction:column;gap:3px">' +
+          '<div style="font-weight:700;font-size:14px;color:var(--txt);display:flex;align-items:center;gap:6px">' +
+            '<span>' + esc(item.name || 'کانفیگ بدون نام') + '</span>' +
+            (!isEnabled ? '<span class="badge badge-d" style="font-size:10px;padding:1px 5px">غیرفعال در ساب</span>' : '') +
+          '</div>' +
+          (hostPreview ? '<div style="font-size:11px;font-family:monospace;color:var(--txt-m);direction:ltr;text-align:right">' + esc(hostPreview) + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+        '<div class="switch ' + (isEnabled ? 'on' : '') + '" onclick="toggleCustomConfig(\'' + item.id + '\')" title="تغییر وضعیت فعال/غیرفعال"></div>' +
+        '<button class="btn btn-g" style="padding:6px 10px;font-size:12px" onclick="openEditCustomConfigModal(\'' + item.id + '\')" title="ویرایش نام">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>' +
+          '<span>ویرایش نام</span>' +
+        '</button>' +
+        '<button class="btn btn-g" style="padding:6px 10px;font-size:12px" onclick="copyCustomConfigUri(\'' + item.id + '\')" title="کپی لینک کانفیگ">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+          '<span>کپی</span>' +
+        '</button>' +
+        '<button class="btn btn-d" style="padding:6px 10px;font-size:12px" onclick="deleteCustomConfig(\'' + item.id + '\')" title="حذف">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  list.innerHTML = html;
+}
+
+function openAddCustomConfigModal() {
+  if ($id('custom-cfg-raw')) $id('custom-cfg-raw').value = '';
+  if ($id('custom-cfg-name')) $id('custom-cfg-name').value = '';
+  if ($id('custom-cfg-enabled-sw')) $id('custom-cfg-enabled-sw').classList.add('on');
+  openModal('mod-custom-config');
+}
+
+async function submitCustomConfig() {
+  var raw = ($id('custom-cfg-raw') ? $id('custom-cfg-raw').value : '').trim();
+  var name = ($id('custom-cfg-name') ? $id('custom-cfg-name').value : '').trim();
+  var enabled = $id('custom-cfg-enabled-sw') ? $id('custom-cfg-enabled-sw').classList.contains('on') : true;
+
+  if (!raw) {
+    toast('لطفاً لینک کانفیگ را وارد کنید', 'err');
+    return;
+  }
+
+  var btn = $id('custom-cfg-submit-btn');
+  if (btn) btn.disabled = true;
+  try {
+    var res = await api('/api/custom-configs', {
+      method: 'POST',
+      body: { raw_text: raw, name: name, enabled: enabled }
+    });
+    toast('تعداد ' + res.added_count + ' کانفیگ با موفقیت اضافه شد', 'ok');
+    closeModal('mod-custom-config');
+    loadCustomConfigs();
+  } catch(e) {
+    toast(e.message || 'خطا در افزودن کانفیگ', 'err');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function openEditCustomConfigModal(id) {
+  var item = CUSTOM_CONFIGS_DATA.find(function(c) { return c.id === id; });
+  if (!item) return;
+  $id('edit-custom-cfg-id').value = item.id;
+  $id('edit-custom-cfg-name').value = item.name || '';
+  $id('edit-custom-cfg-uri').value = item.raw_uri || '';
+  var sw = $id('edit-custom-cfg-sw');
+  if (sw) {
+    if (item.enabled !== false) sw.classList.add('on');
+    else sw.classList.remove('on');
+  }
+  openModal('mod-edit-custom-config');
+}
+
+async function submitEditCustomConfig() {
+  var id = $id('edit-custom-cfg-id').value;
+  var name = $id('edit-custom-cfg-name').value.trim();
+  var uri = $id('edit-custom-cfg-uri').value.trim();
+  var enabled = $id('edit-custom-cfg-sw').classList.contains('on');
+
+  if (!name) {
+    toast('نام کانفیگ نمی‌تواند خالی باشد', 'err');
+    return;
+  }
+
+  try {
+    await api('/api/custom-configs/' + encodeURIComponent(id), {
+      method: 'PUT',
+      body: { name: name, raw_uri: uri, enabled: enabled }
+    });
+    toast('تغییرات ذخیره شد و در لینک ساب اعمال گشت', 'ok');
+    closeModal('mod-edit-custom-config');
+    loadCustomConfigs();
+  } catch(e) {
+    toast(e.message || 'خطا در ویرایش کانفیگ', 'err');
+  }
+}
+
+async function toggleCustomConfig(id) {
+  try {
+    var res = await api('/api/custom-configs/' + encodeURIComponent(id) + '/toggle', { method: 'POST' });
+    toast(res.enabled ? 'کانفیگ در ساب فعال شد' : 'کانفیگ در ساب غیرفعال شد', 'ok');
+    var item = CUSTOM_CONFIGS_DATA.find(function(c) { return c.id === id; });
+    if (item) item.enabled = res.enabled;
+    renderCustomConfigsList();
+  } catch(e) {
+    toast(e.message || 'خطا در تغییر وضعیت', 'err');
+  }
+}
+
+async function deleteCustomConfig(id) {
+  var item = CUSTOM_CONFIGS_DATA.find(function(c) { return c.id === id; });
+  var name = item ? item.name : 'این کانفیگ';
+  if (!confirm('آیا مطمئن هستید که می‌خواهید «' + name + '» را از لینک ساب حذف کنید؟')) return;
+  try {
+    await api('/api/custom-configs/' + encodeURIComponent(id), { method: 'DELETE' });
+    toast('کانفیگ با موفقیت حذف شد', 'ok');
+    loadCustomConfigs();
+  } catch(e) {
+    toast(e.message || 'خطا در حذف کانفیگ', 'err');
+  }
+}
+
+async function clearAllCustomConfigs() {
+  if (!CUSTOM_CONFIGS_DATA.length) {
+    toast('هیچ کانفیگی برای حذف وجود ندارد', 'warn');
+    return;
+  }
+  if (!confirm('آیا مطمئنید می‌خواهید تمام کانفیگ‌های تلگرام/آزاد را حذف کنید؟ این عمل غیرقابل بازگشت است.')) return;
+  try {
+    await api('/api/custom-configs/bulk-delete', { method: 'POST', body: { all: true } });
+    toast('تمام کانفیگ‌های آزاد حذف شدند', 'ok');
+    loadCustomConfigs();
+  } catch(e) {
+    toast(e.message || 'خطا در حذف کانفیگ‌ها', 'err');
+  }
+}
+
+function copyCustomConfigUri(id) {
+  var item = CUSTOM_CONFIGS_DATA.find(function(c) { return c.id === id; });
+  if (!item) return;
+  var uri = item.raw_uri || '';
+  if (item.name) {
+    var base = uri.split('#')[0];
+    uri = base + '#' + encodeURIComponent(item.name);
+  }
+  navigator.clipboard.writeText(uri).then(function() {
+    toast('لینک کانفیگ با نام جدید کپی شد', 'ok');
+  }).catch(function() {
+    toast('خطا در کپی کردن', 'err');
+  });
+}
+
 // Add server info to settings on load
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(loadServerInfo, 500);
   setTimeout(loadBot, 600);
+  setTimeout(loadCustomConfigs, 700);
 });
 
 // Start neon bars when tab opens

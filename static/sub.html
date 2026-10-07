@@ -1327,8 +1327,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       <span class="chip" data-filter="hysteria2" data-i18n="hy2Category">⚡ Hysteria 2</span>
       <span class="chip" data-filter="tuic" data-i18n="tuicCategory">🚀 TUIC v5</span>
       <span class="chip" data-filter="reality" data-i18n="realityCategory">Reality</span>
+      <span class="chip" data-filter="vmess">VMess</span>
+      <span class="chip" data-filter="trojan">Trojan</span>
       <span class="chip" data-filter="tls" data-i18n="tlsCategory">TLS</span>
-      <span class="chip" data-filter="telegram" data-i18n="telegramCategory">Telegram Proxy</span>
+      <span class="chip" data-filter="telegram" data-i18n="telegramCategory">Telegram</span>
     </div>
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
@@ -1565,6 +1567,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     var l = String(link || '').toLowerCase();
     if (l.indexOf('hysteria2://') === 0 || l.indexOf('hy2://') === 0) return 'hysteria2';
     if (l.indexOf('tuic://') === 0) return 'tuic';
+    if (l.indexOf('vmess://') === 0) return 'vmess';
+    if (l.indexOf('trojan://') === 0) return 'trojan';
+    if (l.indexOf('ss://') === 0) return 'shadowsocks';
     if (l.indexOf('t.me/proxy?') === 0 || l.indexOf('https://t.me/proxy?') === 0 || l.indexOf('tg://proxy') === 0) return 'telegram';
     if (l.indexOf('security=reality') >= 0 || l.indexOf('security%3dreality') >= 0) return 'reality';
     return 'tls';
@@ -1574,6 +1579,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     if (cat === 'hysteria2') return tr('hy2Category');
     if (cat === 'tuic') return tr('tuicCategory');
     if (cat === 'reality') return tr('realityCategory');
+    if (cat === 'vmess') return 'VMess';
+    if (cat === 'trojan') return 'Trojan';
+    if (cat === 'shadowsocks') return 'Shadowsocks';
     if (cat === 'telegram') return tr('telegramCategory');
     return tr('tlsCategory');
   }
@@ -1605,6 +1613,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
       iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
       badgeClass += ' badge-chip-reality';
       badgeText = 'Reality';
+    } else if (cat === 'vmess') {
+      iconClass += ' proto-tls';
+      iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>';
+      badgeClass += ' badge-chip-tls';
+      badgeText = 'VMess';
+    } else if (cat === 'trojan') {
+      iconClass += ' proto-reality';
+      iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>';
+      badgeClass += ' badge-chip-reality';
+      badgeText = 'Trojan';
+    } else if (cat === 'shadowsocks') {
+      iconClass += ' proto-tls';
+      iconSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 12h10M12 7v10"/></svg>';
+      badgeClass += ' badge-chip-tls';
+      badgeText = 'Shadowsocks';
     } else if (cat === 'telegram') {
       iconClass += ' proto-telegram';
       iconSvg = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>';
@@ -1638,13 +1661,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     var list = document.getElementById("configList");
     if (!list) return;
     list.innerHTML = '';
-    var groups = { hysteria2: [], tuic: [], reality: [], tls: [], telegram: [] };
+    var groups = { hysteria2: [], tuic: [], reality: [], vmess: [], trojan: [], shadowsocks: [], tls: [], telegram: [] };
     CONFIG_LINKS.forEach(function(link, i) {
       var cat = configCategory(link);
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push(i);
     });
-    ['hysteria2', 'tuic', 'reality', 'tls', 'telegram'].forEach(function(cat) {
+    ['hysteria2', 'tuic', 'reality', 'vmess', 'trojan', 'shadowsocks', 'tls', 'telegram'].forEach(function(cat) {
       if (!groups[cat] || !groups[cat].length) return;
       var section = document.createElement('div');
       section.className = 'config-group';
@@ -1670,11 +1693,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   function applyData(d) {
     var cfgs = [];
     if (Array.isArray(d.configs) && d.configs.length) {
-      cfgs = d.configs.filter(function(c) { return c && c.indexOf('%F0%9F%93%8A') === -1; });
+      cfgs = d.configs.filter(function(c) { return c && c.indexOf('%F0%9F%93%8A') === -1 && c.indexOf('📊') === -1; });
     }
     if (!cfgs.length && d.config) cfgs = [d.config];
     CONFIG_LINKS = cfgs;
     CONFIG_NAMES = cfgs.map(function(c) {
+      if (c && c.indexOf('vmess://') === 0) {
+        try {
+          var b64 = c.substring(8).trim();
+          var rem = b64.length % 4;
+          if (rem) b64 += '='.repeat(4 - rem);
+          var jsonStr = atob(b64);
+          var j = JSON.parse(jsonStr);
+          if (j.ps) return j.ps;
+        } catch(e) {}
+      }
       var h = c.split('#');
       try { return decodeURIComponent((h[1] || '').replace(/\+/g, ' ')) || 'Config'; } catch (e) { return 'Config'; }
     });

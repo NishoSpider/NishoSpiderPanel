@@ -20,7 +20,7 @@ import uuid
 import aiofiles
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 from collections import deque, defaultdict
 import base64
 import io
@@ -242,7 +242,7 @@ def _validate_listener_port(port: int, exclude_id: str | None = None) -> None:
 
 
 async def load_state():
-    global LINKS, AUTH, SUBS, USERS, SETTINGS, GROUPS, IP_POOL, IP_BLACKLIST, INBOUNDS, NODES, PENDING_NODE_DELETIONS
+    global LINKS, AUTH, SUBS, USERS, SETTINGS, GROUPS, IP_POOL, IP_BLACKLIST, INBOUNDS, NODES, PENDING_NODE_DELETIONS, CUSTOM_CONFIGS
     try:
         DATA_DIR.mkdir(parents=True, exist_ok=True)
         target_file = DATA_FILE if DATA_FILE.exists() else (LEGACY_DATA_FILE if LEGACY_DATA_FILE.exists() else DATA_FILE)
@@ -290,6 +290,8 @@ async def load_state():
             NODES.update(data.get("nodes", {}))
             PENDING_NODE_DELETIONS.update(data.get("pending_node_deletions", {}))
             BOT_ORDERS.update(data.get("bot_orders", {}))
+            if isinstance(data.get("custom_configs"), dict):
+                CUSTOM_CONFIGS.update(data["custom_configs"])
             IP_POOL.clear()
             IP_POOL.extend(data.get("ip_pool", []))
             IP_BLACKLIST.clear()
@@ -300,7 +302,7 @@ async def load_state():
                 WORKER.update(data["worker"])
                 if was_connected:
                     WORKER["connected"] = True
-            logger.info(f"State loaded: {len(LINKS)} links, {len(SUBS)} subs, {len(USERS)} users, {len(GROUPS)} groups, {len(IP_POOL)} ips, {len(INBOUNDS)} inbounds, {len(NODES)} nodes")
+            logger.info(f"State loaded: {len(LINKS)} links, {len(SUBS)} subs, {len(USERS)} users, {len(GROUPS)} groups, {len(IP_POOL)} ips, {len(INBOUNDS)} inbounds, {len(NODES)} nodes, {len(CUSTOM_CONFIGS)} custom configs")
     except Exception as e:
         logger.warning(f"Could not load state: {e}")
     # Rebuild path index from all users and links
@@ -438,6 +440,7 @@ async def save_state():
                 "nodes": dict(NODES),
                 "pending_node_deletions": dict(PENDING_NODE_DELETIONS),
                 "bot_orders": dict(BOT_ORDERS),
+                "custom_configs": dict(CUSTOM_CONFIGS),
                 "password_hash": AUTH["password_hash"],
                 "saved_secret": CONFIG["secret"],
                 "saved_at": datetime.now().isoformat(),
@@ -474,6 +477,8 @@ SUBS: dict = {}
 SUBS_LOCK = asyncio.Lock()
 USERS: dict = {}
 USERS_LOCK = asyncio.Lock()
+CUSTOM_CONFIGS: dict = {}
+CUSTOM_CONFIGS_LOCK = asyncio.Lock()
 
 # ── Remote nodes (other SpiderPanel instances we sync configs to) ──────────────
 # node_id -> {domain, api_key, name, added_at, last_status, last_checked,
@@ -2885,42 +2890,129 @@ def generate_custom_ip_configs(user_id: str, user: dict) -> dict:
     return out
 
 
+def parse_proxy_protocol(uri: str) -> str:
+    """Detect the protocol of a raw proxy URI."""
+    u = (uri or "").strip().lower()
+    if u.startswith("vless://"):
+        return "vless"
+    if u.startswith("vmess://"):
+        return "vmess"
+    if u.startswith("trojan://"):
+        return "trojan"
+    if u.startswith("ss://"):
+        return "shadowsocks"
+    if u.startswith("hysteria2://") or u.startswith("hy2://"):
+        return "hysteria2"
+    if u.startswith("tuic://"):
+        return "tuic"
+    if u.startswith("wireguard://"):
+        return "wireguard"
+    if "://" in u:
+        return u.split("://")[0]
+    return "custom"
+
+
+def extract_proxy_remark(uri: str) -> str:
+    """Extract human-readable remark/name from a proxy URI."""
+    u = (uri or "").strip()
+    if not u:
+        return ""
+    if u.lower().startswith("vmess://"):
+        b64 = u[8:].strip()
+        rem = len(b64) % 4
+        if rem:
+            b64 += "=" * (4 - rem)
+        try:
+            dec = base64.b64decode(b64).decode("utf-8")
+            data = json.loads(dec)
+            return str(data.get("ps") or "").strip()
+        except Exception:
+            pass
+    if "#" in u:
+        try:
+            return unquote(u.split("#", 1)[1]).strip()
+        except Exception:
+            return u.split("#", 1)[1].strip()
+    return ""
+
+
+def apply_remark_to_uri(uri: str, name: str) -> str:
+    """Apply a new customized remark (name) to any proxy URI."""
+    uri = (uri or "").strip()
+    name = (name or "").strip()
+    if not uri or not name:
+        return uri
+    if uri.lower().startswith("vmess://"):
+        b64 = uri[8:].strip()
+        rem = len(b64) % 4
+        if rem:
+            b64 += "=" * (4 - rem)
+        try:
+            dec = base64.b64decode(b64).decode("utf-8")
+            data = json.loads(dec)
+            data["ps"] = name
+            new_b64 = base64.b64encode(json.dumps(data, ensure_ascii=False).encode("utf-8")).decode("utf-8")
+            return f"vmess://{new_b64}"
+        except Exception:
+            pass
+    base = uri.split("#")[0]
+    return f"{base}#{quote(name)}"
+
+
 def generate_status_config(user: dict, configs: list) -> str:
-    """Generate a status config (config-status) with fake random stats.
+    """Generate an informational status config with REAL, ACCURATE statistics.
 
     This config is placed FIRST in the subscription so clients display it as
-    the status/overview config. It uses the panel's main domain and carries
-    fake volume/time/user-count in the remark for easy reading.
-
-    The address is the panel domain (not external_domain) and host/sni are
-    also the panel domain so TLS handshake reaches the panel.
+    the status/overview config. It calculates actual used/limit bytes, real
+    remaining days, and status without any random values, keeping it stable
+    and accurate across every subscription update.
     """
-    import random
-
     # Get user info
     username = user.get("username", "user")
     user_id = user.get("user_id", "")
-    config_uuid = user.get("config_uuid", "") or user_id
+    config_uuid = str(user.get("config_uuid") or user_id or "00000000-0000-0000-0000-000000000000")
 
-    # Use panel domain from discovery (required for TLS WS/XHTTP).
-    panel_domain = _safe_host(SETTINGS.get("domain"), get_host())
-    if not panel_domain:
-        return ""
+    # Use panel domain from discovery
+    panel_domain = _safe_host(SETTINGS.get("domain"), get_host()) or "127.0.0.1"
 
-    # Generate fake stats for the status config
-    # Random volume: 100GB - 500GB total, 10GB - 100GB used
-    total_gb = random.randint(100, 500)
-    used_gb = random.randint(10, min(100, total_gb - 1))
+    # Real Traffic Stats
+    used_bytes = int(user.get("traffic_used_bytes") or 0)
+    limit_bytes = int(user.get("traffic_limit_bytes") or 0)
+    used_str = fmt_bytes(used_bytes)
+    limit_str = fmt_bytes(limit_bytes) if limit_bytes > 0 else "نامحدود"
 
-    # Random expiry: 30-365 days
-    expire_days = random.randint(30, 365)
+    # Real Expiry Stats
+    expire_at = user.get("expire_at")
+    status = str(user.get("status") or "active").lower()
 
-    # Random concurrent users: 1-10
-    online_users = random.randint(1, 10)
+    if status == "disabled":
+        status_text = "⛔ غیرفعال"
+        days_text = "غیرفعال"
+    elif status == "expired":
+        status_text = "❌ منقضی"
+        days_text = "پایان‌یافته"
+    elif expire_at:
+        try:
+            exp_dt = datetime.fromisoformat(expire_at)
+            now_dt = datetime.now()
+            diff = (exp_dt - now_dt).total_seconds()
+            if diff <= 0:
+                status_text = "❌ منقضی"
+                days_text = "پایان‌یافته"
+            else:
+                days_left = math.ceil(diff / 86400)
+                status_text = "🟢 فعال"
+                days_text = f"{days_left} روز"
+        except Exception:
+            status_text = "🟢 فعال"
+            days_text = "نامشخص"
+    else:
+        status_text = "🟢 فعال"
+        days_text = "نامحدود"
 
-    # Build remark with fake stats (status config identifier)
-    # Format: "📊 Status | User: {username} | Used: {used}GB/{total}GB | Days: {days} | Online: {online}"
-    remark_text = f"📊 Status | User: {username} | Used: {used_gb}GB/{total_gb}GB | Days: {expire_days} | Online: {online_users}"
+    # Deterministic, professional remark
+    # Example: 📊 Nisho | 👤 user1 | 💾 2.3 GB / 50 GB | ⏳ 24 روز
+    remark_text = f"📊 Nisho | 👤 {username} | 💾 {used_str} / {limit_str} | ⏳ {days_text}"
     remark = quote(remark_text)
 
     # Try to find a TLS WS/XHTTP config to copy transport from
@@ -2933,11 +3025,9 @@ def generate_status_config(user: dict, configs: list) -> str:
     for c in configs:
         if c and "type=ws" in c:
             transport = "ws"
-            # Already set ws_path and params above; break if desired
             break
         elif c and "type=xhttp" in c:
             transport = "xhttp"
-            # Build xhttp parameters using settings from user's inbound
             inbound_ids = user.get("inbound_ids") or []
             xpb = "100-1000"
             xsc = "1000000"
@@ -3514,53 +3604,77 @@ async def _build_subscription_data_by_uuid(config_uuid: str):
     configs = []
     inbound_ids = user.get("inbound_ids") or []
     stored_path_user = (user.get("path") or "").strip()
+    all_custom = []
 
-    for iid_ in inbound_ids:
-        ib = INBOUNDS.get(iid_)
-        try:
-            if is_node_control_inbound(iid_, ib):
-                continue
-            p_ = (ib.get("protocol") if ib else "").lower()
-            sec_ = (ib.get("security") if ib else "").lower()
-            if ib and (p_ == "reality" or sec_ == "reality"):
-                if not str(ib.get("external_domain") or "").strip() or not str(ib.get("external_port") or "").strip():
+    if is_active:
+        for iid_ in inbound_ids:
+            ib = INBOUNDS.get(iid_)
+            try:
+                if is_node_control_inbound(iid_, ib):
                     continue
-            if ib and p_ == "worker":
-                configs.extend(_worker_configs(uid, user, ib, stored_path_user, f"Nisho-{user.get('username', uid)}"))
-            else:
-                cfg = generate_user_config(uid, user, iid_)
-                if cfg:
-                    configs.append(cfg)
-        except Exception as exc:
-            logger.warning(
-                "subscription config generation failed user=%s inbound=%s: %s",
-                user.get("username", uid), iid_, exc,
-            )
+                p_ = (ib.get("protocol") if ib else "").lower()
+                sec_ = (ib.get("security") if ib else "").lower()
+                if ib and (p_ == "reality" or sec_ == "reality"):
+                    if not str(ib.get("external_domain") or "").strip() or not str(ib.get("external_port") or "").strip():
+                        continue
+                if ib and p_ == "worker":
+                    configs.extend(_worker_configs(uid, user, ib, stored_path_user, f"Nisho-{user.get('username', uid)}"))
+                else:
+                    cfg = generate_user_config(uid, user, iid_)
+                    if cfg:
+                        configs.append(cfg)
+            except Exception as exc:
+                logger.warning(
+                    "subscription config generation failed user=%s inbound=%s: %s",
+                    user.get("username", uid), iid_, exc,
+                )
 
-    # Node is a management selector; its public configs come from the exact
-    # existing `پیش‌فرض TLS + WS` inbound on each selected remote panel.
-    configs.extend(node_subscription_configs(user))
+        # Node is a management selector; its public configs come from the exact
+        # existing `پیش‌فرض TLS + WS` inbound on each selected remote panel.
+        configs.extend(node_subscription_configs(user))
 
-    if not configs:
-        fallback_iid = find_default_tls_ws_inbound_id()
-        selected = set(inbound_ids)
-        if not fallback_iid or fallback_iid not in selected:
-            fallback_iid = next((iid for iid in inbound_ids if not is_node_control_inbound(iid)), None)
-        if fallback_iid:
-            fallback_config = generate_user_config(uid, user, fallback_iid)
-            if fallback_config:
-                configs = [fallback_config]
+        if not configs:
+            fallback_iid = find_default_tls_ws_inbound_id()
+            selected = set(inbound_ids)
+            if not fallback_iid or fallback_iid not in selected:
+                fallback_iid = next((iid for iid in inbound_ids if not is_node_control_inbound(iid)), None)
+            if fallback_iid:
+                fallback_config = generate_user_config(uid, user, fallback_iid)
+                if fallback_config:
+                    configs = [fallback_config]
 
-    custom_cfgs = generate_custom_ip_configs(uid, user)
-    all_custom = custom_cfgs.get("railway", []) + custom_cfgs.get("cf", [])
-    if all_custom:
-        configs.extend(all_custom)
+        custom_cfgs = generate_custom_ip_configs(uid, user)
+        all_custom = custom_cfgs.get("railway", []) + custom_cfgs.get("cf", [])
+        if all_custom:
+            configs.extend(all_custom)
 
-    if not configs:
-        raise HTTPException(status_code=404, detail="no configs found")
+        # Inject admin-managed custom / external / free configs (Telegram configs)
+        async with CUSTOM_CONFIGS_LOCK:
+            custom_list = list(CUSTOM_CONFIGS.values())
+        for ccfg in custom_list:
+            if not ccfg.get("enabled", True):
+                continue
+            cscope = ccfg.get("scope", "all")
+            if cscope != "all" and cscope != uid and cscope != user.get("group_id"):
+                continue
+            curi = (ccfg.get("raw_uri") or ccfg.get("uri") or "").strip()
+            cname = (ccfg.get("name") or ccfg.get("remark") or "").strip()
+            if curi:
+                applied_uri = apply_remark_to_uri(curi, cname) if cname else curi
+                configs.append(applied_uri)
 
-    status_config = generate_status_config(user, configs)
-    all_configs = [status_config] + configs if status_config else configs
+        if not configs:
+            raise HTTPException(status_code=404, detail="no configs found")
+
+        status_config = generate_status_config(user, configs)
+        all_configs = [status_config] + configs if status_config else configs
+    else:
+        # Access severed: user is expired or disabled! Only show non-working status alert
+        reason = "پایان حجم مصرفی یا تاریخ انقضا" if status == "expired" else "غیرفعال شده توسط مدیر"
+        warn_remark = quote(f"⛔ Nisho | 👤 {user.get('username', uid)} | اشتراک منقضی یا قطع شد ({reason})")
+        status_config = f"vless://00000000-0000-0000-0000-000000000000@127.0.0.1:443?encryption=none&security=none#{warn_remark}"
+        all_configs = [status_config]
+        custom_cfgs = {"railway": [], "cf": []}
 
     config = None
     for c in all_configs[1:]:
@@ -3636,6 +3750,9 @@ async def link_page(uuid: str, request: Request):
 
     content = base64.b64encode("\n".join(data["configs"]).encode()).decode()
     username = data.get("username") or uuid
+    used_bytes = int(data.get("traffic_used_bytes") or 0)
+    limit_bytes = int(data.get("traffic_limit_bytes") or 0)
+    expire_ts = data.get("expire_at_ts") or 0
     return Response(
         content=content,
         media_type="text/plain",
@@ -3643,6 +3760,7 @@ async def link_page(uuid: str, request: Request):
             "profile-title": quote(username),
             "profile-update-interval": "12",
             "support-url": "https://t.me/NishoVpn",
+            "subscription-userinfo": f"upload=0; download={used_bytes}; total={limit_bytes}; expire={expire_ts}",
         },
     )
 
@@ -3773,6 +3891,151 @@ async def assign_link_to_sub(sub_id: str, request: Request, _=Depends(require_au
             LINKS[link_id]["sub_id"] = sub_id if action == "add" else None
     asyncio.create_task(save_state())
     return {"ok": True}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# CUSTOM / TELEGRAM EXTERNAL CONFIGS (Free Configs injected into Subscription)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.get("/api/custom-configs")
+async def get_custom_configs(_=Depends(require_auth)):
+    """Return all admin-added external/telegram configs for subscription links."""
+    async with CUSTOM_CONFIGS_LOCK:
+        items = list(CUSTOM_CONFIGS.values())
+    items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    return {"configs": items, "total": len(items)}
+
+
+@app.post("/api/custom-configs")
+async def add_custom_configs(request: Request, _=Depends(require_auth)):
+    """Add one or multiple custom configs (bulk paste from Telegram supported)."""
+    body = await request.json()
+    raw_text = str(body.get("raw_text") or body.get("raw_uris") or body.get("uri") or "").strip()
+    custom_name = str(body.get("name") or "").strip()
+    scope = str(body.get("scope") or "all").strip()
+    enabled = bool(body.get("enabled", True))
+
+    if not raw_text:
+        raise HTTPException(status_code=400, detail="متن یا لینک کانفیگ الزامی است")
+
+    # Extract all URIs (supports single or multi-line paste from Telegram channels!)
+    lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
+    valid_schemes = ("vless://", "vmess://", "trojan://", "ss://", "hysteria2://", "hy2://", "tuic://", "wireguard://")
+    uris = []
+    for l in lines:
+        match = re.search(r'(vless|vmess|trojan|ss|hysteria2|hy2|tuic|wireguard)://[^\s]+', l, re.IGNORECASE)
+        if match:
+            uris.append(match.group(0))
+        elif any(l.lower().startswith(s) for s in valid_schemes):
+            uris.append(l)
+
+    if not uris:
+        if "://" in raw_text:
+            uris = [raw_text.strip()]
+        else:
+            raise HTTPException(status_code=400, detail="هیچ لینک کانفیگ معتبری یافت نشد (پشتیبانی از VLESS, VMess, Trojan, SS, Hysteria 2, TUIC)")
+
+    added = []
+    now_iso = datetime.now().isoformat()
+    async with CUSTOM_CONFIGS_LOCK:
+        for idx, uri in enumerate(uris):
+            cid = "cfg_" + secrets.token_hex(6)
+            proto = parse_proxy_protocol(uri)
+            existing_remark = extract_proxy_remark(uri)
+
+            if custom_name:
+                name = f"{custom_name} {idx + 1}" if len(uris) > 1 else custom_name
+            else:
+                name = existing_remark or f"{proto.upper()} Free {len(CUSTOM_CONFIGS) + 1}"
+
+            item = {
+                "id": cid,
+                "name": name,
+                "raw_uri": uri,
+                "protocol": proto,
+                "enabled": enabled,
+                "scope": scope,
+                "created_at": now_iso,
+                "updated_at": now_iso,
+            }
+            CUSTOM_CONFIGS[cid] = item
+            added.append(item)
+
+    asyncio.create_task(save_state())
+    log_activity("custom_config", f"تعداد {len(added)} کانفیگ تلگرام/رایگان به لینک ساب اضافه شد", "ok")
+    return {"ok": True, "added_count": len(added), "configs": added}
+
+
+@app.put("/api/custom-configs/{cfg_id}")
+async def update_custom_config(cfg_id: str, request: Request, _=Depends(require_auth)):
+    """Update name (remark), URI, enabled flag, or scope of a custom config."""
+    body = await request.json()
+    async with CUSTOM_CONFIGS_LOCK:
+        item = CUSTOM_CONFIGS.get(cfg_id)
+        if not item:
+            raise HTTPException(status_code=404, detail="کانفیگ یافت نشد")
+        if "name" in body:
+            item["name"] = str(body["name"]).strip()
+        if "raw_uri" in body and body["raw_uri"]:
+            uri = str(body["raw_uri"]).strip()
+            item["raw_uri"] = uri
+            item["protocol"] = parse_proxy_protocol(uri)
+        if "enabled" in body:
+            item["enabled"] = bool(body["enabled"])
+        if "scope" in body:
+            item["scope"] = str(body["scope"]).strip()
+        item["updated_at"] = datetime.now().isoformat()
+        res_item = dict(item)
+    asyncio.create_task(save_state())
+    log_activity("custom_config", f"کانفیگ «{res_item.get('name')}» ویرایش شد", "ok")
+    return {"ok": True, "config": res_item}
+
+
+@app.post("/api/custom-configs/{cfg_id}/toggle")
+async def toggle_custom_config(cfg_id: str, _=Depends(require_auth)):
+    """Toggle enabled status of a custom config."""
+    async with CUSTOM_CONFIGS_LOCK:
+        item = CUSTOM_CONFIGS.get(cfg_id)
+        if not item:
+            raise HTTPException(status_code=404, detail="کانفیگ یافت نشد")
+        item["enabled"] = not item.get("enabled", True)
+        item["updated_at"] = datetime.now().isoformat()
+        new_state = item["enabled"]
+    asyncio.create_task(save_state())
+    return {"ok": True, "enabled": new_state}
+
+
+@app.delete("/api/custom-configs/{cfg_id}")
+async def delete_custom_config(cfg_id: str, _=Depends(require_auth)):
+    """Delete a custom config."""
+    async with CUSTOM_CONFIGS_LOCK:
+        item = CUSTOM_CONFIGS.pop(cfg_id, None)
+    if not item:
+        raise HTTPException(status_code=404, detail="کانفیگ یافت نشد")
+    asyncio.create_task(save_state())
+    log_activity("custom_config", f"کانفیگ «{item.get('name')}» از ساب حذف شد", "warn")
+    return {"ok": True}
+
+
+@app.post("/api/custom-configs/bulk-delete")
+async def bulk_delete_custom_configs(request: Request, _=Depends(require_auth)):
+    """Delete multiple or all custom configs."""
+    body = await request.json()
+    ids = body.get("ids", [])
+    deleted_count = 0
+    async with CUSTOM_CONFIGS_LOCK:
+        if body.get("all"):
+            deleted_count = len(CUSTOM_CONFIGS)
+            CUSTOM_CONFIGS.clear()
+        else:
+            for cid in ids:
+                if cid in CUSTOM_CONFIGS:
+                    del CUSTOM_CONFIGS[cid]
+                    deleted_count += 1
+    asyncio.create_task(save_state())
+    log_activity("custom_config", f"تعداد {deleted_count} کانفیگ سفارشی حذف شدند", "warn")
+    return {"ok": True, "deleted_count": deleted_count}
+
 
 # ── Public sub-group subscription file ───────────────────────────────────────
 @app.get("/sub-group/{uuid_key}")
