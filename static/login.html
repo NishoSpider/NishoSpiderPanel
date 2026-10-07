@@ -4,7 +4,19 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>NishoVpn | ورود به پنل مدیریت هوشمند</title>
-<link rel="icon" type="image/png" href="/static/img/nisho-logo.png">
+<link rel="icon" type="image/png" href="/static/img/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NishoVpn">
+<meta name="application-name" content="NishoVpn">
+<link rel="apple-touch-icon" href="/static/img/icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/static/img/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="/static/img/icon-512.png">
+<meta name="theme-color" content="#07050d">
+<meta name="msapplication-TileColor" content="#07050d">
+<meta name="msapplication-TileImage" content="/static/img/icon-512.png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;900&display=swap" rel="stylesheet"/>
@@ -358,8 +370,12 @@ button, a, input, [role="button"] {
         </div>
     </div>
 
-    <!-- Status Badges -->
+    <!-- Status Badges & PWA Install Button -->
     <div class="flex items-center gap-2 sm:gap-3">
+        <button id="pwa-install-btn" class="header-chip cursor-pointer hidden items-center gap-1.5 transition hover:brightness-125" style="border-color: rgba(192, 132, 252, 0.45); background: rgba(147, 51, 234, 0.2);">
+            <span class="material-symbols-outlined text-purple-300" style="font-size: 15px;">download_for_offline</span>
+            <span>نصب اپلیکیشن</span>
+        </button>
         <div class="header-chip hidden sm:inline-flex">
             <span class="pulse-dot"></span>
             <span>SYSTEM ONLINE</span>
@@ -706,6 +722,58 @@ document.getElementById('login-form').addEventListener('submit', async function(
 document.addEventListener('wheel', function(e) { if(e.ctrlKey || e.metaKey) e.preventDefault(); }, {passive:false});
 document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].indexOf(e.key) >= 0) e.preventDefault();
+});
+
+// PWA Service Worker Registration & Install Handler
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+            .then(function(reg) {
+                console.log('[Nisho PWA] Service Worker registered with scope:', reg.scope);
+            })
+            .catch(function(err) {
+                console.warn('[Nisho PWA] Service Worker registration failed:', err);
+            });
+    });
+}
+
+// PWA Install Prompt
+var deferredPrompt;
+var pwaBtn = document.getElementById('pwa-install-btn');
+
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (pwaBtn) {
+        pwaBtn.classList.remove('hidden');
+        pwaBtn.classList.add('inline-flex');
+    }
+});
+
+if (pwaBtn) {
+    pwaBtn.addEventListener('click', async function() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            var res = await deferredPrompt.userChoice;
+            if (res.outcome === 'accepted') {
+                pwaBtn.classList.add('hidden');
+            }
+            deferredPrompt = null;
+        } else {
+            // iOS Safari guide
+            var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOS) {
+                alert('برای نصب روی آیفون:\n۱. دکمه Share (مربع با فلش رو به بالا) را در مرورگر Safari بزنید.\n۲. گزینه Add to Home Screen را انتخاب کنید.');
+            } else {
+                alert('برای نصب این برنامه، از منوی مرورگر خود گزینه "Install NishoVpn" یا "Add to Home screen" را انتخاب نمایید.');
+            }
+        }
+    });
+}
+
+window.addEventListener('appinstalled', function() {
+    console.log('[Nisho PWA] App installed successfully');
+    if (pwaBtn) pwaBtn.classList.add('hidden');
 });
 </script>
 

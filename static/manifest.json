@@ -1,0 +1,63 @@
+{
+  "name": "NishoVpn Panel - مدیریت و امنیت هوشمند شبکه",
+  "short_name": "NishoVpn",
+  "description": "سامانه مدیریت اختصاصی پروکسی، تانل و فایروال نیشو وی‌پی‌ان با معماری مدرن و مانیتورینگ بلادرنگ",
+  "start_url": "/login",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07050d",
+  "theme_color": "#07050d",
+  "lang": "fa",
+  "dir": "rtl",
+  "categories": ["utilities", "security", "network"],
+  "icons": [
+    {
+      "src": "/static/img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/img/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/static/img/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/static/nisho-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "داشبورد مدیریت",
+      "short_name": "داشبورد",
+      "description": "دسترسی مستقیم به پنل مدیریت نیشو",
+      "url": "/nisho",
+      "icons": [{ "src": "/static/img/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ورود به حساب",
+      "short_name": "ورود",
+      "description": "صفحه ورود به سامانه",
+      "url": "/login",
+      "icons": [{ "src": "/static/img/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
+}

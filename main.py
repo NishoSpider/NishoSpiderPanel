@@ -6063,6 +6063,18 @@ _os.makedirs(_STATIC_DIR, exist_ok=True)
 # the panel music + background images 404'd.
 app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
 
+@app.get("/manifest.json")
+async def pwa_manifest():
+    return FileResponse(_os.path.join(_STATIC_DIR, "manifest.json"), media_type="application/manifest+json")
+
+@app.get("/service-worker.js")
+async def pwa_service_worker():
+    return FileResponse(
+        _os.path.join(_STATIC_DIR, "service-worker.js"),
+        media_type="application/javascript",
+        headers={"Service-Worker-Allowed": "/"}
+    )
+
 @app.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     if await is_valid_session(request.cookies.get(SESSION_COOKIE)):

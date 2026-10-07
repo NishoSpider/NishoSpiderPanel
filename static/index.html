@@ -6,7 +6,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>NishoVpn Panel | پنل مدیریت قدرتمند نیشو وی‌پی‌ان</title>
-<link rel="icon" type="image/png" href="/static/img/nisho-logo.png">
+<link rel="icon" type="image/png" href="/static/img/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NishoVpn">
+<meta name="application-name" content="NishoVpn">
+<link rel="apple-touch-icon" href="/static/img/icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/static/img/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="/static/img/icon-512.png">
+<meta name="theme-color" content="#07050d">
+<meta name="msapplication-TileColor" content="#07050d">
+<meta name="msapplication-TileImage" content="/static/img/icon-512.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -1372,6 +1384,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     <div class="topbar">
       <div class="topbar-greet" id="grt"></div>
       <div class="topbar-r">
+        <button class="lang-btn" id="pwa-install-btn" onclick="installPWA()" title="نصب اپلیکیشن NishoVpn / Install App" style="display:none;background:rgba(168,85,247,0.18);border-color:rgba(192,132,252,0.4);color:#d8b4fe;"><span class="material-symbols-outlined" style="font-size:17px;color:#c084fc">download_for_offline</span><span id="pwa-install-lbl">نصب اپ</span></button>
+        <button class="lang-btn" id="pwa-notif-btn" onclick="togglePushNotifications()" title="اعلان‌های سیستم / Notifications"><span id="pwa-notif-ic" class="material-symbols-outlined" style="font-size:18px;color:#c084fc">notifications</span></button>
         <button class="lang-btn" id="theme-btn" onclick="toggleThemeMode()" title="حالت روشن/تاریک / Dark-Light mode"><span id="theme-ic" class="material-symbols-outlined" style="font-size:18px">light_mode</span><span id="theme-label">روشن</span></button>
         <button class="lang-btn" id="lang-btn" onclick="toggleLang()" title="تغییر زبان / Change language"><span id="lang-flag" class="lang-flag"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span id="lang-label">EN</span></button>
         <button class="btn btn-sm btn-g sidebar-tog" onclick="toggleSidebar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
@@ -5579,6 +5593,112 @@ setTimeout(updateNeonBars, 500);
 var loginFormEl = $id('login-form');
 if (loginFormEl) {
   loginFormEl.addEventListener('submit', function(e) { e.preventDefault(); doLogin(); });
+}
+
+// ── PWA & Push Notifications System ──
+var _deferredPrompt;
+var _swRegistration = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+      .then(function(reg) {
+        _swRegistration = reg;
+        console.log('[Nisho PWA] Service Worker registered:', reg.scope);
+        updateNotifUI();
+      })
+      .catch(function(err) {
+        console.warn('[Nisho PWA] Service Worker failed:', err);
+      });
+  });
+}
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  _deferredPrompt = e;
+  var b = $id('pwa-install-btn');
+  if (b) b.style.display = 'inline-flex';
+});
+
+window.addEventListener('appinstalled', function() {
+  console.log('[Nisho PWA] App installed');
+  var b = $id('pwa-install-btn');
+  if (b) b.style.display = 'none';
+  toast('اپلیکیشن NishoVpn با موفقیت روی دستگاه شما نصب شد!', 'ok');
+});
+
+async function installPWA() {
+  if (_deferredPrompt) {
+    _deferredPrompt.prompt();
+    var choice = await _deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') {
+      var b = $id('pwa-install-btn');
+      if (b) b.style.display = 'none';
+    }
+    _deferredPrompt = null;
+  } else {
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      alert('نصب در آیفون (iOS):\n۱. روی آیکون Share (مربع با فلش بالا) در پایین مرورگر سافاری بزنید.\n۲. گزینه Add to Home Screen را لمس نمایید.');
+    } else {
+      alert('برای نصب این برنامه، از منوی سه نقطه مرورگر گزینه Install App یا Add to Home screen را انتخاب نمایید.');
+    }
+  }
+}
+
+function updateNotifUI() {
+  var ic = $id('pwa-notif-ic');
+  if (!ic) return;
+  if ('Notification' in window && Notification.permission === 'granted') {
+    ic.textContent = 'notifications_active';
+    ic.style.color = '#34d399';
+  } else {
+    ic.textContent = 'notifications';
+    ic.style.color = '#c084fc';
+  }
+}
+
+async function togglePushNotifications() {
+  if (!('Notification' in window)) {
+    toast('مرورگر شما از اعلان پشتیبانی نمی‌کند', 'err');
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    if (_swRegistration) {
+      _swRegistration.showNotification('NishoVpn Gateway', {
+        body: 'سیستم اعلان‌های پنل مدیریت نیشو فعال و پایدار است.',
+        icon: '/static/img/icon-192.png',
+        badge: '/static/img/icon-192.png'
+      });
+      toast('اعلان آزمایشی ارسال شد', 'ok');
+    } else {
+      new Notification('NishoVpn Gateway', {
+        body: 'سیستم اعلان‌های پنل فعال است.',
+        icon: '/static/img/icon-192.png'
+      });
+    }
+    updateNotifUI();
+    return;
+  }
+
+  try {
+    var perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      updateNotifUI();
+      if (_swRegistration) {
+        _swRegistration.showNotification('NishoVpn Core', {
+          body: 'نوتیفیکیشن‌های سرور نیشو با موفقیت فعال شدند!',
+          icon: '/static/img/icon-192.png',
+          badge: '/static/img/icon-192.png'
+        });
+      }
+      toast('اعلان‌های سیستم با موفقیت فعال شدند', 'ok');
+    } else {
+      toast('مجوز اعلان رد شد', 'err');
+    }
+  } catch(e) {
+    toast('خطا در درخواست مجوز اعلان: ' + e.message, 'err');
+  }
 }
 
 </script>
