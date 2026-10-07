@@ -2019,7 +2019,24 @@ IMPLEMENTATION RULES
               <div class="spd-acc-body" id="acc-help-config-options">
                 <div class="px-hint" data-i18n="helpFeatureHint">این گزینه‌ها فقط به کانفیگ‌های اینباند پیش‌فرض TLS + WS افزوده می‌شوند.</div>
                 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div><strong data-i18n="helpEch">افزودن ECH</strong><div class="px-hint" data-i18n="helpEchHint">پارامتر ECH را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.</div></div><button type="button" class="ios-switch" id="help-ech-switch" role="switch" aria-checked="false" onclick="toggleHelpFeature('ech',this)"></button></div>
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0"><div><strong data-i18n="helpFf">افزودن F+F</strong><div class="px-hint" data-i18n="helpFfHint">مجموعه cipher و تنظیمات fragment نمونه را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.</div></div><button type="button" class="ios-switch" id="help-ff-switch" role="switch" aria-checked="false" onclick="toggleHelpFeature('ff',this)"></button></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div><strong data-i18n="helpFf">افزودن F+F</strong><div class="px-hint" data-i18n="helpFfHint">مجموعه cipher و تنظیمات fragment نمونه را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.</div></div><button type="button" class="ios-switch" id="help-ff-switch" role="switch" aria-checked="false" onclick="toggleHelpFeature('ff',this)"></button></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0">
+                  <div style="flex:1;min-width:0">
+                    <strong data-i18n="helpSpoof">Spoof</strong>
+                    <div class="px-hint" data-i18n="helpSpoofHint">پارامتر snispoofing را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.</div>
+                    <div class="f-r" style="gap:8px;margin-top:8px">
+                      <div class="f-g" style="margin:0">
+                        <label data-i18n="helpSpoofSni">SNI جعلی</label>
+                        <input id="help-spoof-sni" type="text" dir="ltr" placeholder="chatgpt.com" onchange="saveHelpSpoofFields()">
+                      </div>
+                      <div class="f-g" style="margin:0">
+                        <label data-i18n="helpSpoofIp">IP مقصد</label>
+                        <input id="help-spoof-ip" type="text" dir="ltr" placeholder="1.2.3.4" onchange="saveHelpSpoofFields()">
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" class="ios-switch" id="help-spoof-switch" role="switch" aria-checked="false" onclick="toggleHelpFeature('spoof',this)"></button>
+                </div>
               </div>
             </div>
           </div>
@@ -2247,7 +2264,8 @@ var I18N = {
     'helpIntro': 'راهنما و تنظیمات کانفیگ‌های پیش‌فرض', 'helpPromptHint': 'این Prompt منطق صفحه ساب فعلی را توضیح می‌دهد تا بتوانید آن را به هوش مصنوعی بدهید.',
     'helpServerEditHint': 'آدرس اتصال کانفیگ‌های پیش‌فرض TLS + WS را تغییر دهید. Host و SNI دامنه پنل باقی می‌مانند.', 'helpChatgptAddress': 'قرار دادن chatgpt.com در Address', 'helpCustomAddress': 'ذخیره آدرس سفارشی', 'helpAddressLabel': 'آدرس سفارشی', 'helpAddressPlaceholder': 'دامنه یا IP (IPv4/IPv6)', 'helpPanelIpv6': 'استفاده از IPv6 دامنه پنل', 'helpResetAddress': 'استفاده از دامنه پنل',
     'helpAddressSaved': 'آدرس کانفیگ ذخیره شد', 'helpAddressInvalid': 'دامنه یا IP معتبر وارد کنید', 'helpIpv6NotFound': 'برای دامنه پنل IPv6 پیدا نشد', 'helpSettingsSaved': 'تنظیمات ذخیره شد',
-    'helpFeatureHint': 'این گزینه‌ها فقط به کانفیگ‌های اینباند پیش‌فرض TLS + WS افزوده می‌شوند.', 'helpEch': 'افزودن ECH', 'helpEchHint': 'پارامتر ECH را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.', 'helpFf': 'افزودن F+F', 'helpFfHint': 'مجموعه cipher و تنظیمات fragment نمونه را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.',
+    'helpFeatureHint': 'این گزینه‌ها فقط به کانفیگ‌های اینباند پیش‌فرض TLS + WS افزوده می‌شوند.', 'helpEch': 'افزودن ECH', 'helpEchHint': 'پارامتر ECH را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.', 'helpFf': 'افزودن F+F', 'helpFfHint': 'مجموعه cipher و تنظیمات fragment نمونه را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند و هنگام فعال بودن، fingerprint را روی unsafe می‌گذارد.',
+    'helpSpoof': 'Spoof', 'helpSpoofHint': 'پارامتر snispoofing را به کانفیگ‌های TLS + WS پیش‌فرض اضافه می‌کند.', 'helpSpoofSni': 'SNI جعلی', 'helpSpoofIp': 'IP مقصد', 'helpSpoofMissing': 'برای فعال کردن Spoof، SNI و IP را وارد کنید', 'helpSpoofSaved': 'تنظیمات Spoof ذخیره شد',
     'advancedInboundHint': 'یک اینباند را انتخاب کنید و JSON کامل آن را ویرایش کنید. تغییرات ذخیره و برای سرویس اعمال می‌شوند.', 'advancedSelectInbound': 'انتخاب اینباند', 'advancedChooseInbound': 'انتخاب کنید', 'advancedJson': 'JSON اینباند', 'advancedSave': 'ذخیره JSON', 'advancedSaved': 'JSON اینباند ذخیره شد', 'advancedInvalidJson': 'JSON معتبر نیست', 'advancedNoInbounds': 'اینباند قابل ویرایشی وجود ندارد', 'defaultTlsWsInbound': 'پیش‌فرض TLS + WS', 'defaultHttpWsInbound': 'پیش‌فرض HTTP + WS',
     'inboundFixedHint': 'فقط اینباندهای پیش‌فرض پنل استفاده می‌شوند. WS/TLS به‌صورت خودکار با دامنه اصلی پنل آماده است؛ Reality را با دامنه و پورت خودتان تکمیل کنید (کلید pbk به‌صورت خودکار ساخته می‌شود).', 'inboundFixed': 'افزودن اینباند غیرفعال است — فقط اینباندهای پیش‌فرض.', 'inboundAuto': 'این اینباند خودکار است و نیازی به تنظیم ندارد.',
     'newUser': 'کاربر جدید', 'newInbound': 'اینباند جدید', 'domain': 'دامنه',
@@ -2314,7 +2332,8 @@ var I18N = {
     'helpIntro': 'Help and default config settings', 'helpPromptHint': 'This prompt documents the current subscription page so you can give it to an AI.',
     'helpServerEditHint': 'Change the connect address in default TLS + WS configs. Host and SNI remain the panel domain.', 'helpChatgptAddress': 'Set Address to chatgpt.com', 'helpCustomAddress': 'Save custom address', 'helpAddressLabel': 'Custom Address', 'helpAddressPlaceholder': 'Domain or IP (IPv4/IPv6)', 'helpPanelIpv6': 'Use the panel domain IPv6', 'helpResetAddress': 'Use the panel domain',
     'helpAddressSaved': 'Config address saved', 'helpAddressInvalid': 'Enter a valid domain or IP address', 'helpIpv6NotFound': 'No IPv6 address was found for the panel domain', 'helpSettingsSaved': 'Settings saved',
-    'helpFeatureHint': 'These options are added only to configs from the default TLS + WS inbound.', 'helpEch': 'Add ECH', 'helpEchHint': 'Adds the ECH parameter to default TLS + WS configs.', 'helpFf': 'Add F+F', 'helpFfHint': 'Adds the sample cipher suite and fragmentation parameters to default TLS + WS configs.',
+    'helpFeatureHint': 'These options are added only to configs from the default TLS + WS inbound.', 'helpEch': 'Add ECH', 'helpEchHint': 'Adds the ECH parameter to default TLS + WS configs.', 'helpFf': 'Add F+F', 'helpFfHint': 'Adds the sample cipher suite and fragmentation parameters to default TLS + WS configs, and sets the fingerprint to unsafe while it is on.',
+    'helpSpoof': 'Spoof', 'helpSpoofHint': 'Adds the snispoofing parameter to default TLS + WS configs.', 'helpSpoofSni': 'Fake SNI', 'helpSpoofIp': 'Target IP', 'helpSpoofMissing': 'Enter the SNI and IP to enable Spoof', 'helpSpoofSaved': 'Spoof settings saved',
     'advancedInboundHint': 'Select an inbound and edit its full JSON. Changes are saved and applied to the service.', 'advancedSelectInbound': 'Select inbound', 'advancedChooseInbound': 'Choose an inbound', 'advancedJson': 'Inbound JSON', 'advancedSave': 'Save JSON', 'advancedSaved': 'Inbound JSON saved', 'advancedInvalidJson': 'Invalid JSON', 'advancedNoInbounds': 'No editable inbounds', 'defaultTlsWsInbound': 'Default TLS + WS', 'defaultHttpWsInbound': 'Default HTTP + WS',
     'inboundFixedHint': 'Only the panel’s default inbounds are used. WS/TLS is ready automatically with the panel’s main domain; fill Reality’s domain & ports yourself (pbk is auto-generated).', 'inboundFixed': 'Adding inbounds is disabled — only the default inbounds.', 'inboundAuto': 'This inbound is automatic — nothing to configure.',
     'newUser': 'New User', 'newInbound': 'New Inbound', 'domain': 'Domain',
@@ -3714,6 +3733,9 @@ async function loadHelpSettings() {
     if ($id('help-custom-address')) $id('help-custom-address').value = s.address_override || '';
     _setHelpSwitch('help-ech-switch', s.ech_enabled);
     _setHelpSwitch('help-ff-switch', s.ff_enabled);
+    _setHelpSwitch('help-spoof-switch', s.spoof_enabled);
+    if ($id('help-spoof-sni')) $id('help-spoof-sni').value = s.spoof_sni || '';
+    if ($id('help-spoof-ip')) $id('help-spoof-ip').value = s.spoof_ip || '';
   } catch(e) { toast(e.message || t('toast.err'), 'err'); }
 }
 
@@ -3735,14 +3757,38 @@ async function saveHelpAddress(mode) {
 
 async function toggleHelpFeature(feature, el) {
   var enabled = !el.classList.contains('on');
+  // Spoof needs both values saved before it can be turned on, otherwise the
+  // config URI would carry a blank fakeSni/spoofIp.
+  if (feature === 'spoof' && enabled) {
+    var ok = await saveHelpSpoofFields();
+    if (!ok) { toast(t('helpSpoofMissing'), 'err'); return; }
+  }
   _setHelpSwitch(el.id, enabled);
-  var body = feature === 'ech' ? {ech_enabled: enabled} : {ff_enabled: enabled};
+  var body = {};
+  if (feature === 'ech') { body.ech_enabled = enabled; }
+  else if (feature === 'ff') { body.ff_enabled = enabled; }
+  else if (feature === 'spoof') { body.spoof_enabled = enabled; }
   try {
     await api('/api/help/settings', {method: 'POST', body: body});
     toast(t('helpSettingsSaved'), 'ok');
   } catch(e) {
     _setHelpSwitch(el.id, !enabled);
     toast(e.message || t('toast.err'), 'err');
+  }
+}
+
+// Persist the fake SNI and target IP. Returns false when either value is
+// missing or the server rejects it, so the caller can keep the switch off.
+async function saveHelpSpoofFields() {
+  var sni = ($id('help-spoof-sni') ? $id('help-spoof-sni').value : '').trim();
+  var ip = ($id('help-spoof-ip') ? $id('help-spoof-ip').value : '').trim();
+  if (!sni || !ip) return false;
+  try {
+    await api('/api/help/settings', {method: 'POST', body: {spoof_sni: sni, spoof_ip: ip}});
+    return true;
+  } catch(e) {
+    toast(e.message || t('toast.err'), 'err');
+    return false;
   }
 }
 

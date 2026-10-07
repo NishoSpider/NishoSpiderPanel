@@ -2337,6 +2337,33 @@ _FF_CIPHER_SUITES = (
 )
 
 
+# SNI spoofing payloads are written with a space before the colon and a newline
+# per field; clients re-parsing this JSON expect that exact layout.
+_SPOOF_DEFAULT_SNI = "chatgpt.com"
+_SPOOF_DEFAULT_IP = "1.2.3.4"
+
+
+def _spoof_payload(fake_sni: str, spoof_ip: str) -> str:
+    """Build the snispoofing JSON in the layout clients expect."""
+    return ("{\n"
+            '  "active" : true,\n'
+            f'  "fakeSni" : {json.dumps(fake_sni, ensure_ascii=False)},\n'
+            f'  "spoofIp" : {json.dumps(spoof_ip, ensure_ascii=False)},\n'
+            '  "targetPort" : 0\n'
+            "}")
+
+
+def _ws_fingerprint(is_default_tls_ws: bool) -> str:
+    """F+F runs with `unsafe` so the fragmented handshake is not fingerprinted.
+
+    Only the default TLS+WS inbound carries the F+F option; every other inbound
+    keeps the normal chrome fingerprint.
+    """
+    if is_default_tls_ws and SETTINGS.get("default_tls_ws_ff_enabled"):
+        return "unsafe"
+    return "chrome"
+
+
 def _default_tls_ws_feature_params() -> str:
     params = []
     if SETTINGS.get("default_tls_ws_ech_enabled"):
@@ -2350,6 +2377,12 @@ def _default_tls_ws_feature_params() -> str:
         }
         params.append("cs=" + quote(_FF_CIPHER_SUITES, safe=""))
         params.append("fm=" + quote(json.dumps(fragment, separators=(",", ":")), safe=""))
+    if SETTINGS.get("default_tls_ws_spoof_enabled"):
+        fake_sni = str(SETTINGS.get("default_tls_ws_spoof_sni") or _SPOOF_DEFAULT_SNI).strip() or _SPOOF_DEFAULT_SNI
+        spoof_ip = str(SETTINGS.get("default_tls_ws_spoof_ip") or _SPOOF_DEFAULT_IP).strip() or _SPOOF_DEFAULT_IP
+        params.append("allowInsecure=0")
+        params.append("snispoofing=" + quote(_spoof_payload(fake_sni, spoof_ip), safe=""))
+        params.append("insecure=0")
     return "&" + "&".join(params) if params else ""
 
 
@@ -2734,7 +2767,7 @@ def generate_user_config(user_id: str, user: dict, inbound_id: str = None, addr:
         else:
             params = (f"encryption=none&security={security}&type=ws"
                       f"&host={quote(tls_host, safe='')}&path={quote(ws_path, safe='')}&sni={quote(tls_host, safe='')}"
-                      f"&fp=chrome&alpn=http/1.1")
+                      f"&fp={_ws_fingerprint(is_default_tls_ws_inbound(inbound))}&alpn=http/1.1")
     if is_default_tls_ws_inbound(inbound):
         params += _default_tls_ws_feature_params()
     return f"vless://{config_uuid}@{_url_authority_host(host)}:{port}?{params}#{remark}"
@@ -6308,6 +6341,30 @@ def _normalize_config_address(raw: str) -> str:
     return value.rstrip(".").lower()
 
 
+def _normalize_spoof_sni(raw) -> str:
+    """The fake SNI sent by the client — a plain hostname, no scheme or path."""
+    value = str(raw or "").strip()
+    if not value:
+        raise HTTPException(status_code=400, detail="Spoof SNI is required")
+    if len(value) > 253 or any(ch.isspace() for ch in value) or any(ch in value for ch in "/?#@"):
+        raise HTTPException(status_code=400, detail="Enter a hostname for the spoof SNI")
+    labels = value.rstrip(".").split(".")
+    if not labels or any(not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?", label) for label in labels):
+        raise HTTPException(status_code=400, detail="Enter a valid hostname for the spoof SNI")
+    return value.rstrip(".").lower()
+
+
+def _normalize_spoof_ip(raw) -> str:
+    """The spoof target must be a literal IP address — not a hostname."""
+    value = str(raw or "").strip().strip("[]")
+    if not value:
+        raise HTTPException(status_code=400, detail="Spoof IP is required")
+    try:
+        return str(ipaddress.ip_address(value))
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Enter a valid IPv4 or IPv6 address for the spoof IP")
+
+
 async def _panel_domain_ipv6() -> str:
     domain = _safe_host(SETTINGS.get("domain"), get_host()).strip().strip("[]")
     if not domain:
@@ -6342,6 +6399,9 @@ async def get_help_settings(_=Depends(require_auth)):
             "address_mode": str(SETTINGS.get("default_tls_ws_address_mode") or "panel"),
             "ech_enabled": bool(SETTINGS.get("default_tls_ws_ech_enabled")),
             "ff_enabled": bool(SETTINGS.get("default_tls_ws_ff_enabled")),
+            "spoof_enabled": bool(SETTINGS.get("default_tls_ws_spoof_enabled")),
+            "spoof_sni": str(SETTINGS.get("default_tls_ws_spoof_sni") or _SPOOF_DEFAULT_SNI),
+            "spoof_ip": str(SETTINGS.get("default_tls_ws_spoof_ip") or _SPOOF_DEFAULT_IP),
         }
 
 
@@ -6369,11 +6429,22 @@ async def update_help_settings(request: Request, _=Depends(require_auth)):
             SETTINGS["default_tls_ws_ech_enabled"] = bool(body["ech_enabled"])
         if "ff_enabled" in body:
             SETTINGS["default_tls_ws_ff_enabled"] = bool(body["ff_enabled"])
+        if "spoof_enabled" in body:
+            SETTINGS["default_tls_ws_spoof_enabled"] = bool(body["spoof_enabled"])
+        # The spoof SNI is a hostname; the spoof IP must be a literal address.
+        # Both are validated on save so a bad value can never reach a config URI.
+        if "spoof_sni" in body:
+            SETTINGS["default_tls_ws_spoof_sni"] = _normalize_spoof_sni(body.get("spoof_sni"))
+        if "spoof_ip" in body:
+            SETTINGS["default_tls_ws_spoof_ip"] = _normalize_spoof_ip(body.get("spoof_ip"))
         saved = {
             "address_override": str(SETTINGS.get("default_tls_ws_address_override") or ""),
             "address_mode": str(SETTINGS.get("default_tls_ws_address_mode") or "panel"),
             "ech_enabled": bool(SETTINGS.get("default_tls_ws_ech_enabled")),
             "ff_enabled": bool(SETTINGS.get("default_tls_ws_ff_enabled")),
+            "spoof_enabled": bool(SETTINGS.get("default_tls_ws_spoof_enabled")),
+            "spoof_sni": str(SETTINGS.get("default_tls_ws_spoof_sni") or _SPOOF_DEFAULT_SNI),
+            "spoof_ip": str(SETTINGS.get("default_tls_ws_spoof_ip") or _SPOOF_DEFAULT_IP),
         }
     await save_state()
     return {"ok": True, **saved}
