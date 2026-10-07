@@ -2143,16 +2143,18 @@ IMPLEMENTATION RULES
     <div class="f-g"><label data-i18n="inboundName">نام اینباند</label><input type="text" id="ib-name" data-i18n-placeholder="inboundName" placeholder="خالی = تصادفی"></div>
     <div class="f-r">
       <div class="f-g"><label data-i18n="inboundType">Inbound Type</label><select id="ib-inbound-type" onchange="onInboundTypeChange()">
-        <option value="config">Config</option>
+        <option value="config">VLESS (TLS / Reality / WS / XHTTP)</option>
+        <option value="hysteria2">⚡ Hysteria 2 (UDP/QUIC - ضد پکت‌لاس همراه)</option>
+        <option value="tuic">🚀 TUIC v5 (QUIC 0-RTT + BBR - همراه اول/ایرانسل)</option>
         <option value="telegram">Telegram Proxy</option>
       </select></div>
     </div>
 
     <!-- Internal listen port: the port the server/Xray actually listens on. -->
     <div class="f-g" id="ib-internal-port-wrap">
-      <label>Internal Port (پورت داخلی)</label>
+      <label>Internal Port (پورت داخلی سرور)</label>
       <input type="number" id="ib-port" value="443" min="1" max="65535" dir="ltr" placeholder="443">
-      <div class="px-hint" style="font-size:10px">این پورت پورت واقعی Listen سرور است.</div>
+      <div class="px-hint" style="font-size:10px">پورت واقعی بازشده روی سرور (برای UDP/QUIC معمولاً 443 یا پورت تصادفی).</div>
     </div>
 
     <div id="ib-tls-fields">
@@ -2188,6 +2190,120 @@ IMPLEMENTATION RULES
       <button type="button" class="btn btn-sm btn-b" onclick="generateRealityKeysUI()" style="width:100%;margin-bottom:10px"><span data-i18n="genRealityKey">تولید کلید Reality (x25519)</span></button>
       <div class="f-g"><label data-i18n="shortIds">Short IDs</label><div style="display:flex;gap:6px"><input type="text" id="ib-shortids" value="" dir="ltr" data-i18n-placeholder="hex8" placeholder="هگز ۸ رقمی — خالی = تصادفی" style="flex:1"><button type="button" class="btn btn-sm" onclick="generateShortId()" style="white-space:nowrap"><span data-i18n="generate">+ تولید</span></button></div></div>
       <div class="f-g"><label data-i18n="spiderx">SpiderX</label><input type="text" id="ib-spiderx" dir="ltr" placeholder="/" value="/"></div>
+    </div>
+
+    <!-- Hysteria 2 fields (QUIC / UDP) -->
+    <div id="ib-hy2-fields" class="hidden">
+      <div class="divider"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:12px;color:var(--neon);font-weight:700;display:flex;align-items:center;gap:6px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          تنظیمات Hysteria 2 (UDP / QUIC)
+        </div>
+        <span class="badge badge-r" style="font-size:10px;font-weight:600">⚡ ضد پکت‌لاس ایرانسل / همراه‌اول</span>
+      </div>
+      <div class="f-g">
+        <label>دامنه یا آی‌پی سرور (Domain / Host)</label>
+        <input type="text" id="ib-hy2-domain" dir="ltr" placeholder="مثال: hy2.example.com یا آی‌پی سرور">
+        <div class="px-hint" style="font-size:10px">دامنه با گواهینامه معتبر یا آی‌پی سرور برای اتصال کلاینت.</div>
+      </div>
+      <div class="f-r">
+        <div class="f-g">
+          <label>پورت خارجی (External Port)</label>
+          <input type="number" id="ib-hy2-extport" value="443" min="1" max="65535" dir="ltr" placeholder="443">
+        </div>
+        <div class="f-g">
+          <label>SNI (Server Name TLS)</label>
+          <input type="text" id="ib-hy2-sni" dir="ltr" placeholder="خالی = همان دامنه سرور">
+        </div>
+      </div>
+      <div class="f-r">
+        <div class="f-g">
+          <label>حالت استتار (Obfuscation)</label>
+          <select id="ib-hy2-obfs">
+            <option value="salamander">Salamander (استاندارد Hy2)</option>
+            <option value="">بدون Obfs (None)</option>
+          </select>
+        </div>
+        <div class="f-g">
+          <label>رمز استتار (Obfs Password)</label>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="ib-hy2-obfspass" dir="ltr" placeholder="رمز دلخواه یا خالی" style="flex:1">
+            <button type="button" class="btn btn-sm btn-b" onclick="genHy2ObfsPass()" title="تولید رمز تصادفی" style="white-space:nowrap">تولید</button>
+          </div>
+        </div>
+      </div>
+      <div class="f-g">
+        <label>محدوده پورت هاپینگ (Port Hopping / Multi-Port)</label>
+        <input type="text" id="ib-hy2-mport" dir="ltr" placeholder="مثال: 20000-50000 یا 443,8443,2053">
+        <div class="px-hint" style="font-size:10px">پورت هاپینگ بازه پورت‌های UDP را تغییر می‌دهد تا فیلترچی نتواند پورت خاص را مسدود کند.</div>
+      </div>
+      <div class="f-g" style="margin-top:6px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;user-select:none">
+          <input type="checkbox" id="ib-hy2-insecure" style="width:16px;height:16px;cursor:pointer">
+          <span>نادیده گرفتن گواهینامه نامعتبر (Allow Insecure / Self-signed)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- TUIC v5 fields (IETF QUIC 0-RTT) -->
+    <div id="ib-tuic-fields" class="hidden">
+      <div class="divider"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:12px;color:var(--neon);font-weight:700;display:flex;align-items:center;gap:6px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/></svg>
+          تنظیمات TUIC v5 (QUIC 0-RTT + BBR)
+        </div>
+        <span class="badge badge-g" style="font-size:10px;font-weight:600">🚀 بدون تاخیر 0-RTT با BBR</span>
+      </div>
+      <div class="f-g">
+        <label>دامنه یا آی‌پی سرور (Domain / Host)</label>
+        <input type="text" id="ib-tuic-domain" dir="ltr" placeholder="مثال: tuic.example.com یا آی‌پی سرور">
+        <div class="px-hint" style="font-size:10px">دامنه با گواهینامه معتبر یا آی‌پی مستقیم UDP سرور شما.</div>
+      </div>
+      <div class="f-r">
+        <div class="f-g">
+          <label>پورت خارجی (External Port)</label>
+          <input type="number" id="ib-tuic-extport" value="443" min="1" max="65535" dir="ltr" placeholder="443">
+        </div>
+        <div class="f-g">
+          <label>SNI (Server Name TLS)</label>
+          <input type="text" id="ib-tuic-sni" dir="ltr" placeholder="خالی = همان دامنه سرور">
+        </div>
+      </div>
+      <div class="f-r">
+        <div class="f-g">
+          <label>کنترل ازدحام (Congestion Control)</label>
+          <select id="ib-tuic-cc">
+            <option value="bbr" selected>BBR (توصیه شده برای همراه اول و ایرانسل)</option>
+            <option value="cubic">Cubic</option>
+            <option value="new_reno">New Reno</option>
+          </select>
+        </div>
+        <div class="f-g">
+          <label>حالت رله UDP (UDP Relay Mode)</label>
+          <select id="ib-tuic-relay">
+            <option value="native" selected>native (بالاترین سرعت / مستقیم)</option>
+            <option value="quic">quic (کپسوله‌شده در QUIC Stream)</option>
+          </select>
+        </div>
+      </div>
+      <div class="f-r">
+        <div class="f-g">
+          <label>ALPN (معمولاً h3)</label>
+          <input type="text" id="ib-tuic-alpn" value="h3" dir="ltr" placeholder="h3">
+        </div>
+        <div class="f-g">
+          <label>رمز اختصاصی (Custom Token - اختیاری)</label>
+          <input type="text" id="ib-tuic-pass" dir="ltr" placeholder="خالی = شناسه UUID کاربر">
+        </div>
+      </div>
+      <div class="f-g" style="margin-top:6px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;user-select:none">
+          <input type="checkbox" id="ib-tuic-insecure" style="width:16px;height:16px;cursor:pointer">
+          <span>نادیده گرفتن گواهینامه نامعتبر (Allow Insecure)</span>
+        </label>
+      </div>
     </div>
 
     <!-- Telegram Proxy fields -->
@@ -3213,6 +3329,18 @@ function _ibDetail(ib) {
   } else if (proto === 'worker') {
     d += t('domain') + ': ' + (ib.external_domain || '—') + '<br>';
     d += t('port') + ': 443 (Worker)';
+  } else if (proto === 'hysteria2' || proto === 'hy2') {
+    var hs = ib.hysteria2_settings || {};
+    d += 'Host: ' + (ib.external_domain || ib.domain || '—') + '<br>';
+    d += 'Port: ' + (ib.external_port || ib.port || '443') + (hs.ports ? ' (Hopping: ' + hs.ports + ')' : '') + '<br>';
+    d += 'SNI: ' + (ib.sni || ib.external_domain || '—') + '<br>';
+    d += 'پروتکل: Hysteria 2 (UDP/QUIC) | استتار: ' + (hs.obfs || 'none') + (hs.insecure ? ' | Insecure: Yes' : '');
+  } else if (proto === 'tuic' || proto === 'tuic5' || proto === 'tuicv5') {
+    var ts = ib.tuic_settings || {};
+    d += 'Host: ' + (ib.external_domain || ib.domain || '—') + '<br>';
+    d += 'Port: ' + (ib.external_port || ib.port || '443') + '<br>';
+    d += 'SNI: ' + (ib.sni || ib.external_domain || '—') + '<br>';
+    d += 'پروتکل: TUIC v5 (QUIC 0-RTT) | CC: ' + (ts.congestion_control || 'bbr').toUpperCase() + ' | رله: ' + (ts.udp_relay_mode || 'native');
   } else if (ib.protocol === 'reality' || ib.security === 'reality') {
     d += t('domain') + ': ' + (ib.external_domain || '—') + '<br>';
     d += t('port') + ': ' + (ib.port || '—');
@@ -3220,7 +3348,7 @@ function _ibDetail(ib) {
     d += t('domain') + ': ' + (ib.external_domain || '—') + ' (خودکار)<br>';
     d += t('port') + ': 443 / relay';
   }
-  if (proto !== 'telegram') {
+  if (proto !== 'telegram' && proto !== 'hysteria2' && proto !== 'hy2' && proto !== 'tuic' && proto !== 'tuic5' && proto !== 'tuicv5') {
     d += '<br>' + t('secNetwork') + ': ' + (ib.network || 'tcp') + ' | ' + t('security') + ': ' + (ib.security || 'none');
   }
   d += '<br>' + t('usersCount') + ': ' + (ib.users_count || 0);
@@ -3236,11 +3364,21 @@ function renderInbounds() {
     var ib = ALL_IB[i];
     var proto = (ib.protocol || 'vless').toLowerCase();
     var inboundTitle = inboundDisplayName(ib);
-    var protoBadge = proto === 'reality' ? 'badge-p' : 'badge-b';
+    var protoBadge = 'badge-b';
+    var badgeLabel = proto.toUpperCase();
+    if (proto === 'reality') {
+      protoBadge = 'badge-p';
+    } else if (proto === 'hysteria2' || proto === 'hy2') {
+      protoBadge = 'badge-r';
+      badgeLabel = 'HY2 / UDP';
+    } else if (proto === 'tuic' || proto === 'tuic5' || proto === 'tuicv5') {
+      protoBadge = 'badge-g';
+      badgeLabel = 'TUIC v5 / QUIC';
+    }
     html += '<div class="spd-acc">' +
       '<button type="button" class="spd-acc-head" onclick="spdToggleAcc(\'ia-' + ib.inbound_id + '\',this)" aria-expanded="false">' +
         '<span class="spd-acc-title"><strong>' + esc(inboundTitle) + '</strong></span>' +
-        '<span class="spd-acc-badges"><span class="badge ' + protoBadge + '">' + proto.toUpperCase() + '</span></span>' +
+        '<span class="spd-acc-badges"><span class="badge ' + protoBadge + '">' + badgeLabel + '</span></span>' +
         '<span class="material-symbols-outlined spd-acc-arrow">expand_more</span>' +
       '</button>' +
       '<div class="spd-acc-body" id="acc-ia-' + ib.inbound_id + '">' +
@@ -3310,11 +3448,21 @@ function onInboundTypeChange() {
   var type = $id('ib-inbound-type').value;
   var isTg = type === 'telegram';
   var isConfig = type === 'config';
+  var isHy2 = type === 'hysteria2';
+  var isTuic = type === 'tuic';
   toggleById('ib-tls-fields', isConfig);
   toggleById('ib-net-wrap', isConfig);
-  toggleById('ib-internal-port-wrap', isConfig);
+  toggleById('ib-internal-port-wrap', isConfig || isHy2 || isTuic);
   toggleById('ib-tg-fields', isTg);
+  toggleById('ib-hy2-fields', isHy2);
+  toggleById('ib-tuic-fields', isTuic);
   if (isTg) loadTelegramRailwayInfo();
+}
+
+function genHy2ObfsPass() {
+  var hex = ''; for(var i=0;i<12;i++) hex += '0123456789abcdef'[Math.floor(Math.random()*16)];
+  var el = $id('ib-hy2-obfspass');
+  if (el) el.value = hex;
 }
 
 function onNetworkChange() {
@@ -3461,6 +3609,26 @@ function openCreateInbound() {
   $id('ib-xhttppath').value = '/';
   $id('ib-xhttp-mode').value = 'auto';
   $id('ib-grpc-svc').value = 'grpc';
+
+  // Hysteria 2 defaults
+  if ($id('ib-hy2-domain')) $id('ib-hy2-domain').value = '';
+  if ($id('ib-hy2-extport')) $id('ib-hy2-extport').value = '443';
+  if ($id('ib-hy2-sni')) $id('ib-hy2-sni').value = '';
+  if ($id('ib-hy2-obfs')) $id('ib-hy2-obfs').value = 'salamander';
+  if ($id('ib-hy2-obfspass')) $id('ib-hy2-obfspass').value = '';
+  if ($id('ib-hy2-mport')) $id('ib-hy2-mport').value = '';
+  if ($id('ib-hy2-insecure')) $id('ib-hy2-insecure').checked = false;
+
+  // TUIC v5 defaults
+  if ($id('ib-tuic-domain')) $id('ib-tuic-domain').value = '';
+  if ($id('ib-tuic-extport')) $id('ib-tuic-extport').value = '443';
+  if ($id('ib-tuic-sni')) $id('ib-tuic-sni').value = '';
+  if ($id('ib-tuic-cc')) $id('ib-tuic-cc').value = 'bbr';
+  if ($id('ib-tuic-relay')) $id('ib-tuic-relay').value = 'native';
+  if ($id('ib-tuic-alpn')) $id('ib-tuic-alpn').value = 'h3';
+  if ($id('ib-tuic-pass')) $id('ib-tuic-pass').value = '';
+  if ($id('ib-tuic-insecure')) $id('ib-tuic-insecure').checked = false;
+
   $id('ib-submit').textContent = t('createInbound');
   onInboundTypeChange();
   onSecurityChange();
@@ -3471,14 +3639,16 @@ function openCreateInbound() {
 async function editInbound(iid) {
   var ib = ALL_IB.find(function(x) { return x.inbound_id === iid; });
   if (!ib) return;
-  var isReality = (ib.protocol === 'reality' || ib.security === 'reality');
-  var isTg = (ib.protocol || '').toLowerCase() === 'telegram';
-  var isNode = ((ib.protocol || '').toLowerCase() === 'node' || ib.inbound_id === 'Node' || ib.system === true);
+  var proto = (ib.protocol || '').toLowerCase();
+  var isHy2 = (proto === 'hysteria2' || proto === 'hy2');
+  var isTuic = (proto === 'tuic' || proto === 'tuic5' || proto === 'tuicv5');
+  var isReality = (proto === 'reality' || (ib.security || '').toLowerCase() === 'reality');
+  var isTg = proto === 'telegram';
+  var isNode = (proto === 'node' || ib.inbound_id === 'Node' || ib.system === true);
   var modal = $id('mod-inbound');
   $id('ib-title').textContent = t('editInbound');
   $id('ib-id').value = iid;
   $id('ib-name').value = ib.name || '';
-  $id('ib-inbound-type').value = isTg ? 'telegram' : 'config';
   $id('ib-sni').value = ib.sni || 'is1-ssl.mzstatic.com';
   var rs = ib.reality_settings || {};
   $id('ib-privkey').value = (rs || {}).private_key || '';
@@ -3520,6 +3690,35 @@ async function editInbound(iid) {
     $id('ib-submit').textContent = t('updateInbound');
     onInboundTypeChange();
     openModal('mod-inbound');
+  } else if (isHy2) {
+    $id('ib-inbound-type').value = 'hysteria2';
+    $id('ib-port').value = ib.port || 443;
+    if ($id('ib-hy2-domain')) $id('ib-hy2-domain').value = ib.external_domain || ib.domain || '';
+    if ($id('ib-hy2-extport')) $id('ib-hy2-extport').value = ib.external_port || ib.port || 443;
+    if ($id('ib-hy2-sni')) $id('ib-hy2-sni').value = ib.sni || '';
+    var hs = ib.hysteria2_settings || {};
+    if ($id('ib-hy2-obfs')) $id('ib-hy2-obfs').value = hs.obfs || 'salamander';
+    if ($id('ib-hy2-obfspass')) $id('ib-hy2-obfspass').value = hs.obfs_password || hs.obfs_pass || '';
+    if ($id('ib-hy2-mport')) $id('ib-hy2-mport').value = hs.ports || hs.mport || '';
+    if ($id('ib-hy2-insecure')) $id('ib-hy2-insecure').checked = !!(hs.insecure || ib.allow_insecure);
+    $id('ib-submit').textContent = t('updateInbound');
+    onInboundTypeChange();
+    openModal('mod-inbound');
+  } else if (isTuic) {
+    $id('ib-inbound-type').value = 'tuic';
+    $id('ib-port').value = ib.port || 443;
+    if ($id('ib-tuic-domain')) $id('ib-tuic-domain').value = ib.external_domain || ib.domain || '';
+    if ($id('ib-tuic-extport')) $id('ib-tuic-extport').value = ib.external_port || ib.port || 443;
+    if ($id('ib-tuic-sni')) $id('ib-tuic-sni').value = ib.sni || '';
+    var ts = ib.tuic_settings || {};
+    if ($id('ib-tuic-cc')) $id('ib-tuic-cc').value = ts.congestion_control || 'bbr';
+    if ($id('ib-tuic-relay')) $id('ib-tuic-relay').value = ts.udp_relay_mode || 'native';
+    if ($id('ib-tuic-alpn')) $id('ib-tuic-alpn').value = ts.alpn || 'h3';
+    if ($id('ib-tuic-pass')) $id('ib-tuic-pass').value = ts.password || '';
+    if ($id('ib-tuic-insecure')) $id('ib-tuic-insecure').checked = !!(ts.insecure || ib.allow_insecure);
+    $id('ib-submit').textContent = t('updateInbound');
+    onInboundTypeChange();
+    openModal('mod-inbound');
   } else if (isReality) {
     // Reality: user fills domain + ports; pbk is auto-generated.
     $id('ib-security').value = 'reality';
@@ -3555,7 +3754,10 @@ async function submitInbound(e) {
   btn.textContent = t('saving');
   var iid = $id('ib-id').value;
   var type = $id('ib-inbound-type').value;
-  var proto = type === 'telegram' ? 'telegram' : 'vless';
+  var proto = 'vless';
+  if (type === 'telegram') proto = 'telegram';
+  else if (type === 'hysteria2') proto = 'hysteria2';
+  else if (type === 'tuic') proto = 'tuic';
 
   // Collect selected node IDs for Inbound "Node"
   var nodeIds = [];
@@ -3586,10 +3788,46 @@ async function submitInbound(e) {
       external_port: externalPort,
       external_domain: $id('ib-tg-domain').value || ''
     };
-    // Use internal_port as the listening port
     body.port = internalPort;
     body.external_port = externalPort;
     body.external_domain = $id('ib-tg-domain').value || '';
+  } else if (type === 'hysteria2') {
+    var internalPort = parseInt($id('ib-port').value, 10) || 443;
+    var extPort = parseInt($id('ib-hy2-extport').value, 10) || internalPort;
+    var extDomain = ($id('ib-hy2-domain').value || '').trim();
+    var sni = ($id('ib-hy2-sni').value || extDomain).trim();
+    body.port = internalPort;
+    body.external_port = extPort;
+    body.external_domain = extDomain;
+    body.sni = sni;
+    body.network = 'udp';
+    body.security = 'tls';
+    body.allow_insecure = $id('ib-hy2-insecure').checked;
+    body.hysteria2_settings = {
+      obfs: $id('ib-hy2-obfs').value,
+      obfs_password: ($id('ib-hy2-obfspass').value || '').trim(),
+      ports: ($id('ib-hy2-mport').value || '').trim(),
+      insecure: $id('ib-hy2-insecure').checked
+    };
+  } else if (type === 'tuic') {
+    var internalPort = parseInt($id('ib-port').value, 10) || 443;
+    var extPort = parseInt($id('ib-tuic-extport').value, 10) || internalPort;
+    var extDomain = ($id('ib-tuic-domain').value || '').trim();
+    var sni = ($id('ib-tuic-sni').value || extDomain).trim();
+    body.port = internalPort;
+    body.external_port = extPort;
+    body.external_domain = extDomain;
+    body.sni = sni;
+    body.network = 'quic';
+    body.security = 'tls';
+    body.allow_insecure = $id('ib-tuic-insecure').checked;
+    body.tuic_settings = {
+      congestion_control: $id('ib-tuic-cc').value,
+      udp_relay_mode: $id('ib-tuic-relay').value,
+      alpn: ($id('ib-tuic-alpn').value || 'h3').trim(),
+      password: ($id('ib-tuic-pass').value || '').trim(),
+      insecure: $id('ib-tuic-insecure').checked
+    };
   } else {
     // VLESS / TLS / Reality
     var network = $id('ib-network').value;
@@ -5148,6 +5386,8 @@ function cuInboundType(ib) {
   var p = (ib && ib.protocol || '').toLowerCase();
   if (p === 'worker') return 'worker';
   if (p === 'telegram') return 'telegram';
+  if (p === 'hysteria2' || p === 'hy2') return 'hysteria2';
+  if (p === 'tuic' || p === 'tuic5' || p === 'tuicv5') return 'tuic';
   if (p === 'reality' || (ib && ib.security || '').toLowerCase() === 'reality') return 'reality';
   return 'tls';
 }
@@ -5216,9 +5456,21 @@ function cuRenderInboundOpts() {
     var selected = cuInboundState.picks[id] === true;
     var type = cuInboundType(ib);
     var proto = (ib.protocol || 'vless').toUpperCase();
-    var meta = proto + ' · ' + (ib.network || 'ws').toUpperCase() + ' · ' + (ib.security || 'tls').toUpperCase();
+    var meta = proto;
+    if (type === 'hysteria2') {
+      meta += ' · UDP · QUIC BBR';
+    } else if (type === 'tuic') {
+      meta += ' · QUIC 0-RTT · BBR';
+    } else {
+      meta += ' · ' + (ib.network || 'ws').toUpperCase() + ' · ' + (ib.security || 'tls').toUpperCase();
+    }
+    var icon = (type === 'worker' ? 'bolt' :
+                type === 'reality' ? 'shield' :
+                type === 'hysteria2' ? 'flash_on' :
+                type === 'tuic' ? 'rocket_launch' :
+                type === 'telegram' ? 'send' : 'cloud');
     html += '<div class="ib-pick' + (selected ? ' selected' : '') + '" data-id="' + esc(id) + '" onclick="cuToggleIbPick(this)">' +
-      '<div class="ib-pick-ic"><span class="material-symbols-outlined">' + (type === 'worker' ? 'bolt' : type === 'reality' ? 'shield' : 'cloud') + '</span></div>' +
+      '<div class="ib-pick-ic"><span class="material-symbols-outlined">' + icon + '</span></div>' +
       '<div class="ib-pick-info">' +
         '<div class="ib-pick-name">' + esc(inboundDisplayName(ib)) + '</div>' +
         '<div class="ib-pick-meta">' + esc(meta) + '</div>' +

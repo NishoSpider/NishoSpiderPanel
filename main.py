@@ -203,7 +203,7 @@ def _save_scanned_ips(ctype: str, entries: list, replace: bool = False) -> list:
 def _is_real_listener_inbound(ib: dict) -> bool:
     proto = str(ib.get("protocol") or "").lower()
     sec = str(ib.get("security") or "").lower()
-    return proto == "telegram" or proto == "reality" or sec == "reality"
+    return proto in ("telegram", "reality", "hysteria2", "tuic") or sec == "reality"
 
 
 def _listener_port_in_use(port: int, exclude_id: str | None = None) -> str | None:
@@ -2573,7 +2573,7 @@ def generate_user_config(user_id: str, user: dict, inbound_id: str = None, addr:
     # Never generate a client-facing config until a real public hostname is known.
     # Returning an empty config lets the caller/UI retry while the resolver works.
     panel_domain = _safe_host(SETTINGS.get("domain"), get_host())
-    if not panel_domain and proto not in ("worker", "reality", "telegram"):
+    if not panel_domain and proto not in ("worker", "reality", "telegram", "hysteria2", "hy2", "tuic", "tuic5", "tuicv5"):
         return ""
 
     # Optional custom-IP address override (only the connect address changes).
@@ -2598,6 +2598,57 @@ def generate_user_config(user_id: str, user: dict, inbound_id: str = None, addr:
         if not inbound:
             return ""
         return generate_telegram_proxy_link(user_id, user, inbound, remark_tag)
+
+    # ── HYSTERIA 2 (High-Performance UDP / QUIC with Salamander Obfs) ──
+    if proto in ("hysteria2", "hy2"):
+        if not inbound:
+            host = addr_ip or panel_domain
+            port = addr_port or "443"
+            sni = panel_domain
+            return f"hysteria2://{config_uuid}@{host}:{port}/?sni={quote(sni)}&insecure=0#{remark}"
+
+        inbound_domain = str(inbound.get("external_domain") or inbound.get("domain") or "").strip()
+        host = addr_ip or _safe_host(inbound_domain, panel_domain, get_host())
+        port = addr_port or str(inbound.get("external_port") or inbound.get("port") or 443)
+        sni = str(inbound.get("sni") or inbound_domain or panel_domain).strip()
+        hs = inbound.get("hysteria2_settings") or {}
+        insecure = "1" if (hs.get("insecure") or inbound.get("allow_insecure")) else "0"
+
+        params = [f"sni={quote(sni)}", f"insecure={insecure}"]
+        obfs = str(hs.get("obfs") or "").strip()
+        obfs_pass = str(hs.get("obfs_password") or hs.get("obfs_pass") or "").strip()
+        if obfs:
+            params.append(f"obfs={quote(obfs)}")
+            if obfs_pass:
+                params.append(f"obfs-password={quote(obfs_pass)}")
+        mport = str(hs.get("ports") or hs.get("mport") or "").strip()
+        if mport:
+            params.append(f"mport={quote(mport)}")
+
+        return f"hysteria2://{config_uuid}@{host}:{port}/?{'&'.join(params)}#{remark}"
+
+    # ── TUIC v5 (0-RTT IETF QUIC with BBR Congestion Control) ──
+    if proto in ("tuic", "tuic5", "tuicv5"):
+        if not inbound:
+            host = addr_ip or panel_domain
+            port = addr_port or "443"
+            sni = panel_domain
+            return f"tuic://{config_uuid}:{config_uuid}@{host}:{port}?congestion_control=bbr&udp_relay_mode=native&alpn=h3&sni={quote(sni)}&allow_insecure=0#{remark}"
+
+        inbound_domain = str(inbound.get("external_domain") or inbound.get("domain") or "").strip()
+        host = addr_ip or _safe_host(inbound_domain, panel_domain, get_host())
+        port = addr_port or str(inbound.get("external_port") or inbound.get("port") or 443)
+        sni = str(inbound.get("sni") or inbound_domain or panel_domain).strip()
+        ts = inbound.get("tuic_settings") or {}
+        cc = str(ts.get("congestion_control") or "bbr").strip().lower()
+        udp_mode = str(ts.get("udp_relay_mode") or "native").strip().lower()
+        alpn = str(ts.get("alpn") or "h3").strip()
+        insecure = "1" if (ts.get("insecure") or inbound.get("allow_insecure")) else "0"
+        token = str(ts.get("password") or config_uuid).strip()
+
+        params = (f"congestion_control={quote(cc)}&udp_relay_mode={quote(udp_mode)}"
+                  f"&alpn={quote(alpn)}&sni={quote(sni)}&allow_insecure={insecure}")
+        return f"tuic://{config_uuid}:{token}@{host}:{port}?{params}#{remark}" 
 
     # ── REALITY (served by Xray core) ──
     if proto == "reality" or sec == "reality":
@@ -4660,7 +4711,7 @@ async def create_inbound(request: Request, auth=Depends(require_replication_auth
     _raw_ib = (body.get("name") or "").strip()[:60]
     name = _raw_ib or f"inbound-{secrets.token_hex(3)}"
     protocol = str(body.get("protocol") or "vless").lower()
-    if protocol not in ("vless", "vmess", "trojan", "reality", "worker", "telegram", "node"):
+    if protocol not in ("vless", "vmess", "trojan", "reality", "worker", "telegram", "node", "hysteria2", "hy2", "tuic", "tuic5", "tuicv5"):
         raise HTTPException(status_code=400, detail="Invalid protocol")
     if protocol == "node":
         selected = [str(x).strip() for x in (body.get("enabled_node_ids") or body.get("node_ids") or []) if str(x).strip()]
@@ -4711,6 +4762,8 @@ async def create_inbound(request: Request, auth=Depends(require_replication_auth
     ws_settings = body.get("ws_settings", {}) if isinstance(body.get("ws_settings"), dict) else {}
     grpc_settings = body.get("grpc_settings", {}) if isinstance(body.get("grpc_settings"), dict) else {}
     telegram_settings = body.get("telegram_settings", {}) if isinstance(body.get("telegram_settings"), dict) else {}
+    hysteria2_settings = body.get("hysteria2_settings", {}) if isinstance(body.get("hysteria2_settings"), dict) else {}
+    tuic_settings = body.get("tuic_settings", {}) if isinstance(body.get("tuic_settings"), dict) else {}
     if protocol == "telegram":
         # Telegram Proxy does not use Xray Reality fields.
         sni = ""
@@ -4765,6 +4818,13 @@ async def create_inbound(request: Request, auth=Depends(require_replication_auth
             external_domain = domain or CONFIG.get("host", "")
         if network not in ("tcp", "xhttp", "grpc"):
             network = "tcp"
+    elif protocol in ("hysteria2", "hy2", "tuic", "tuic5", "tuicv5"):
+        network = "udp" if protocol in ("hysteria2", "hy2") else "quic"
+        security = "tls"
+        if not external_domain:
+            external_domain = domain or SETTINGS.get("domain") or CONFIG.get("host", "")
+        if not external_port:
+            external_port = port or 443
     else:
         # For TLS WS/XHTTP (non-reality, non-worker): external_domain and external_port should be empty
         # The panel domain is used via SETTINGS["domain"] in generate_user_config
@@ -4803,6 +4863,8 @@ async def create_inbound(request: Request, auth=Depends(require_replication_auth
             "ws_settings": ws_settings,
             "grpc_settings": grpc_settings,
             "telegram_settings": telegram_settings,
+            "hysteria2_settings": hysteria2_settings,
+            "tuic_settings": tuic_settings,
             "node_ids": [str(x).strip() for x in (body.get("node_ids") or []) if str(x).strip()],
             "enabled_node_ids": [str(x).strip() for x in (body.get("enabled_node_ids") or body.get("node_ids") or []) if str(x).strip()],
             "created_at": datetime.now().isoformat(),
@@ -4843,7 +4905,7 @@ async def update_inbound(inbound_id: str, request: Request, _=Depends(require_au
                 ib["name"] = _nn
         if "protocol" in body:
             p = str(body["protocol"]).lower()
-            if p in ("vless", "vmess", "trojan", "reality", "worker", "telegram", "node"): 
+            if p in ("vless", "vmess", "trojan", "reality", "worker", "telegram", "node", "hysteria2", "hy2", "tuic", "tuic5", "tuicv5"): 
                 ib["protocol"] = p
         if ib.get("protocol") == "node":
             if inbound_id != "Node" and not ib.get("system"):
@@ -4934,6 +4996,10 @@ async def update_inbound(inbound_id: str, request: Request, _=Depends(require_au
             ib["grpc_settings"] = body["grpc_settings"]
         if "telegram_settings" in body and isinstance(body["telegram_settings"], dict):
             ib["telegram_settings"] = body["telegram_settings"]
+        if "hysteria2_settings" in body and isinstance(body["hysteria2_settings"], dict):
+            ib["hysteria2_settings"] = body["hysteria2_settings"]
+        if "tuic_settings" in body and isinstance(body["tuic_settings"], dict):
+            ib["tuic_settings"] = body["tuic_settings"]
 
         if (ib.get("protocol") or "").lower() == "reality" or (ib.get("security") or "").lower() == "reality":
             rs = ib.setdefault("reality_settings", {})
