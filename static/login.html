@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>NishoVpn | ورود به پنل مدیریت</title>
+<title>NishoVpn | ورود به پنل مدیریت هوشمند</title>
 <link rel="icon" type="image/png" href="/static/img/nisho-logo.png">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 
 <script>
@@ -29,9 +29,11 @@ tailwind.config = {
                     900: '#581c87',
                     950: '#2e1065',
                 },
-                "on-surface": "#f1f5f9",
-                "on-surface-variant": "#a78bfa",
-                "background": "#07050d"
+                surface: {
+                    base: "#07050d",
+                    card: "rgba(16, 11, 29, 0.82)",
+                    input: "rgba(9, 6, 18, 0.85)"
+                }
             },
             fontFamily: {
                 sans: ["Vazirmatn", "Inter", "sans-serif"],
@@ -43,7 +45,7 @@ tailwind.config = {
 </script>
 
 <style>
-/* Reset & anti-zoom */
+/* Reset & anti-zoom rules */
 html, body {
     touch-action: pan-y;
     -webkit-user-select: none;
@@ -55,10 +57,10 @@ html, body {
     background-color: #07050d !important;
     color: #f1f5f9 !important;
     min-height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    position: relative;
+    width: 100%;
+    overflow-x: hidden;
     font-family: 'Vazirmatn', 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 input, textarea, select {
@@ -66,310 +68,585 @@ input, textarea, select {
     -webkit-user-select: text;
 }
 
-/* Cosmic purple background aura */
-.bg-mesh {
+/* Background Atmosphere */
+.bg-canvas-container {
     position: fixed;
     inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+#cyber-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.bg-nebula {
+    position: absolute;
+    inset: 0;
     background: 
-        radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.22) 0%, transparent 45%),
-        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.18) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(109, 40, 217, 0.15) 0%, transparent 65%),
+        radial-gradient(circle at 15% 25%, rgba(147, 51, 234, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(168, 85, 247, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(126, 34, 206, 0.14) 0%, transparent 65%),
         #07050d;
     z-index: 0;
 }
 
-.cyber-grid {
-    position: fixed;
+.bg-grid-cyber {
+    position: absolute;
     inset: 0;
     background-image: 
-        linear-gradient(rgba(147, 51, 234, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(147, 51, 234, 0.05) 1px, transparent 1px);
-    background-size: 40px 40px;
+        linear-gradient(rgba(168, 85, 247, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.05) 1px, transparent 1px);
+    background-size: 52px 52px;
     z-index: 0;
-    pointer-events: none;
-    mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
-    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+    mask-image: radial-gradient(circle at center, black 40%, transparent 88%);
+    -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 88%);
 }
 
-/* Nisho Cobra Showcase in Left/Background */
-.hero-container {
-    position: absolute;
-    left: 4%;
-    bottom: 50%;
-    transform: translateY(50%);
-    width: 44vw;
-    max-width: 620px;
-    display: flex;
-    flex-direction: column;
+/* Floating Cobra Avatar & Halo */
+.avatar-orbital {
+    position: relative;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none;
-    z-index: 1;
 }
 
-.hero-halo {
+.avatar-halo {
     position: absolute;
-    width: clamp(300px, 35vw, 540px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(126, 34, 206, 0.15) 50%, transparent 75%);
-    filter: blur(25px);
+    inset: -14px;
+    border-radius: 36px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(99, 102, 241, 0.25) 50%, transparent 80%);
+    filter: blur(18px);
     z-index: 0;
-    animation: nishoPulse 6s ease-in-out infinite alternate;
+    animation: haloPulse 5s ease-in-out infinite alternate;
 }
 
-@keyframes nishoPulse {
-    0% { transform: scale(0.92); opacity: 0.6; }
-    100% { transform: scale(1.08); opacity: 0.95; filter: blur(35px); }
+@keyframes haloPulse {
+    0% { transform: scale(0.95); opacity: 0.65; }
+    100% { transform: scale(1.1); opacity: 0.95; filter: blur(24px); }
 }
 
-.hero-image-wrapper {
-    position: relative;
-    z-index: 2;
-    filter: drop-shadow(0 20px 45px rgba(147, 51, 234, 0.45));
-    animation: floatSnake 7s ease-in-out infinite;
-}
-
-@keyframes floatSnake {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-}
-
-.hero-statue {
-    width: clamp(260px, 30vw, 460px);
-    height: auto;
-    border-radius: 28px;
-    border: 1px solid rgba(192, 132, 252, 0.3);
-    box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);
-}
-
-.hero-brand-name {
-    margin-top: 18px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 900;
-    font-size: clamp(1.8rem, 2.5vw, 2.8rem);
-    letter-spacing: 0.25em;
-    background: linear-gradient(135deg, #ffffff 0%, #d8b4fe 40%, #a855f7 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 10px 30px rgba(168, 85, 247, 0.5);
-    z-index: 2;
-}
-
-/* Badge Bar */
-.badge-bar {
+.avatar-ring {
     position: absolute;
-    top: 24px;
-    right: 28px;
-    display: flex;
-    gap: 12px;
-    font-size: 0.75rem;
-    font-family: 'JetBrains Mono', monospace;
-    color: rgba(216, 180, 254, 0.85);
-    z-index: 20;
-    letter-spacing: 0.08em;
+    inset: -6px;
+    border-radius: 32px;
+    padding: 2px;
+    background: linear-gradient(135deg, rgba(192, 132, 252, 0.8), rgba(126, 34, 206, 0.3), rgba(99, 102, 241, 0.7));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 2;
+    animation: ringRotate 12s linear infinite;
 }
 
-.badge-item {
-    border: 1px solid rgba(168, 85, 247, 0.28);
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: rgba(18, 12, 34, 0.65);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+@keyframes ringRotate {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
 }
 
-.badge-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #a855f7;
-    box-shadow: 0 0 8px #a855f7;
-    display: inline-block;
+.avatar-img {
+    position: relative;
+    z-index: 1;
+    border-radius: 26px;
+    object-fit: cover;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.65), 0 0 35px rgba(168, 85, 247, 0.35);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
-/* Glass Card */
-.glass-card {
-    background: rgba(17, 13, 30, 0.78) !important;
-    backdrop-filter: blur(28px) saturate(190%) !important;
-    -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-    border: 1px solid rgba(192, 132, 252, 0.2) !important;
-    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85), 0 0 40px rgba(147, 51, 234, 0.15) !important;
+.avatar-orbital:hover .avatar-img {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 50px rgba(168, 85, 247, 0.55);
 }
 
-/* Input Fields */
-.input-glass {
-    background-color: rgba(9, 6, 18, 0.75) !important;
-    border: 1px solid rgba(168, 85, 247, 0.22) !important;
+/* Glassmorphism Luxury Card */
+.glass-panel {
+    background: rgba(15, 10, 27, 0.82) !important;
+    backdrop-filter: blur(32px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+    border: 1px solid rgba(192, 132, 252, 0.22) !important;
+    box-shadow: 
+        0 30px 80px rgba(0, 0, 0, 0.88),
+        0 0 45px rgba(147, 51, 234, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    border-radius: 28px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+    border-color: rgba(192, 132, 252, 0.35) !important;
+    box-shadow: 
+        0 35px 90px rgba(0, 0, 0, 0.92),
+        0 0 55px rgba(147, 51, 234, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Futuristic Inputs */
+.input-cyber {
+    background: rgba(8, 5, 16, 0.82) !important;
+    border: 1px solid rgba(168, 85, 247, 0.24) !important;
     color: #f3e8ff !important;
     caret-color: #c084fc !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
-.input-glass:focus {
-    border-color: #a855f7 !important;
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.35) !important;
-    outline: none;
-    background-color: rgba(14, 9, 28, 0.9) !important;
+.input-cyber:focus {
+    border-color: #c084fc !important;
+    background: rgba(13, 8, 26, 0.95) !important;
+    box-shadow: 
+        0 0 25px rgba(168, 85, 247, 0.38),
+        inset 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+    outline: none !important;
 }
 
-/* Login Submit Button */
-.btn-submit {
-    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #6366f1 100%) !important;
+/* Submit Action Button */
+.btn-action {
+    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #4f46e5 100%) !important;
     color: #ffffff !important;
-    box-shadow: 0 10px 25px rgba(124, 58, 237, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-    transition: all 0.25s ease;
+    box-shadow: 
+        0 12px 28px rgba(124, 58, 237, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+    border: 1px solid rgba(216, 180, 254, 0.3) !important;
+    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
 }
 
-.btn-submit:hover {
+.btn-action::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.btn-action:hover::before {
+    transform: translateX(100%);
+}
+
+.btn-action:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 35px rgba(147, 51, 234, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 
+        0 18px 40px rgba(147, 51, 234, 0.65),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
     filter: brightness(1.08);
 }
 
-.btn-submit:active {
+.btn-action:active {
     transform: translateY(0);
+    box-shadow: 0 8px 18px rgba(124, 58, 237, 0.4) !important;
 }
 
-/* Error message */
-.error-msg {
+/* Error Banner with Shake Animation */
+.error-box {
     background: rgba(239, 68, 68, 0.12);
-    border: 1px solid rgba(239, 68, 68, 0.35);
+    border: 1px solid rgba(239, 68, 68, 0.38);
     color: #fca5a5;
+    border-radius: 16px;
     padding: 12px 16px;
-    border-radius: 14px;
     font-size: 13px;
     display: none;
     align-items: center;
     gap: 10px;
-    backdrop-filter: blur(8px);
-}
-.error-msg.show { display: flex; }
-
-/* Mobile Adaptations */
-@media (max-width: 900px) {
-    .hero-container {
-        display: none;
-    }
-    .badge-bar {
-        top: 16px;
-        right: 16px;
-    }
+    backdrop-filter: blur(10px);
 }
 
-/* Tap highlights reset */
+.error-box.show {
+    display: flex;
+    animation: shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+    40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
+/* Caps Lock Notification */
+.caps-warn {
+    display: none;
+    font-size: 11px;
+    color: #fbbf24;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+}
+
+.caps-warn.show {
+    display: flex;
+}
+
+/* Showcase Side (Desktop) */
+.hero-visual-card {
+    background: rgba(14, 9, 26, 0.6);
+    border: 1px solid rgba(168, 85, 247, 0.18);
+    border-radius: 28px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    padding: 36px 32px;
+}
+
+.stat-chip {
+    background: rgba(23, 14, 43, 0.7);
+    border: 1px solid rgba(168, 85, 247, 0.22);
+    border-radius: 14px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+}
+
+/* Floating Header Chips */
+.header-chip {
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    background: rgba(18, 11, 36, 0.75);
+    backdrop-filter: blur(16px);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #d8b4fe;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 10px #34d399;
+}
+
+/* Touch Reset */
 button, a, input, [role="button"] {
     -webkit-tap-highlight-color: transparent !important;
-    outline: none;
 }
 </style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex items-center justify-center relative">
+<body class="min-h-screen w-full relative flex flex-col justify-between overflow-x-hidden selection:bg-purple-500/30 selection:text-white">
 
-<div class="bg-mesh"></div>
-<div class="cyber-grid"></div>
-
-<!-- Top floating badge bar -->
-<div class="badge-bar">
-    <span class="badge-item">
-        <span class="badge-dot"></span>
-        <span>NISHO CORE v10.0</span>
-    </span>
-    <span class="badge-item">
-        <span class="material-symbols-outlined" style="font-size:14px;color:#c084fc">security</span>
-        <span>ENCRYPTED</span>
-    </span>
+<!-- Dynamic 3D / Cyber Canvas Background -->
+<div class="bg-canvas-container">
+    <div class="bg-nebula"></div>
+    <div class="bg-grid-cyber"></div>
+    <canvas id="cyber-canvas"></canvas>
 </div>
 
-<!-- Left Branding Visual (Desktop) -->
-<div class="hero-container">
-    <div class="hero-halo"></div>
-    <div class="hero-image-wrapper">
-        <img class="hero-statue" src="/static/img/nisho-logo.png" alt="NishoVpn Mascot Cobra">
-    </div>
-    <div class="hero-brand-name">NISHO VPN</div>
-    <div class="text-xs tracking-widest text-purple-300/70 font-mono mt-1">HIGH PERFORMANCE TUNNEL GATEWAY</div>
-</div>
-
-<!-- Login Card (Centered/Right) -->
-<div class="glass-card rounded-3xl w-full max-w-md p-8 md:p-10 mx-4 flex flex-col gap-6 z-10 relative md:mr-[10%]">
-    <!-- Header -->
-    <div class="flex flex-col items-center gap-3 text-center">
-        <div class="relative group cursor-pointer">
-            <div class="absolute -inset-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-3xl blur-md opacity-70 group-hover:opacity-100 transition duration-500"></div>
-            <img src="/static/img/nisho-logo.png" alt="NishoVpn" class="relative w-24 h-24 rounded-2xl object-cover ring-2 ring-purple-400/30 shadow-2xl">
+<!-- Header / Navigation Bar -->
+<header class="w-full relative z-20 py-4 px-4 sm:px-8 max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Brand Info -->
+    <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl overflow-hidden ring-1 ring-purple-400/40 shadow-lg">
+            <img src="/static/img/nisho-logo.png" alt="NishoVpn" class="w-full h-full object-cover">
         </div>
-        <div>
-            <h1 class="text-2xl font-black tracking-wide text-white flex items-center justify-center gap-2">
-                <span>NISHO VPN</span>
-                <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono font-normal">PANEL</span>
-            </h1>
-            <p class="text-xs text-purple-300/80 font-medium mt-1">پنل مدیریت و امنیت شبکه نیشو وی‌پی‌ان</p>
+        <div class="flex flex-col">
+            <span class="font-extrabold text-sm tracking-wider text-white">NISHO VPN</span>
+            <span class="text-[10px] text-purple-300/70 font-mono">GATEWAY MANAGEMENT</span>
         </div>
     </div>
 
-    <!-- Error Message Box -->
-    <div class="error-msg" id="error-msg">
-        <span class="material-symbols-outlined" style="font-size:20px;">error</span>
-        <span id="error-text">رمز عبور نادرست است</span>
-    </div>
-
-    <!-- Login Form -->
-    <form class="flex flex-col gap-5" id="login-form">
-        <div class="flex flex-col gap-2">
-            <div class="flex justify-between items-center text-xs text-purple-200/80 font-medium">
-                <label for="password" class="flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-purple-400" style="font-size:16px;">key</span>
-                    <span>رمز عبور مدیریت</span>
-                </label>
-                <span class="font-mono text-[10px] text-purple-400/60 uppercase">Admin Auth</span>
-            </div>
-            <div class="relative">
-                <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-purple-400/70" style="font-size: 20px;">lock</span>
-                <input class="input-glass w-full rounded-2xl py-3.5 pr-12 pl-12 text-sm text-white placeholder:text-purple-300/30 text-left font-mono" 
-                       id="password" 
-                       placeholder="••••••••••••" 
-                       type="password" 
-                       dir="ltr"
-                       autofocus 
-                       required/>
-                <button type="button" id="togglePassword" class="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400/60 hover:text-purple-200 transition">
-                    <span class="material-symbols-outlined" style="font-size: 20px;" id="eyeIcon">visibility</span>
-                </button>
-            </div>
+    <!-- Status Badges -->
+    <div class="flex items-center gap-2 sm:gap-3">
+        <div class="header-chip hidden sm:inline-flex">
+            <span class="pulse-dot"></span>
+            <span>SYSTEM ONLINE</span>
         </div>
+        <div class="header-chip">
+            <span class="material-symbols-outlined text-purple-400" style="font-size: 14px;">encrypted</span>
+            <span>PRO v10.4</span>
+        </div>
+    </div>
+</header>
+
+<!-- Main Stage Container: Balanced 2-Column Desktop Grid / Clean Mobile Center Stack -->
+<main class="w-full flex-1 relative z-10 flex items-center justify-center px-4 py-6 sm:py-10">
+    <div class="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         
-        <button class="mt-2 btn-submit font-bold py-3.5 rounded-2xl flex items-center justify-center gap-2 text-sm cursor-pointer" id="loginBtn" type="submit">
-            <span id="btn-text" class="flex items-center gap-2">
-                <span>ورود به سامانه</span>
-                <span class="material-symbols-outlined rotate-180" style="font-size: 18px;">arrow_forward</span>
-            </span>
-            <span id="btn-spinner" class="hidden flex items-center gap-2">
-                <span class="material-symbols-outlined animate-spin" style="font-size: 18px;">progress_activity</span>
-                <span>در حال تایید...</span>
-            </span>
-        </button>
-    </form>
+        <!-- Left Side: Interactive Brand Showcase (Visible on Large Screens) -->
+        <div class="hidden lg:flex lg:col-span-6 flex-col items-center text-center">
+            <div class="hero-visual-card w-full max-w-md flex flex-col items-center relative overflow-hidden group">
+                <!-- Background Accent Glow -->
+                <div class="absolute -top-24 -right-24 w-60 h-60 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-60 h-60 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
-    <!-- Footer Security Note -->
-    <div class="text-center pt-2 border-t border-purple-500/15">
-        <div class="flex items-center justify-center gap-2 text-[11px] text-purple-300/60">
-            <span class="material-symbols-outlined text-purple-400" style="font-size:14px;">verified_user</span>
-            <span>اتصال امن رمزنگاری‌شده Nisho Guard</span>
+                <!-- Cobra Emblem -->
+                <div class="avatar-orbital mb-6">
+                    <div class="avatar-halo"></div>
+                    <div class="avatar-ring"></div>
+                    <img src="/static/img/nisho-logo.png" alt="NishoVpn Mascot" class="avatar-img w-52 h-52">
+                </div>
+
+                <!-- Title & Typography -->
+                <h2 class="text-3xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-purple-400">
+                    NISHO VPN
+                </h2>
+                <p class="text-xs text-purple-300/80 mt-2 font-medium leading-relaxed max-w-xs">
+                    زیرساخت اختصاصی تانلینگ امن، ضد فیلتر و مدیریت توزیع‌شده با الگوریتم‌های مدرن
+                </p>
+
+                <!-- System Specs Matrix -->
+                <div class="w-full mt-6 flex flex-col gap-2.5">
+                    <div class="stat-chip">
+                        <span class="text-purple-300/70">ENCRYPTION PROTOCOL</span>
+                        <span class="text-purple-200 font-bold">CHA-CHA20 / AES</span>
+                    </div>
+                    <div class="stat-chip">
+                        <span class="text-purple-300/70">CORE ARCHITECTURE</span>
+                        <span class="text-emerald-400 font-bold flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            ACTIVE CLUSTER
+                        </span>
+                    </div>
+                    <div class="stat-chip">
+                        <span class="text-purple-300/70">AVERAGE LATENCY</span>
+                        <span class="text-purple-200 font-bold">&lt; 14 MS</span>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
-<!-- Login Script -->
+        <!-- Right Side: The Login Card -->
+        <div class="w-full lg:col-span-6 flex justify-center">
+            <div class="glass-panel w-full max-w-md p-6 sm:p-8 md:p-10 flex flex-col gap-6 relative">
+                
+                <!-- Card Header -->
+                <div class="flex flex-col items-center text-center gap-3">
+                    <!-- Mobile Mascot Icon (Shown when left panel hidden) -->
+                    <div class="lg:hidden avatar-orbital mb-1">
+                        <div class="avatar-halo" style="inset:-8px;"></div>
+                        <img src="/static/img/nisho-logo.png" alt="NishoVpn" class="w-20 h-20 rounded-2xl object-cover ring-2 ring-purple-400/40 shadow-xl">
+                    </div>
+
+                    <div class="space-y-1">
+                        <h1 class="text-2xl sm:text-3xl font-black text-white flex items-center justify-center gap-2">
+                            <span>ورود مدیریت</span>
+                            <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/35 font-mono">PANEL</span>
+                        </h1>
+                        <p class="text-xs sm:text-sm text-purple-300/70 font-medium">برای دسترسی به تنظیمات سرور رمز عبور را وارد کنید</p>
+                    </div>
+                </div>
+
+                <!-- Error Message Box -->
+                <div class="error-box" id="error-msg" role="alert">
+                    <span class="material-symbols-outlined text-red-400 flex-shrink-0" style="font-size: 20px;">gpp_bad</span>
+                    <span id="error-text" class="font-medium text-xs sm:text-sm">رمز عبور نادرست است</span>
+                </div>
+
+                <!-- Login Form -->
+                <form class="flex flex-col gap-5" id="login-form" autocomplete="off">
+                    
+                    <!-- Password Field -->
+                    <div class="flex flex-col gap-2">
+                        <div class="flex justify-between items-center text-xs text-purple-200/90 font-medium">
+                            <label for="password" class="flex items-center gap-1.5 cursor-pointer">
+                                <span class="material-symbols-outlined text-purple-400" style="font-size: 16px;">lock</span>
+                                <span>رمز عبور سیستم</span>
+                            </label>
+                            <span class="font-mono text-[10px] text-purple-400/70 uppercase">Master Auth</span>
+                        </div>
+                        
+                        <div class="relative">
+                            <!-- Right Lock Icon -->
+                            <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-purple-400/70 pointer-events-none" style="font-size: 20px;">
+                                key
+                            </span>
+                            
+                            <!-- Input Box -->
+                            <input class="input-cyber w-full rounded-2xl py-3.5 pr-12 pl-12 text-sm text-white placeholder:text-purple-300/30 text-left font-mono tracking-wider focus:ring-0" 
+                                   id="password" 
+                                   placeholder="••••••••••••" 
+                                   type="password" 
+                                   dir="ltr"
+                                   autofocus 
+                                   required/>
+                            
+                            <!-- Left Show/Hide Eye Button (Min 44x44 Touch Target) -->
+                            <button type="button" 
+                                    id="togglePassword" 
+                                    class="absolute left-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-purple-400/60 hover:text-purple-200 focus:text-purple-200 transition cursor-pointer"
+                                    aria-label="نمایش یا پنهان کردن رمز عبور">
+                                <span class="material-symbols-outlined" style="font-size: 20px;" id="eyeIcon">visibility</span>
+                            </button>
+                        </div>
+
+                        <!-- Caps Lock Warning -->
+                        <div class="caps-warn" id="caps-warning">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
+                            <span>هشدار: کلید Caps Lock روشن است</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button class="btn-action w-full font-bold py-3.5 sm:py-4 rounded-2xl flex items-center justify-center gap-2 text-sm cursor-pointer mt-1 focus:ring-2 focus:ring-purple-400/50" 
+                            id="loginBtn" 
+                            type="submit">
+                        <span id="btn-text" class="flex items-center gap-2">
+                            <span>ورود به سامانه</span>
+                            <span class="material-symbols-outlined rotate-180" style="font-size: 18px;">arrow_forward</span>
+                        </span>
+                        <span id="btn-spinner" class="hidden flex items-center gap-2">
+                            <span class="material-symbols-outlined animate-spin" style="font-size: 18px;">progress_activity</span>
+                            <span>در حال اعتبارسنجی...</span>
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Footer Security Verification Note -->
+                <div class="pt-4 border-t border-purple-500/15 flex flex-col items-center gap-1 text-center">
+                    <div class="flex items-center justify-center gap-2 text-xs text-purple-300/70">
+                        <span class="material-symbols-outlined text-purple-400" style="font-size: 15px;">verified_user</span>
+                        <span>محیط مدیریت امن رمزنگاری‌شده Nisho Shield</span>
+                    </div>
+                    <span class="text-[10px] text-purple-400/40 font-mono">ALL SESSIONS LOGGED & MONITORED</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="w-full relative z-20 py-4 text-center text-[11px] text-purple-300/40 font-mono">
+    NishoVpn Platform • Distributed Network Security • &copy; 2026
+</footer>
+
+<!-- 3D Interactive Cyber Canvas Script (Skills: 3D Web Experience) -->
 <script>
-// Toggle Password Visibility
+(function() {
+    var canvas = document.getElementById('cyber-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    var width, height;
+    var particles = [];
+    var particleCount = 45;
+    var mouse = { x: -1000, y: -1000, radius: 140 };
+
+    function resize() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        // Adjust particle density for screen width
+        particleCount = width < 768 ? 25 : 55;
+        initParticles();
+    }
+
+    function Particle() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 0.6;
+        this.vy = (Math.random() - 0.5) * 0.6;
+        this.size = Math.random() * 2 + 1;
+        this.alpha = Math.random() * 0.6 + 0.2;
+        this.color = Math.random() > 0.4 ? '#a855f7' : '#c084fc';
+    }
+
+    Particle.prototype.update = function() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0) this.x = width;
+        if (this.x > width) this.x = 0;
+        if (this.y < 0) this.y = height;
+        if (this.y > height) this.y = 0;
+
+        // Mouse avoidance/attraction
+        var dx = mouse.x - this.x;
+        var dy = mouse.y - this.y;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius) {
+            var force = (mouse.radius - dist) / mouse.radius;
+            this.x -= (dx / dist) * force * 2;
+            this.y -= (dy / dist) * force * 2;
+        }
+    };
+
+    Particle.prototype.draw = function() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.alpha;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = this.color;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    };
+
+    function initParticles() {
+        particles = [];
+        for (var i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Draw connections
+        for (var i = 0; i < particles.length; i++) {
+            for (var j = i + 1; j < particles.length; j++) {
+                var dx = particles[i].x - particles[j].x;
+                var dy = particles[i].y - particles[j].y;
+                var dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 120) {
+                    var alpha = (1 - dist / 120) * 0.22;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = '#9333ea';
+                    ctx.globalAlpha = alpha;
+                    ctx.lineWidth = 0.8;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Draw and update particles
+        for (var k = 0; k < particles.length; k++) {
+            particles[k].update();
+            particles[k].draw();
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', function(e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseleave', function() {
+        mouse.x = -1000;
+        mouse.y = -1000;
+    });
+
+    resize();
+    animate();
+})();
+</script>
+
+<!-- Logic & Authentication Handler (Skills: frontend-expert & uiux-designer) -->
+<script>
 const toggleBtn = document.getElementById('togglePassword');
 const passInput = document.getElementById('password');
 const eyeIcon = document.getElementById('eyeIcon');
+const capsWarning = document.getElementById('caps-warning');
 
+// Toggle Password Visibility
 toggleBtn.addEventListener('click', function() {
     if (passInput.type === 'password') {
         passInput.type = 'text';
@@ -377,6 +654,15 @@ toggleBtn.addEventListener('click', function() {
     } else {
         passInput.type = 'password';
         eyeIcon.textContent = 'visibility';
+    }
+});
+
+// Caps Lock Detection
+passInput.addEventListener('keyup', function(e) {
+    if (e.getModifierState && e.getModifierState('CapsLock')) {
+        capsWarning.classList.add('show');
+    } else {
+        capsWarning.classList.remove('show');
     }
 });
 
@@ -412,16 +698,16 @@ document.getElementById('login-form').addEventListener('submit', async function(
         btn.disabled = false;
         btnText.classList.remove('hidden');
         btnSpinner.classList.add('hidden');
+        passInput.focus();
     }
 });
-</script>
 
-<!-- Security handlers -->
-<script>
+// Touch and zoom security handlers
 document.addEventListener('wheel', function(e) { if(e.ctrlKey || e.metaKey) e.preventDefault(); }, {passive:false});
 document.addEventListener('keydown', function(e) {
     if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '0'].indexOf(e.key) >= 0) e.preventDefault();
 });
 </script>
+
 </body>
 </html>

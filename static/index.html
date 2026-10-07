@@ -35,49 +35,49 @@ html, body {
 /* Ultra-dark sub-style theme — absolute black, no glass, fixed teal accent.
    Matches the /sub page exactly. */
 :root{
-  /* Accent matches the /sub page: teal #00e1c1 on pure black, no glass, no glow. */
-  --teal:#00e1c1;--blue:#9db4ff;--spider-blue:#9db4ff;--spider-purple:#b9a6ff;--spider-red:#ff6b6b;
-  --neon:#00e1c1;--neon2:#2ef2d6;--purple:#b9a6ff;--green:#00e1c1;--red:#ff6b6b;
-  --gold:#00e1c1;--success:#00e1c1;--warning:#ffab00;--danger:#ff6b6b;
-  --bg:#000000;--bg2:#000000;--bg3:rgba(255,255,255,.06);--txt:#ffffff;--txt2:#c9c9ce;
-  --r:12px;--radius:14px;--radius-lg:16px;--radius-xl:24px;
-  --glass:#0a0a0d;--surface-glass:#0a0a0d;
-  --grad1:#00e1c1;--grad2:#2ef2d6;--grad:linear-gradient(135deg,#00e1c1,#2ef2d6);
-  --gradient:linear-gradient(90deg,#00e1c1,#2ef2d6);
-  --border:rgba(255,255,255,.06);
-  --glow:none;--glow-strong:none;
-  --logo-shadow:none;
-  --tab-bg:#00e1c1;--tab-color:#000;--tab-glow:none;
-  --nav-bg:rgba(0,225,193,.14);--nav-color:#00e1c1;
-  --border-glow:rgba(0,225,193,.4);--input-glow:rgba(0,225,193,.14);
-  --line:rgba(255,255,255,.16);--input-bg:#121216;
-  --orb1:rgba(255,255,255,.05);--orb2:rgba(255,255,255,.03);
-  --surface:#FFFFFF;--text-primary:#ffffff;--text-secondary:#c9c9ce;
-  --shadow-sm:0 8px 32px rgba(0,0,0,.55);--shadow-md:0 8px 32px rgba(0,0,0,.6);
-  --shadow-lg:0 16px 48px rgba(0,0,0,.7);--shadow-hover:0 8px 32px rgba(0,0,0,.6);
+  --nisho-purple:#a855f7;--nisho-violet:#7c3aed;--nisho-lavender:#c084fc;--nisho-indigo:#6366f1;
+  --teal:#a855f7;--blue:#818cf8;--spider-blue:#818cf8;--spider-purple:#c084fc;--spider-red:#f43f5e;
+  --neon:#c084fc;--neon2:#a855f7;--purple:#c084fc;--green:#10b981;--red:#f43f5e;
+  --gold:#f59e0b;--success:#10b981;--warning:#f59e0b;--danger:#f43f5e;
+  --bg:#07050d;--bg2:#0d0819;--bg3:rgba(168,85,247,.08);--txt:#f8fafc;--txt2:#c4b5fd;
+  --r:14px;--radius:14px;--radius-lg:18px;--radius-xl:24px;
+  --glass:rgba(15,10,27,.82);--surface-glass:rgba(18,12,32,.78);
+  --grad1:#c084fc;--grad2:#a855f7;--grad:linear-gradient(135deg,#c084fc 0%,#a855f7 50%,#7c3aed 100%);
+  --gradient:linear-gradient(90deg,#c084fc 0%,#a855f7 50%,#7c3aed 100%);
+  --border:rgba(192,132,252,.16);
+  --glow:0 0 24px rgba(168,85,247,.45);--glow-strong:0 0 35px rgba(168,85,247,.7);
+  --logo-shadow:0 0 30px rgba(168,85,247,.6);
+  --tab-bg:linear-gradient(135deg,#a855f7,#7c3aed);--tab-color:#ffffff;--tab-glow:0 4px 18px rgba(168,85,247,.45);
+  --nav-bg:rgba(168,85,247,.12);--nav-color:#d8b4fe;
+  --border-glow:rgba(192,132,252,.45);--input-glow:rgba(168,85,247,.25);
+  --line:rgba(192,132,252,.18);--input-bg:rgba(10,7,18,.85);
+  --orb1:rgba(168,85,247,.12);--orb2:rgba(99,102,241,.08);
+  --surface:rgba(16,11,29,.9);--text-primary:#f8fafc;--text-secondary:#c4b5fd;
+  --shadow-sm:0 8px 30px rgba(0,0,0,.7);--shadow-md:0 12px 38px rgba(0,0,0,.78);
+  --shadow-lg:0 20px 50px rgba(0,0,0,.85);--shadow-hover:0 14px 40px rgba(147,51,234,.3);
 }
 
-/* ── Light mode (iOS-style, pure black text) ── */
 [data-theme="light"]{
-  --teal:#000000;--blue:#0a84ff;--spider-blue:#0a84ff;--spider-purple:#5e4ec4;--spider-red:#000000;
-  --neon:#000000;--neon2:#000000;--purple:#5e4ec4;--green:#000000;--red:#000000;
-  --gold:#000000;--success:#000000;--warning:#000000;--danger:#000000;
-  --bg:#f2f2f7;--bg2:#f2f2f7;--bg3:rgba(0,0,0,.06);--txt:#000000;--txt2:#3a3a3e;
-  --r:12px;--radius:14px;--radius-lg:16px;--radius-xl:24px;
-  --glass:#ffffff;--surface-glass:#ffffff;
-  --grad1:#000000;--grad2:#000000;--grad:linear-gradient(135deg,#000000,#000000);
-  --gradient:linear-gradient(90deg,#000000,#000000);
-  --border:rgba(0,0,0,.08);
-  --glow:none;--glow-strong:none;
+  --nisho-purple:#7e22ce;--nisho-violet:#6b21a8;--nisho-lavender:#9333ea;--nisho-indigo:#4338ca;
+  --teal:#7e22ce;--blue:#4f46e5;--spider-blue:#4f46e5;--spider-purple:#7e22ce;--spider-red:#dc2626;
+  --neon:#7e22ce;--neon2:#9333ea;--purple:#7e22ce;--green:#16a34a;--red:#dc2626;
+  --gold:#d97706;--success:#16a34a;--warning:#d97706;--danger:#dc2626;
+  --bg:#faf5ff;--bg2:#f3e8ff;--bg3:rgba(126,34,206,.06);--txt:#1e1b4b;--txt2:#581c87;
+  --r:14px;--radius:14px;--radius-lg:18px;--radius-xl:24px;
+  --glass:rgba(255,255,255,.94);--surface-glass:rgba(255,255,255,.9);
+  --grad1:#7e22ce;--grad2:#9333ea;--grad:linear-gradient(135deg,#7e22ce,#9333ea);
+  --gradient:linear-gradient(90deg,#7e22ce,#9333ea);
+  --border:rgba(126,34,206,.15);
+  --glow:0 4px 20px rgba(126,34,206,.15);--glow-strong:0 6px 25px rgba(126,34,206,.25);
   --logo-shadow:none;
-  --tab-bg:#000000;--tab-color:#fff;--tab-glow:none;
-  --nav-bg:rgba(0,0,0,.08);--nav-color:#000000;
-  --border-glow:rgba(0,0,0,.25);--input-glow:rgba(0,0,0,.08);
-  --line:rgba(0,0,0,.16);--input-bg:#ffffff;
-  --orb1:rgba(0,0,0,.05);--orb2:rgba(0,0,0,.03);
-  --surface:#FFFFFF;--text-primary:#000000;--text-secondary:#3a3a3e;
-  --shadow-sm:0 8px 30px rgba(0,0,0,.08);--shadow-md:0 10px 32px rgba(0,0,0,.1);
-  --shadow-lg:0 16px 48px rgba(0,0,0,.12);--shadow-hover:0 10px 32px rgba(0,0,0,.12);
+  --tab-bg:linear-gradient(135deg,#7e22ce,#9333ea);--tab-color:#fff;--tab-glow:0 4px 15px rgba(126,34,206,.25);
+  --nav-bg:rgba(126,34,206,.08);--nav-color:#7e22ce;
+  --border-glow:rgba(126,34,206,.35);--input-glow:rgba(126,34,206,.12);
+  --line:rgba(126,34,206,.18);--input-bg:#ffffff;
+  --orb1:rgba(126,34,206,.05);--orb2:rgba(99,102,241,.03);
+  --surface:#ffffff;--text-primary:#1e1b4b;--text-secondary:#581c87;
+  --shadow-sm:0 6px 20px rgba(126,34,206,.06);--shadow-md:0 10px 28px rgba(126,34,206,.1);
+  --shadow-lg:0 16px 40px rgba(126,34,206,.14);--shadow-hover:0 10px 28px rgba(126,34,206,.14);
 }
 /* Light: cards are white, softer shadows */
 [data-theme="light"] .panel,
@@ -101,20 +101,19 @@ html, body {
 [data-theme="light"] .bg-fx{background:none}
 [data-theme="light"] .bg-grid{background:none}
 
-/* ── Live background (matches /sub) ── */
+/* ── Cosmic Purple Live background ── */
 .bg-fx{
   position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none;
   background:
-    radial-gradient(ellipse 900px 600px at 25% 20%, rgba(0,225,193,0.16) 0%, transparent 70%),
-    radial-gradient(ellipse 700px 500px at 75% 15%, rgba(64,120,255,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 600px 400px at 60% 75%, rgba(139,92,246,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 500px 400px at 10% 80%, rgba(0,180,255,0.07) 0%, transparent 55%);
+    radial-gradient(ellipse 900px 600px at 20% 20%, rgba(147, 51, 234, 0.20) 0%, transparent 70%),
+    radial-gradient(ellipse 750px 500px at 80% 80%, rgba(168, 85, 247, 0.16) 0%, transparent 65%),
+    radial-gradient(ellipse 600px 450px at 50% 50%, rgba(99, 102, 241, 0.12) 0%, transparent 60%);
 }
 .bg-grid{
   position:fixed;inset:-2px;z-index:-2;pointer-events:none;
   background-image:
-    linear-gradient(rgba(0,225,193,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,225,193,0.04) 1px, transparent 1px);
+    linear-gradient(rgba(168, 85, 247, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 85, 247, 0.05) 1px, transparent 1px);
   background-size:48px 48px;
   mask-image:radial-gradient(ellipse 90% 80% at 50% 45%, black 20%, transparent 70%);
   -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 45%, black 20%, transparent 70%);
@@ -140,9 +139,9 @@ body{
   min-height:100vh;line-height:1.6;
   transition:background .4s ease,color .4s ease;
 }
-/* Persian: iOS uses the built-in system Arabic font for RTL text */
-html[lang="fa"] body{
-  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI','Tahoma',system-ui,sans-serif;
+/* Persian & English modern typography - Vazirmatn + Inter */
+html[lang="fa"] body, html[lang="fa"] .sidebar, html[lang="fa"] .panel, html[lang="fa"] .btn, html[lang="fa"] input, html[lang="fa"] select {
+  font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif !important;
 }
 /* Dark mode: ultra-white text */
 [data-theme="dark"] body{
@@ -163,20 +162,21 @@ html[lang="fa"] body{
 }
 /* Neon accent in dark mode: teal like the /sub page */
 [data-theme="dark"]{
-  --neon:#00e1c1;--neon2:#2ef2d6;--teal:#00e1c1;--green:#00e1c1;--success:#00e1c1;
-  --grad1:#00e1c1;--grad2:#2ef2d6;
-  --tab-bg:#00e1c1;--nav-color:#00e1c1;--nav-bg:rgba(0,225,193,.14);--border-glow:rgba(0,225,193,.4);--input-glow:rgba(0,225,193,.14);
-  --glow:none;--glow-strong:none;
-  --logo-shadow:none;
-  --spider-red:#ff6b6b;--red:#ff6b6b;--danger:#ff6b6b;
+  --neon:#c084fc;--neon2:#a855f7;--teal:#a855f7;--green:#10b981;--success:#10b981;
+  --grad1:#c084fc;--grad2:#a855f7;
+  --tab-bg:linear-gradient(135deg,#a855f7,#7c3aed);--tab-color:#ffffff;
+  --nav-color:#d8b4fe;--nav-bg:rgba(168,85,247,.14);--border-glow:rgba(192,132,252,.45);--input-glow:rgba(168,85,247,.25);
+  --glow:0 0 20px rgba(168,85,247,.4);--glow-strong:0 0 32px rgba(168,85,247,.65);
+  --logo-shadow:0 0 25px rgba(168,85,247,.55);
+  --spider-red:#f43f5e;--red:#f43f5e;--danger:#f43f5e;
 }
 /* White grid for the live background in dark mode */
 [data-theme="dark"] .bg-grid{
   background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
 }
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(43,127,255,.25);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:rgba(43,127,255,.45)}
+::-webkit-scrollbar-thumb{background:rgba(168,85,247,.32);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(168,85,247,.6)}
 input,select,button,textarea{font-family:inherit}
 
 /* ═══ LOGIN — Modern Glassmorphism ═══ */
@@ -478,14 +478,15 @@ input,select,button,textarea{font-family:inherit}
 
 /* Sidebar - Glass */
 .sidebar{
-  width:260px;background:#0a0a0d;
-  border-left:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;
+  width:260px;background:rgba(13,9,24,.88);
+  backdrop-filter:blur(28px) saturate(190%);-webkit-backdrop-filter:blur(28px) saturate(190%);
+  border-left:1px solid rgba(192,132,252,.18);display:flex;flex-direction:column;
   position:fixed;top:0;bottom:0;right:0;z-index:100;transition:transform .35s cubic-bezier(.4,0,.2,1);
-  overflow-y:auto;overflow-x:hidden;box-shadow:0 8px 32px rgba(0,0,0,.6);
+  overflow-y:auto;overflow-x:hidden;box-shadow:0 12px 40px rgba(0,0,0,.75);
   height:100vh;
 }
 .sb-brand{padding:22px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
-.sb-brand img{width:56px;height:56px;background:#000;border-radius:14px;padding:4px}
+.sb-brand img{width:56px;height:56px;background:rgba(168,85,247,.15);border:1px solid rgba(192,132,252,.35);border-radius:16px;padding:3px;box-shadow:0 0 22px rgba(168,85,247,.35);object-fit:cover;}
 [data-theme="light"] .sb-brand img{background:#000}
 .sb-brand-t{font-size:17px;font-weight:800;letter-spacing:3px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .sb-brand-t span{color:inherit;-webkit-text-fill-color:inherit}
@@ -505,8 +506,9 @@ input,select,button,textarea{font-family:inherit}
 /* Main area */
 .main-area{flex:1;min-width:0;margin-right:260px;display:flex;flex-direction:column;position:relative;z-index:1}
 .topbar{
-  padding:14px 24px;background:#0a0a0d;
-  border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;background:rgba(13,9,24,.88);
+  backdrop-filter:blur(28px) saturate(190%);-webkit-backdrop-filter:blur(28px) saturate(190%);
+  border-bottom:1px solid rgba(192,132,252,.16);display:flex;align-items:center;justify-content:space-between;
   position:sticky;top:0;z-index:50;
 }
 .topbar-greet{font-size:14px}.topbar-greet strong{color:var(--neon)}
@@ -550,11 +552,12 @@ html[lang="en"] body, html[lang="en"] .sidebar, html[lang="en"] .panel, html[lan
 
 /* Cards - solid */
 .panel{
-  background:#0a0a0d;
-  border:1px solid rgba(255,255,255,.05);border-radius:var(--radius-lg);padding:22px;
-  margin-bottom:16px;transition:all .3s;animation:fadeIn .4s ease;box-shadow:0 8px 32px rgba(0,0,0,.55);
+  background:rgba(15,10,27,.82);
+  backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(192,132,252,.16);border-radius:var(--radius-lg);padding:22px;
+  margin-bottom:16px;transition:all .3s cubic-bezier(.4,0,.2,1);animation:fadeIn .4s ease;box-shadow:0 10px 36px rgba(0,0,0,.65);
 }
-.panel:hover{border-color:var(--border);box-shadow:0 8px 32px rgba(0,0,0,.6)}
+.panel:hover{border-color:rgba(192,132,252,.35);box-shadow:0 14px 44px rgba(0,0,0,.75),0 0 25px rgba(168,85,247,.12)}
 .panel-h{
   font-size:15px;font-weight:700;margin-bottom:14px;
   display:flex;align-items:center;gap:8px;
@@ -564,12 +567,13 @@ html[lang="en"] body, html[lang="en"] .sidebar, html[lang="en"] .panel, html[lan
 /* Stats */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
 .stat{
-  background:#0a0a0d;
-  border:1px solid rgba(255,255,255,.05);border-radius:var(--radius-lg);padding:20px 16px;
-  text-align:center;transition:all .3s;animation:fadeIn .5s ease;position:relative;overflow:hidden;
-  box-shadow:0 8px 32px rgba(0,0,0,.55);
+  background:rgba(15,10,27,.82);
+  backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid rgba(192,132,252,.16);border-radius:var(--radius-lg);padding:20px 16px;
+  text-align:center;transition:all .3s cubic-bezier(.4,0,.2,1);animation:fadeIn .5s ease;position:relative;overflow:hidden;
+  box-shadow:0 10px 36px rgba(0,0,0,.65);
 }
-.stat:hover{border-color:var(--border-glow);transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.6)}
+.stat:hover{border-color:var(--border-glow);transform:translateY(-3px);box-shadow:0 16px 45px rgba(0,0,0,.75),0 0 25px rgba(168,85,247,.15)}
 .stat-icon{margin-bottom:8px;color:var(--neon)}
 .stat-v{font-size:26px;font-weight:800;color:var(--neon)}
 .stat-l{font-size:11px;color:var(--txt2);margin-top:4px}
@@ -621,8 +625,8 @@ html[lang="en"] body, html[lang="en"] .sidebar, html[lang="en"] .panel, html[lan
   border:none;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;
   transition:all .25s;font-family:inherit;text-decoration:none;position:relative;
 }
-.btn-p{background:var(--neon);color:var(--tab-color);box-shadow:0 4px 16px var(--neon)}
-.btn-p:hover{transform:translateY(-2px);filter:brightness(1.1);box-shadow:0 8px 24px var(--neon)}
+.btn-p{background:var(--tab-bg);color:#fff!important;box-shadow:0 4px 18px rgba(168,85,247,.4);border:1px solid rgba(255,255,255,.15)}
+.btn-p:hover{transform:translateY(-2px);filter:brightness(1.1);box-shadow:0 8px 26px rgba(168,85,247,.6)}
 .btn-g{background:var(--input-bg);color:var(--txt);border:1px solid rgba(255,255,255,.08)}.btn-g:hover{background:var(--nav-bg);color:var(--neon);border-color:var(--border-glow)}
 .btn-r{background:rgba(255,35,82,.1);color:var(--spider-red);border:1px solid rgba(255,35,82,.2)}.btn-r:hover{background:rgba(255,35,82,.2)}
 .btn-gr{background:rgba(22,163,74,.1);color:var(--green);border:1px solid rgba(22,163,74,.2)}.btn-b{background:rgba(68,138,255,.1);color:var(--blue);border:1px solid rgba(68,138,255,.2)}
@@ -1983,7 +1987,7 @@ PAGE BEHAVIOR
 - Each config card shows its decoded remark and protocol and has copy and QR actions. Escape remarks before inserting them into HTML. Never insert server text as trusted markup.
 - The chips filter all/TLS/Reality/Telegram groups. Search filters by the decoded config name within the active category. Update group visibility and visible counts after either action.
 - Copy Subscription Link, Copy Sub Text, Copy All Configs, and per-config Copy use the Clipboard API with the existing textarea fallback. Keep localized success/error toast messages.
-- Quick Connect opens a modal with Android, iOS, and Windows choices. Existing app deep links are: Happ happ://add/{encoded-sub-url}; v2rayNG v2rayng://install-sub?url={encoded-sub-url}&name=SPiDER; V2Box v2box://install-sub?url={encoded-sub-url}&name=SPiDER; Hiddify hiddify://install-sub?url={encoded-sub-url}&name=SPiDER; Windows v2rayN v2rayn://install-sub?url={encoded-sub-url}. Copy the subscription URL before redirecting to the chosen client.
+- Quick Connect opens a modal with Android, iOS, and Windows choices. Existing app deep links are: Happ happ://add/{encoded-sub-url}; v2rayNG v2rayng://install-sub?url={encoded-sub-url}&name=NishoVpn; V2Box v2box://install-sub?url={encoded-sub-url}&name=NishoVpn; Hiddify hiddify://install-sub?url={encoded-sub-url}&name=NishoVpn; Windows v2rayN v2rayn://install-sub?url={encoded-sub-url}. Copy the subscription URL before redirecting to the chosen client.
 - The QR modal requests the server image for the selected real config index, shows its decoded name, and can close from its button. Quick Connect closes from its close button, backdrop, or chosen action.
 - Keep event binding idempotent: dynamically rendered cards are recreated, so do not attach duplicate handlers. Existing code uses a _bound marker for this.
 
@@ -2257,7 +2261,7 @@ var LANG = localStorage.getItem('nisho-lang') || localStorage.getItem('spider-la
 var I18N = {
   fa: {
     'dash': 'داشبورد', 'navGroup': 'مدیریت', 'advanced': 'پیشرفته', 'networkTotal': 'مجموع ارسال + دریافت', 'users': 'کاربران', 'inbounds': 'اینباندها', 'scanner': 'اسکنر IP', 'worker': 'ورکر (Worker)', 'settings': 'تنظیمات', 'contact': 'تماس با من', 'logout': 'خروج',
-    'workerSetupTip': 'پنل را به Cloudflare متصل کنید تا یک پروژه Pages اختصاصی ساخته شود، worker.js داخل آن Deploy شود و یک KV اختصاصی به آن متصل شود.', 'cfToken': 'توکن API کلادفلر', 'getToken': 'گرفتن توکن', 'cfAccountId': 'شناسه حساب', 'cfWorkerName': 'نام Worker', 'cfWorkerDomain': 'دامنه Worker', 'createNewWorker': 'ساخت Worker جدید', 'cfConnect': 'اتصال و Deploy', 'connected': 'متصل', 'disconnected': 'قطع', 'workerStatus': 'وضعیت', 'remoteStatus': 'وضعیت ریموت', 'lastHeartbeat': 'آخرین Heartbeat', 'workerId': 'پروژه Pages', 'kvId': 'KV ID', 'onlineUsers': 'کاربران آنلاین', 'workerTraffic': 'مصرف Worker', 'workerUrl': 'نشانی ورکر', 'lastSync': 'آخرین Sync', 'lastError': 'آخرین خطا', 'proxyPool': 'مخزن IP پروکسی', 'addProxy': 'افزودن کشور', 'workerSettings': 'تنظیمات Worker', 'removeConn': 'حذف اتصال Worker', 'noProxyYet': 'هنوز کشوری اضافه نکرده‌اید', 'connecting': 'در حال ساخت...', 'workerConnected': 'Worker جدید ساخته و Deploy شد', 'syncing': 'در حال Sync...', 'synced': 'Sync شد', 'confirmRemoveWorker': 'اتصال Worker حذف شود؟', 'workerRemoved': 'اتصال Worker حذف شد', 'proxyCodePrompt': 'کد کشور (مثلا de):', 'proxyCountryPrompt': 'نام کشور:', 'proxyHostPrompt': 'آدرس Proxy IP (مثلا de.example.com):', 'proxyPortPrompt': 'پورت Proxy IP:', 'proxySaved': 'کشور ذخیره و Worker بروزرسانی شد', 'confirmDelProxy': 'این کشور حذف شود؟', 'proxyDeleted': 'کشور حذف شد', 'workerFillAll': 'همه فیلدها را پر کنید', 'workerProxyEnabled': 'IP پروکسی Worker', 'workerProxyNone': 'بدون Proxy', 'workerRouteTip': 'کانفیگ کاربر روی دامنه Pages با مسیر /ws/{uuid} ساخته می‌شود و از Railway عبور نمی‌کند.', 'workerAutoName': 'یک پروژه Pages جدید با نام تصادفی (spider-xxxxxx) و KV اختصاصی ساخته می‌شود — نیازی به ورود نام نیست.', 'proxySource': 'منبع پروکسی روزانه', 'autoSyncHourly': 'بروزرسانی خودکار (ساعتی)', 'updateNow': 'بروزرسانی از منبع', 'updatingFromSource': 'در حال بروزرسانی از منبع', 'sourceUpdated': 'بروزرسانی شد', 'sourceError': 'خطا در بروزرسانی منبع', 'countries': 'کشور', 'syncsDone': 'تعداد بروزرسانی‌ها', 'pickCountry': 'یک کشور انتخاب کنید',
+    'workerSetupTip': 'پنل را به Cloudflare متصل کنید تا یک پروژه Pages اختصاصی ساخته شود، worker.js داخل آن Deploy شود و یک KV اختصاصی به آن متصل شود.', 'cfToken': 'توکن API کلادفلر', 'getToken': 'گرفتن توکن', 'cfAccountId': 'شناسه حساب', 'cfWorkerName': 'نام Worker', 'cfWorkerDomain': 'دامنه Worker', 'createNewWorker': 'ساخت Worker جدید', 'cfConnect': 'اتصال و Deploy', 'connected': 'متصل', 'disconnected': 'قطع', 'workerStatus': 'وضعیت', 'remoteStatus': 'وضعیت ریموت', 'lastHeartbeat': 'آخرین Heartbeat', 'workerId': 'پروژه Pages', 'kvId': 'KV ID', 'onlineUsers': 'کاربران آنلاین', 'workerTraffic': 'مصرف Worker', 'workerUrl': 'نشانی ورکر', 'lastSync': 'آخرین Sync', 'lastError': 'آخرین خطا', 'proxyPool': 'مخزن IP پروکسی', 'addProxy': 'افزودن کشور', 'workerSettings': 'تنظیمات Worker', 'removeConn': 'حذف اتصال Worker', 'noProxyYet': 'هنوز کشوری اضافه نکرده‌اید', 'connecting': 'در حال ساخت...', 'workerConnected': 'Worker جدید ساخته و Deploy شد', 'syncing': 'در حال Sync...', 'synced': 'Sync شد', 'confirmRemoveWorker': 'اتصال Worker حذف شود؟', 'workerRemoved': 'اتصال Worker حذف شد', 'proxyCodePrompt': 'کد کشور (مثلا de):', 'proxyCountryPrompt': 'نام کشور:', 'proxyHostPrompt': 'آدرس Proxy IP (مثلا de.example.com):', 'proxyPortPrompt': 'پورت Proxy IP:', 'proxySaved': 'کشور ذخیره و Worker بروزرسانی شد', 'confirmDelProxy': 'این کشور حذف شود؟', 'proxyDeleted': 'کشور حذف شد', 'workerFillAll': 'همه فیلدها را پر کنید', 'workerProxyEnabled': 'IP پروکسی Worker', 'workerProxyNone': 'بدون Proxy', 'workerRouteTip': 'کانفیگ کاربر روی دامنه Pages با مسیر /ws/{uuid} ساخته می‌شود و از Railway عبور نمی‌کند.', 'workerAutoName': 'یک پروژه Pages جدید با نام تصادفی (nisho-xxxxxx) و KV اختصاصی ساخته می‌شود — نیازی به ورود نام نیست.', 'proxySource': 'منبع پروکسی روزانه', 'autoSyncHourly': 'بروزرسانی خودکار (ساعتی)', 'updateNow': 'بروزرسانی از منبع', 'updatingFromSource': 'در حال بروزرسانی از منبع', 'sourceUpdated': 'بروزرسانی شد', 'sourceError': 'خطا در بروزرسانی منبع', 'countries': 'کشور', 'syncsDone': 'تعداد بروزرسانی‌ها', 'pickCountry': 'یک کشور انتخاب کنید',
     'tab.dash': 'داشبورد', 'tab.users': 'مدیریت کاربران', 'tab.inbounds': 'مدیریت اینباندها', 'tab.scanner': 'اسکنر آی‌پی', 'tab.settings': 'تنظیمات', 'tab.advanced': 'پیشرفته', 'tab.help': 'راهنما',
     'helpTemplate': 'قالب', 'helpServerEdit': 'ویرایش سرور', 'helpConfigOptions': 'تنظیمات کانفیگ', 'helpCopyPrompt': 'کپی متن راهنما', 'helpPromptCopied': 'متن راهنما کپی شد', 'helpPromptCopyFailed': 'کپی متن راهنما ناموفق بود',
     'helpIntro': 'راهنما و تنظیمات کانفیگ‌های پیش‌فرض', 'helpPromptHint': 'این Prompt منطق صفحه ساب فعلی را توضیح می‌دهد تا بتوانید آن را به هوش مصنوعی بدهید.',
@@ -2325,7 +2329,7 @@ var I18N = {
   },
   en: {
     'dash': 'Dashboard', 'navGroup': 'Management', 'advanced': 'Advanced', 'networkTotal': 'Total sent + received', 'users': 'Users', 'inbounds': 'Inbounds', 'scanner': 'IP Scanner', 'worker': 'Worker', 'settings': 'Settings', 'contact': 'Contact Me', 'logout': 'Logout',
-    'workerSetupTip': 'Connect the panel to Cloudflare to create a dedicated Pages project, deploy worker.js, and attach a private KV namespace automatically.', 'cfToken': 'Cloudflare API Token', 'getToken': 'Get Token', 'cfAccountId': 'Account ID', 'cfWorkerName': 'Worker Name', 'cfWorkerDomain': 'Worker Domain', 'createNewWorker': 'Create New Worker', 'cfConnect': 'Connect & Deploy', 'connected': 'Connected', 'disconnected': 'Disconnected', 'workerStatus': 'Status', 'remoteStatus': 'Remote Status', 'lastHeartbeat': 'Last Heartbeat', 'workerId': 'Pages Project', 'kvId': 'KV ID', 'onlineUsers': 'Online Users', 'workerTraffic': 'Worker Traffic', 'workerUrl': 'Worker URL', 'lastSync': 'Last Sync', 'lastError': 'Last Error', 'proxyPool': 'Proxy IP Pool', 'addProxy': 'Add Country', 'workerSettings': 'Worker Settings', 'removeConn': 'Remove Worker Connection', 'noProxyYet': 'No country added yet', 'connecting': 'Creating...', 'workerConnected': 'New worker created & deployed', 'syncing': 'Syncing...', 'synced': 'Synced', 'confirmRemoveWorker': 'Remove the Worker connection?', 'workerRemoved': 'Worker connection removed', 'proxyCodePrompt': 'Country code (e.g. de):', 'proxyCountryPrompt': 'Country name:', 'proxyHostPrompt': 'Proxy IP host (e.g. de.example.com):', 'proxyPortPrompt': 'Proxy IP port:', 'proxySaved': 'Country saved, worker updated', 'confirmDelProxy': 'Delete this country?', 'proxyDeleted': 'Country deleted', 'workerFillAll': 'Fill in all fields', 'workerProxyEnabled': 'Worker Proxy IP', 'workerProxyNone': 'No Proxy', 'workerRouteTip': 'The user config is built on the Pages Worker domain with the /ws/{uuid} path.', 'workerAutoName': 'A dedicated Pages project is created with a random name (spider-xxxxxx) and its own dedicated KV — no project name is needed.', 'proxySource': 'Daily Proxy Source', 'autoSyncHourly': 'Auto-update (hourly)', 'updateNow': 'Update Now', 'updatingFromSource': 'Updating from source', 'sourceUpdated': 'Updated', 'sourceError': 'Failed to update source', 'countries': 'countries', 'syncsDone': 'Syncs done', 'pickCountry': 'Pick a country',
+    'workerSetupTip': 'Connect the panel to Cloudflare to create a dedicated Pages project, deploy worker.js, and attach a private KV namespace automatically.', 'cfToken': 'Cloudflare API Token', 'getToken': 'Get Token', 'cfAccountId': 'Account ID', 'cfWorkerName': 'Worker Name', 'cfWorkerDomain': 'Worker Domain', 'createNewWorker': 'Create New Worker', 'cfConnect': 'Connect & Deploy', 'connected': 'Connected', 'disconnected': 'Disconnected', 'workerStatus': 'Status', 'remoteStatus': 'Remote Status', 'lastHeartbeat': 'Last Heartbeat', 'workerId': 'Pages Project', 'kvId': 'KV ID', 'onlineUsers': 'Online Users', 'workerTraffic': 'Worker Traffic', 'workerUrl': 'Worker URL', 'lastSync': 'Last Sync', 'lastError': 'Last Error', 'proxyPool': 'Proxy IP Pool', 'addProxy': 'Add Country', 'workerSettings': 'Worker Settings', 'removeConn': 'Remove Worker Connection', 'noProxyYet': 'No country added yet', 'connecting': 'Creating...', 'workerConnected': 'New worker created & deployed', 'syncing': 'Syncing...', 'synced': 'Synced', 'confirmRemoveWorker': 'Remove the Worker connection?', 'workerRemoved': 'Worker connection removed', 'proxyCodePrompt': 'Country code (e.g. de):', 'proxyCountryPrompt': 'Country name:', 'proxyHostPrompt': 'Proxy IP host (e.g. de.example.com):', 'proxyPortPrompt': 'Proxy IP port:', 'proxySaved': 'Country saved, worker updated', 'confirmDelProxy': 'Delete this country?', 'proxyDeleted': 'Country deleted', 'workerFillAll': 'Fill in all fields', 'workerProxyEnabled': 'Worker Proxy IP', 'workerProxyNone': 'No Proxy', 'workerRouteTip': 'The user config is built on the Pages Worker domain with the /ws/{uuid} path.', 'workerAutoName': 'A dedicated Pages project is created with a random name (nisho-xxxxxx) and its own dedicated KV — no project name is needed.', 'proxySource': 'Daily Proxy Source', 'autoSyncHourly': 'Auto-update (hourly)', 'updateNow': 'Update Now', 'updatingFromSource': 'Updating from source', 'sourceUpdated': 'Updated', 'sourceError': 'Failed to update source', 'countries': 'countries', 'syncsDone': 'Syncs done', 'pickCountry': 'Pick a country',
     'tab.dash': 'Dashboard', 'tab.users': 'Manage Users', 'tab.inbounds': 'Manage Inbounds', 'tab.scanner': 'IP Scanner', 'tab.settings': 'Settings', 'tab.advanced': 'Advanced', 'tab.help': 'Help',
     'helpTemplate': 'Template', 'helpServerEdit': 'Server Edit', 'helpConfigOptions': 'Config Options', 'helpCopyPrompt': 'Copy Prompt', 'helpPromptCopied': 'Prompt copied', 'helpPromptCopyFailed': 'Could not copy the prompt',
     'helpIntro': 'Help and default config settings', 'helpPromptHint': 'This prompt documents the current subscription page so you can give it to an AI.',
@@ -3876,7 +3880,7 @@ async function downloadBackup() {
     a.href = url;
     var cd = r.headers.get('Content-Disposition') || '';
     var match = cd.match(/filename="([^"]+)"/i);
-    a.download = match && match[1] ? match[1] : ('spider-panel-backup-' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '.json');
+    a.download = match && match[1] ? match[1] : ('nisho-panel-backup-' + new Date().toISOString().slice(0,19).replace(/[:T]/g,'-') + '.json');
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
@@ -5520,8 +5524,8 @@ async function deleteSellPlan(id){if(!confirm('این Plan حذف شود؟'))ret
 function addBotJoinRow(item){var wrap=$id('bot-join-list');if(!wrap)return;item=item||{};var row=document.createElement('div');row.className='bot-join-row';row.innerHTML='<div class="f-g" style="margin:0"><label>Channel / Chat ID</label><input class="bot-join-chat" type="text" dir="ltr" placeholder="@channel یا -100123456789" value="'+escAttr(item.chat_id||item.channel||'')+'"></div><div class="f-g" style="margin:0"><label>Join Link</label><input class="bot-join-url" type="url" dir="ltr" placeholder="https://t.me/channel" value="'+escAttr(item.join_url||item.url||'')+'"></div><button class="btn-glass" type="button" onclick="this.parentElement.remove()">حذف</button>';wrap.appendChild(row);}
 function renderBotJoinRows(items){var wrap=$id('bot-join-list');if(!wrap)return;wrap.innerHTML='';(items||[]).forEach(addBotJoinRow);if(!items||!items.length)addBotJoinRow();}
 function getBotJoinPayload(){return Array.prototype.slice.call(document.querySelectorAll('#bot-join-list .bot-join-row')).map(function(row){return{chat_id:(row.querySelector('.bot-join-chat').value||'').trim(),join_url:(row.querySelector('.bot-join-url').value||'').trim()};}).filter(function(x){return x.chat_id;});}
-async function loadBot(){try{var d=await api('/api/bot/status');fillBotStatus(d);if($id('bot-token')&&!d.token_configured)$id('bot-token').value='';var ch=d.channel||{},sell=d.sell||{};$id('bot-channel-enabled').checked=!!ch.enabled;$id('bot-channel').value=ch.channel||'';$id('bot-channel-interval').value=ch.interval_minutes||60;$id('bot-channel-prefix').value=ch.username_prefix||'spider';$id('bot-channel-traffic').value=ch.traffic_limit_gb||0;$id('bot-channel-days').value=ch.expire_days||30;$id('bot-channel-replace').checked=ch.replace_previous!==false;await loadBotInbounds();$id('bot-channel-inbound').value=ch.inbound_id||'';$id('bot-sell-enabled').checked=!!sell.enabled;$id('bot-sell-admin').value=sell.admin_chat_id||'';$id('bot-sell-support').value=sell.support_username||'';$id('bot-sell-support-text').value=sell.support_text||'💬 برای پشتیبانی با مدیر فروش تماس بگیرید.';$id('bot-sell-payment').value=sell.payment_url||'';$id('bot-sell-payment-details').value=sell.payment_details||'';renderBotJoinRows(sell.required_channels||[]);}catch(e){console.error(e);}}
-function botPayload(){return{token:($id('bot-token').value||'').trim(),channel:{enabled:$id('bot-channel-enabled').checked,channel:($id('bot-channel').value||'').trim(),interval_minutes:parseInt($id('bot-channel-interval').value||60,10),username_prefix:($id('bot-channel-prefix').value||'spider').trim(),traffic_limit_gb:parseFloat($id('bot-channel-traffic').value||0),expire_days:parseInt($id('bot-channel-days').value||0,10),inbound_id:$id('bot-channel-inbound').value||'',replace_previous:$id('bot-channel-replace').checked},sell:{enabled:$id('bot-sell-enabled').checked,admin_chat_id:($id('bot-sell-admin').value||'').trim(),support_username:($id('bot-sell-support').value||'').trim(),support_text:$id('bot-sell-support-text').value||'',payment_url:($id('bot-sell-payment').value||'').trim(),payment_details:$id('bot-sell-payment-details').value||'',required_channels:getBotJoinPayload(),welcome_text:'سلام 👋\nبرای استفاده از فروشگاه یکی از بخش‌های زیر را انتخاب کنید.'}};}
+async function loadBot(){try{var d=await api('/api/bot/status');fillBotStatus(d);if($id('bot-token')&&!d.token_configured)$id('bot-token').value='';var ch=d.channel||{},sell=d.sell||{};$id('bot-channel-enabled').checked=!!ch.enabled;$id('bot-channel').value=ch.channel||'';$id('bot-channel-interval').value=ch.interval_minutes||60;$id('bot-channel-prefix').value=ch.username_prefix||'nisho';$id('bot-channel-traffic').value=ch.traffic_limit_gb||0;$id('bot-channel-days').value=ch.expire_days||30;$id('bot-channel-replace').checked=ch.replace_previous!==false;await loadBotInbounds();$id('bot-channel-inbound').value=ch.inbound_id||'';$id('bot-sell-enabled').checked=!!sell.enabled;$id('bot-sell-admin').value=sell.admin_chat_id||'';$id('bot-sell-support').value=sell.support_username||'';$id('bot-sell-support-text').value=sell.support_text||'💬 برای پشتیبانی با مدیر فروش تماس بگیرید.';$id('bot-sell-payment').value=sell.payment_url||'';$id('bot-sell-payment-details').value=sell.payment_details||'';renderBotJoinRows(sell.required_channels||[]);}catch(e){console.error(e);}}
+function botPayload(){return{token:($id('bot-token').value||'').trim(),channel:{enabled:$id('bot-channel-enabled').checked,channel:($id('bot-channel').value||'').trim(),interval_minutes:parseInt($id('bot-channel-interval').value||60,10),username_prefix:($id('bot-channel-prefix').value||'nisho').trim(),traffic_limit_gb:parseFloat($id('bot-channel-traffic').value||0),expire_days:parseInt($id('bot-channel-days').value||0,10),inbound_id:$id('bot-channel-inbound').value||'',replace_previous:$id('bot-channel-replace').checked},sell:{enabled:$id('bot-sell-enabled').checked,admin_chat_id:($id('bot-sell-admin').value||'').trim(),support_username:($id('bot-sell-support').value||'').trim(),support_text:$id('bot-sell-support-text').value||'',payment_url:($id('bot-sell-payment').value||'').trim(),payment_details:$id('bot-sell-payment-details').value||'',required_channels:getBotJoinPayload(),welcome_text:'سلام 👋\nبرای استفاده از فروشگاه یکی از بخش‌های زیر را انتخاب کنید.'}};}
 async function saveBotConfig(){try{var p=botPayload();if(!p.token){var st=await api('/api/bot/status');if(!st.token_configured)throw new Error('Telegram Bot API Key را وارد کنید');}await api('/api/bot/config',{method:'POST',body:p});await loadBot();toast('تنظیمات Bot ذخیره شد','ok');}catch(e){toast(e.message||'خطا در ذخیره تنظیمات','err');}}
 async function testBotConfig(){try{var p=botPayload();var d=await api('/api/bot/test',{method:'POST',body:{token:p.token,channel:p.channel.channel}});var msg='Bot: @'+(d.bot&&d.bot.username||'?');if(d.channel){msg+=' · Channel: '+(d.channel.username||d.channel.title||d.channel.id);if(!d.channel.is_admin)msg+=' · Bot admin نیست';}toast(msg,d.channel&&!d.channel.is_admin?'warn':'ok');}catch(e){toast(e.message||'Telegram test failed','err');}}
 async function runChannelBotNow(){try{await api('/api/bot/config',{method:'POST',body:botPayload()});var d=await api('/api/bot/channel/run',{method:'POST'});toast('کاربر '+((d.user||{}).username||'')+' ساخته و در Channel ارسال شد','ok');await loadBot();}catch(e){toast(e.message||'خطا در اجرای Channel Bot','err');}}
